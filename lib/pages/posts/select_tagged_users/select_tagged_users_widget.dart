@@ -4,14 +4,14 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:text_search/text_search.dart';
 import 'select_tagged_users_model.dart';
 export 'select_tagged_users_model.dart';
 
 class SelectTaggedUsersWidget extends StatefulWidget {
-  const SelectTaggedUsersWidget({Key? key}) : super(key: key);
+  const SelectTaggedUsersWidget({super.key});
 
   @override
   _SelectTaggedUsersWidgetState createState() =>
@@ -29,6 +29,8 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
     _model = createModel(context, () => SelectTaggedUsersModel());
 
     _model.textController ??= TextEditingController();
+    _model.textFieldFocusNode ??= FocusNode();
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -41,10 +43,21 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -58,7 +71,7 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                   fontSize: 16.0,
                 ),
           ),
-          actions: [],
+          actions: const [],
           centerTitle: true,
           elevation: 0.0,
         ),
@@ -68,7 +81,7 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
             mainAxisSize: MainAxisSize.max,
             children: [
               Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 12.0),
+                padding: const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 12.0),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -79,7 +92,7 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                         builder: (context, snapshot) {
                           // Customize what your widget looks like when it's loading.
                           if (!snapshot.hasData) {
-                            return Center(
+                            return const Center(
                               child: SizedBox(
                                 width: 12.0,
                                 height: 12.0,
@@ -95,22 +108,24 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                               .data!
                               .where((u) => u.uid != currentUserUid)
                               .toList();
-                          return Container(
+                          return SizedBox(
                             width: 50.0,
                             child: TextFormField(
                               controller: _model.textController,
+                              focusNode: _model.textFieldFocusNode,
                               onChanged: (_) => EasyDebounce.debounce(
                                 '_model.textController',
-                                Duration(milliseconds: 1000),
+                                const Duration(milliseconds: 1000),
                                 () async {
-                                  setState(() {
+                                  safeSetState(() {
                                     _model.simpleSearchResults = TextSearch(
                                       textFieldUsersRecordList
                                           .map(
-                                            (record) => TextSearchItem(record, [
-                                              record.displayName!,
-                                              record.username!
-                                            ]),
+                                            (record) =>
+                                                TextSearchItem.fromTerms(
+                                                    record, [
+                                              record.displayName,
+                                              record.username]),
                                           )
                                           .toList(),
                                     )
@@ -118,7 +133,6 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                                         .map((r) => r.object)
                                         .take(15)
                                         .toList();
-                                    ;
                                   });
                                 },
                               ),
@@ -135,28 +149,28 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                                       lineHeight: 1.5,
                                     ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Color(0x00000000),
                                     width: 1.0,
                                   ),
                                   borderRadius: BorderRadius.circular(16.0),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Color(0x00000000),
                                     width: 1.0,
                                   ),
                                   borderRadius: BorderRadius.circular(16.0),
                                 ),
                                 errorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Color(0x00000000),
                                     width: 1.0,
                                   ),
                                   borderRadius: BorderRadius.circular(16.0),
                                 ),
                                 focusedErrorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
+                                  borderSide: const BorderSide(
                                     color: Color(0x00000000),
                                     width: 1.0,
                                   ),
@@ -165,7 +179,7 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                                 filled: true,
                                 fillColor: FlutterFlowTheme.of(context)
                                     .primaryBackground,
-                                contentPadding: EdgeInsetsDirectional.fromSTEB(
+                                contentPadding: const EdgeInsetsDirectional.fromSTEB(
                                     24.0, 0.0, 24.0, 0.0),
                                 prefixIcon: Icon(
                                   FFIcons.ksearch,
@@ -178,16 +192,15 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                                     ? InkWell(
                                         onTap: () async {
                                           _model.textController?.clear();
-                                          setState(() {
+                                          safeSetState(() {
                                             _model.simpleSearchResults =
                                                 TextSearch(
                                               textFieldUsersRecordList
                                                   .map(
-                                                    (record) => TextSearchItem(
-                                                        record, [
-                                                      record.displayName!,
-                                                      record.username!
-                                                    ]),
+                                                    (record) => TextSearchItem
+                                                        .fromTerms(record, [
+                                                      record.displayName,
+                                                      record.username]),
                                                   )
                                                   .toList(),
                                             )
@@ -196,7 +209,6 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                                                     .map((r) => r.object)
                                                     .take(15)
                                                     .toList();
-                                            ;
                                           });
                                           setState(() {});
                                         },
@@ -226,7 +238,7 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                     ),
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 0.0, 0.0),
+                          const EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 0.0, 0.0),
                       child: InkWell(
                         splashColor: Colors.transparent,
                         focusColor: Colors.transparent,
@@ -251,7 +263,7 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
               ),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
                   child: Builder(
                     builder: (context) {
                       final taggedUsers = _model.simpleSearchResults
@@ -264,7 +276,7 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                             (taggedUsersIndex) {
                           final taggedUsersItem = taggedUsers[taggedUsersIndex];
                           return Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 12.0, 0.0, 0.0),
                             child: InkWell(
                               splashColor: Colors.transparent,
@@ -285,7 +297,7 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                                     width: 55.0,
                                     height: 55.0,
                                     clipBehavior: Clip.antiAlias,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
                                     ),
                                     child: Image.network(
@@ -298,7 +310,7 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                                   ),
                                   Expanded(
                                     child: Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           12.0, 0.0, 0.0, 0.0),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.max,
@@ -317,7 +329,7 @@ class _SelectTaggedUsersWidgetState extends State<SelectTaggedUsersWidget> {
                                           ),
                                           Padding(
                                             padding:
-                                                EdgeInsetsDirectional.fromSTEB(
+                                                const EdgeInsetsDirectional.fromSTEB(
                                                     0.0, 2.0, 0.0, 0.0),
                                             child: Text(
                                               taggedUsersItem.username,

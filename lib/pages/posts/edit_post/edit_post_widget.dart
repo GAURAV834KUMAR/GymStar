@@ -2,19 +2,18 @@ import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'edit_post_model.dart';
 export 'edit_post_model.dart';
 
 class EditPostWidget extends StatefulWidget {
   const EditPostWidget({
-    Key? key,
+    super.key,
     this.post,
-  }) : super(key: key);
+  });
 
   final PostsRecord? post;
 
@@ -46,6 +45,8 @@ class _EditPostWidgetState extends State<EditPostWidget> {
 
     _model.textController ??=
         TextEditingController(text: widget.post?.postCaption);
+    _model.textFieldFocusNode ??= FocusNode();
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -58,10 +59,21 @@ class _EditPostWidgetState extends State<EditPostWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -69,7 +81,7 @@ class _EditPostWidgetState extends State<EditPostWidget> {
           backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
           automaticallyImplyLeading: false,
           leading: Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 0.0, 0.0),
+            padding: const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 0.0, 0.0),
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: [
@@ -103,7 +115,7 @@ class _EditPostWidgetState extends State<EditPostWidget> {
           ),
           actions: [
             Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -118,7 +130,11 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                           postCaption: _model.textController.text,
                           location: FFAppState().location,
                         ),
-                        'tagged_users': FFAppState().taggedUsers,
+                        ...mapToFirestore(
+                          {
+                            'tagged_users': FFAppState().taggedUsers,
+                          },
+                        ),
                       });
                       context.pop();
                     },
@@ -149,13 +165,13 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                 Container(
                   width: double.infinity,
                   height: 0.5,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFFDADADA),
                   ),
                 ),
                 Padding(
                   padding:
-                      EdgeInsetsDirectional.fromSTEB(15.0, 12.0, 15.0, 12.0),
+                      const EdgeInsetsDirectional.fromSTEB(15.0, 12.0, 15.0, 12.0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -177,7 +193,7 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                             ),
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Color(0xFFDADADA),
+                              color: const Color(0xFFDADADA),
                               width: 0.5,
                             ),
                           ),
@@ -185,7 +201,7 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                       ),
                       Padding(
                         padding:
-                            EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 0.0, 0.0),
+                            const EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 0.0, 0.0),
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,7 +222,7 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                             if (widget.post?.location != null &&
                                 widget.post?.location != '')
                               Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     0.0, 2.0, 0.0, 0.0),
                                 child: InkWell(
                                   splashColor: Colors.transparent,
@@ -217,7 +233,7 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                                     context.pushNamed(
                                       'Location',
                                       extra: <String, dynamic>{
-                                        kTransitionInfoKey: TransitionInfo(
+                                        kTransitionInfoKey: const TransitionInfo(
                                           hasTransition: true,
                                           transitionType:
                                               PageTransitionType.bottomToTop,
@@ -252,18 +268,18 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                 Container(
                   width: double.infinity,
                   height: 0.5,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFFDADADA),
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: 500.0,
                   height: 350.0,
                   child: Stack(
-                    alignment: AlignmentDirectional(-1.0, -1.0),
+                    alignment: const AlignmentDirectional(-1.0, -1.0),
                     children: [
                       Align(
-                        alignment: AlignmentDirectional(0.0, 0.0),
+                        alignment: const AlignmentDirectional(0.0, 0.0),
                         child: Image.network(
                           widget.post!.postPhoto,
                           width: 500.0,
@@ -272,9 +288,9 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                         ),
                       ),
                       Align(
-                        alignment: AlignmentDirectional(-1.0, 1.0),
+                        alignment: const AlignmentDirectional(-1.0, 1.0),
                         child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               12.0, 0.0, 0.0, 21.0),
                           child: InkWell(
                             splashColor: Colors.transparent,
@@ -285,7 +301,7 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                               context.pushNamed(
                                 'TagUsers',
                                 extra: <String, dynamic>{
-                                  kTransitionInfoKey: TransitionInfo(
+                                  kTransitionInfoKey: const TransitionInfo(
                                     hasTransition: true,
                                     transitionType:
                                         PageTransitionType.bottomToTop,
@@ -299,11 +315,11 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                                 Container(
                                   width: 30.0,
                                   height: 30.0,
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: Color(0x80000000),
                                     shape: BoxShape.circle,
                                   ),
-                                  child: Align(
+                                  child: const Align(
                                     alignment: AlignmentDirectional(0.0, 0.0),
                                     child: Icon(
                                       Icons.person_rounded,
@@ -312,21 +328,20 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                                     ),
                                   ),
                                 ),
-                                if (widget.post!.taggedUsers.length > 0)
+                                if (widget.post!.taggedUsers.isNotEmpty)
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         6.0, 0.0, 0.0, 0.0),
                                     child: Text(
                                       () {
-                                        if (widget.post?.taggedUsers?.length ==
-                                            0) {
+                                        if (widget.post?.taggedUsers.isEmpty) {
                                           return 'Tag users';
                                         } else if (widget
-                                                .post?.taggedUsers?.length ==
+                                                .post?.taggedUsers.length ==
                                             1) {
                                           return '1 person';
                                         } else {
-                                          return '${widget.post?.taggedUsers?.length?.toString()} people';
+                                          return '${widget.post?.taggedUsers.length.toString()} people';
                                         }
                                       }(),
                                       style: FlutterFlowTheme.of(context)
@@ -346,10 +361,10 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                   ),
                 ),
                 Padding(
-                  padding:
-                      EdgeInsetsDirectional.fromSTEB(15.0, 15.0, 15.0, 15.0),
+                  padding: const EdgeInsets.all(15.0),
                   child: TextFormField(
                     controller: _model.textController,
+                    focusNode: _model.textFieldFocusNode,
                     autofocus: true,
                     obscureText: false,
                     decoration: InputDecoration(
@@ -360,42 +375,42 @@ class _EditPostWidgetState extends State<EditPostWidget> {
                                 fontSize: 14.0,
                                 fontWeight: FontWeight.normal,
                               ),
-                      enabledBorder: UnderlineInputBorder(
+                      enabledBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(
                           color: Color(0x00000000),
                           width: 1.0,
                         ),
-                        borderRadius: const BorderRadius.only(
+                        borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(4.0),
                           topRight: Radius.circular(4.0),
                         ),
                       ),
-                      focusedBorder: UnderlineInputBorder(
+                      focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(
                           color: Color(0x00000000),
                           width: 1.0,
                         ),
-                        borderRadius: const BorderRadius.only(
+                        borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(4.0),
                           topRight: Radius.circular(4.0),
                         ),
                       ),
-                      errorBorder: UnderlineInputBorder(
+                      errorBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(
                           color: Color(0x00000000),
                           width: 1.0,
                         ),
-                        borderRadius: const BorderRadius.only(
+                        borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(4.0),
                           topRight: Radius.circular(4.0),
                         ),
                       ),
-                      focusedErrorBorder: UnderlineInputBorder(
+                      focusedErrorBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(
                           color: Color(0x00000000),
                           width: 1.0,
                         ),
-                        borderRadius: const BorderRadius.only(
+                        borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(4.0),
                           topRight: Radius.circular(4.0),
                         ),

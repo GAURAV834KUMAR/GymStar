@@ -2,15 +2,14 @@ import '/flutter_flow/flutter_flow_button_tabbar.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'work_out_planner_model.dart';
 export 'work_out_planner_model.dart';
 
 class WorkOutPlannerWidget extends StatefulWidget {
-  const WorkOutPlannerWidget({Key? key}) : super(key: key);
+  const WorkOutPlannerWidget({super.key});
 
   @override
   _WorkOutPlannerWidgetState createState() => _WorkOutPlannerWidgetState();
@@ -31,7 +30,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
       vsync: this,
       length: 3,
       initialIndex: 0,
-    );
+    )..addListener(() => setState(() {}));
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -44,10 +43,21 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -77,7 +87,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          actions: [],
+          actions: const [],
           centerTitle: true,
           elevation: 0.0,
         ),
@@ -89,11 +99,11 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
               Expanded(
                 child: Padding(
                   padding:
-                      EdgeInsetsDirectional.fromSTEB(28.0, 18.0, 20.0, 0.0),
+                      const EdgeInsetsDirectional.fromSTEB(28.0, 18.0, 20.0, 0.0),
                   child: Column(
                     children: [
                       Align(
-                        alignment: Alignment(0.0, 0),
+                        alignment: const Alignment(0.0, 0),
                         child: FlutterFlowButtonTabBar(
                           useToggleButtonStyle: true,
                           labelStyle:
@@ -101,12 +111,11 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     fontFamily: 'Inter',
                                     fontSize: 15.0,
                                   ),
-                          unselectedLabelStyle: TextStyle(),
+                          unselectedLabelStyle: const TextStyle(),
                           labelColor: FlutterFlowTheme.of(context).primaryText,
                           unselectedLabelColor:
                               FlutterFlowTheme.of(context).secondaryText,
-                          backgroundColor:
-                              FlutterFlowTheme.of(context).secondary,
+                          backgroundColor: FlutterFlowTheme.of(context).primary,
                           unselectedBackgroundColor:
                               FlutterFlowTheme.of(context).alternate,
                           borderColor: FlutterFlowTheme.of(context).primary,
@@ -115,9 +124,9 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                           borderWidth: 0.0,
                           borderRadius: 32.0,
                           elevation: 0.0,
-                          buttonMargin: EdgeInsetsDirectional.fromSTEB(
+                          buttonMargin: const EdgeInsetsDirectional.fromSTEB(
                               8.0, 0.0, 8.0, 0.0),
-                          tabs: [
+                          tabs: const [
                             Tab(
                               text: 'Beginer',
                             ),
@@ -129,7 +138,9 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                             ),
                           ],
                           controller: _model.tabBarController,
-                          onTap: (value) => setState(() {}),
+                          onTap: (i) async {
+                            [() async {}, () async {}, () async {}][i]();
+                          },
                         ),
                       ),
                       Expanded(
@@ -141,7 +152,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 31.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -162,7 +173,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -176,7 +187,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -191,21 +202,26 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                     children: [
                                                       Text(
                                                         'Wake Up Call',
-                                                        style: FlutterFlowTheme
-                                                                .of(context)
-                                                            .bodyMedium
-                                                            .override(
-                                                              fontFamily:
-                                                                  'Inter',
-                                                              fontSize: 17.0,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                            ),
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .primaryBtnText,
+                                                                  fontSize:
+                                                                      17.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                ),
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -223,7 +239,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                                 thickness: 1.5,
                                                                 color: FlutterFlowTheme.of(
                                                                         context)
-                                                                    .secondary,
+                                                                    .primary,
                                                               ),
                                                             ),
                                                             Text(
@@ -236,7 +252,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                                         'Inter',
                                                                     color: FlutterFlowTheme.of(
                                                                             context)
-                                                                        .secondary,
+                                                                        .primary,
                                                                     fontSize:
                                                                         13.0,
                                                                   ),
@@ -255,7 +271,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 16.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -276,7 +292,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -290,7 +306,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -319,7 +335,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -329,7 +345,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                           mainAxisSize:
                                                               MainAxisSize.max,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 10.0,
                                                               child:
                                                                   VerticalDivider(
@@ -362,7 +378,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                   Flexible(
                                                     child: Align(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.8, 0.0),
                                                       child: Image.asset(
                                                         'assets/images/Pro_Badge.png',
@@ -381,7 +397,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 16.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -402,7 +418,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -416,7 +432,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -445,7 +461,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -455,7 +471,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                           mainAxisSize:
                                                               MainAxisSize.max,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 10.0,
                                                               child:
                                                                   VerticalDivider(
@@ -488,7 +504,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                   Flexible(
                                                     child: Align(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.8, 0.0),
                                                       child: Image.asset(
                                                         'assets/images/Pro_Badge.png',
@@ -507,7 +523,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 16.0, 0.0, 31.0),
                                     child: Container(
                                       width: double.infinity,
@@ -528,7 +544,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -542,7 +558,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -571,7 +587,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -581,7 +597,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                           mainAxisSize:
                                                               MainAxisSize.max,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 10.0,
                                                               child:
                                                                   VerticalDivider(
@@ -614,7 +630,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                   Flexible(
                                                     child: Align(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.8, 0.0),
                                                       child: Image.asset(
                                                         'assets/images/Pro_Badge.png',
@@ -640,7 +656,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 31.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -661,7 +677,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -675,7 +691,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -704,7 +720,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -754,7 +770,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 16.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -775,7 +791,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -789,7 +805,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -818,7 +834,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -828,7 +844,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                           mainAxisSize:
                                                               MainAxisSize.max,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 10.0,
                                                               child:
                                                                   VerticalDivider(
@@ -861,7 +877,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                   Flexible(
                                                     child: Align(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.8, 0.0),
                                                       child: Image.asset(
                                                         'assets/images/Pro_Badge.png',
@@ -880,7 +896,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 16.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -901,7 +917,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -915,7 +931,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -944,7 +960,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -954,7 +970,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                           mainAxisSize:
                                                               MainAxisSize.max,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 10.0,
                                                               child:
                                                                   VerticalDivider(
@@ -987,7 +1003,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                   Flexible(
                                                     child: Align(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.8, 0.0),
                                                       child: Image.asset(
                                                         'assets/images/Pro_Badge.png',
@@ -1006,7 +1022,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 16.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -1027,7 +1043,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -1041,7 +1057,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -1070,7 +1086,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -1080,7 +1096,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                           mainAxisSize:
                                                               MainAxisSize.max,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 10.0,
                                                               child:
                                                                   VerticalDivider(
@@ -1113,7 +1129,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                   Flexible(
                                                     child: Align(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.8, 0.0),
                                                       child: Image.asset(
                                                         'assets/images/Pro_Badge.png',
@@ -1132,7 +1148,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 16.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -1153,7 +1169,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -1167,7 +1183,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -1196,7 +1212,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -1206,7 +1222,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                           mainAxisSize:
                                                               MainAxisSize.max,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 10.0,
                                                               child:
                                                                   VerticalDivider(
@@ -1239,7 +1255,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                   Flexible(
                                                     child: Align(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.8, 0.0),
                                                       child: Image.asset(
                                                         'assets/images/Pro_Badge.png',
@@ -1265,7 +1281,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 31.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -1286,7 +1302,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -1300,7 +1316,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -1329,7 +1345,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -1379,7 +1395,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 16.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -1400,7 +1416,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -1414,7 +1430,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -1443,7 +1459,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -1453,7 +1469,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                           mainAxisSize:
                                                               MainAxisSize.max,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 10.0,
                                                               child:
                                                                   VerticalDivider(
@@ -1486,7 +1502,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                   Flexible(
                                                     child: Align(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.8, 0.0),
                                                       child: Image.asset(
                                                         'assets/images/Pro_Badge.png',
@@ -1505,7 +1521,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 16.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -1526,7 +1542,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -1540,7 +1556,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -1569,7 +1585,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -1579,7 +1595,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                           mainAxisSize:
                                                               MainAxisSize.max,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 10.0,
                                                               child:
                                                                   VerticalDivider(
@@ -1612,7 +1628,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                   Flexible(
                                                     child: Align(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.8, 0.0),
                                                       child: Image.asset(
                                                         'assets/images/Pro_Badge.png',
@@ -1631,7 +1647,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 16.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -1652,7 +1668,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -1666,7 +1682,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -1695,7 +1711,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -1705,7 +1721,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                           mainAxisSize:
                                                               MainAxisSize.max,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 10.0,
                                                               child:
                                                                   VerticalDivider(
@@ -1738,7 +1754,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                   Flexible(
                                                     child: Align(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.8, 0.0),
                                                       child: Image.asset(
                                                         'assets/images/Pro_Badge.png',
@@ -1757,7 +1773,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 16.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
@@ -1778,7 +1794,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                         width: 100.0,
                                         height: 100.0,
                                         decoration: BoxDecoration(
-                                          color: Color(0x001C1C1E),
+                                          color: const Color(0x001C1C1E),
                                           image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: Image.asset(
@@ -1792,7 +1808,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       16.0, 0.0, 0.0, 16.0),
                                               child: Row(
@@ -1821,7 +1837,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     4.0,
@@ -1831,7 +1847,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                           mainAxisSize:
                                                               MainAxisSize.max,
                                                           children: [
-                                                            SizedBox(
+                                                            const SizedBox(
                                                               height: 10.0,
                                                               child:
                                                                   VerticalDivider(
@@ -1864,7 +1880,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                                   Flexible(
                                                     child: Align(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.8, 0.0),
                                                       child: Image.asset(
                                                         'assets/images/Pro_Badge.png',
@@ -1910,7 +1926,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                           Material(
                             color: Colors.transparent,
                             elevation: 0.0,
-                            shape: RoundedRectangleBorder(
+                            shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(0.0),
                                 bottomRight: Radius.circular(0.0),
@@ -1924,7 +1940,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                               decoration: BoxDecoration(
                                 color: FlutterFlowTheme.of(context)
                                     .secondaryBackground,
-                                boxShadow: [
+                                boxShadow: const [
                                   BoxShadow(
                                     blurRadius: 10.0,
                                     color: Color(0x1A57636C),
@@ -1932,7 +1948,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                     spreadRadius: 0.1,
                                   )
                                 ],
-                                borderRadius: BorderRadius.only(
+                                borderRadius: const BorderRadius.only(
                                   bottomLeft: Radius.circular(0.0),
                                   bottomRight: Radius.circular(0.0),
                                   topLeft: Radius.circular(20.0),
@@ -1991,7 +2007,7 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     0.0, 0.0, 0.0, 10.0),
                                 child: FlutterFlowIconButton(
                                   borderColor: Colors.transparent,
@@ -2008,9 +2024,9 @@ class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>
                                   ),
                                   onPressed: () async {
                                     context.goNamed(
-                                      'Reels',
+                                      'Home',
                                       extra: <String, dynamic>{
-                                        kTransitionInfoKey: TransitionInfo(
+                                        kTransitionInfoKey: const TransitionInfo(
                                           hasTransition: true,
                                           transitionType:
                                               PageTransitionType.topToBottom,

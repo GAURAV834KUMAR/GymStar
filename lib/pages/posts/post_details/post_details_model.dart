@@ -1,17 +1,10 @@
-import '/backend/backend.dart';
 import '/components/nav_bar1/nav_bar1_widget.dart';
 import '/components/post/post_widget.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'dart:async';
-import '/flutter_flow/custom_functions.dart' as functions;
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'post_details_widget.dart' show PostDetailsWidget;
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
-class PostDetailsModel extends FlutterFlowModel {
+class PostDetailsModel extends FlutterFlowModel<PostDetailsWidget> {
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
@@ -22,11 +15,13 @@ class PostDetailsModel extends FlutterFlowModel {
 
   /// Initialization and disposal methods.
 
+  @override
   void initState(BuildContext context) {
     postModel = createModel(context, () => PostModel());
     navBar1Model = createModel(context, () => NavBar1Model());
   }
 
+  @override
   void dispose() {
     unfocusNode.dispose();
     postModel.dispose();

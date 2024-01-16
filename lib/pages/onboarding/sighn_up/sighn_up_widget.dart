@@ -3,22 +3,21 @@ import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'sighn_up_model.dart';
 export 'sighn_up_model.dart';
 
 class SighnUpWidget extends StatefulWidget {
   const SighnUpWidget({
-    Key? key,
+    super.key,
     this.gender,
     this.age,
     this.weight,
-  }) : super(key: key);
+  });
 
   final String? gender;
   final double? age;
@@ -39,8 +38,14 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
     _model = createModel(context, () => SighnUpModel());
 
     _model.emailTextController ??= TextEditingController();
+    _model.textFieldFocusNode1 ??= FocusNode();
+
     _model.passwordTextController ??= TextEditingController();
+    _model.textFieldFocusNode2 ??= FocusNode();
+
     _model.confirmPasswordTextController ??= TextEditingController();
+    _model.textFieldFocusNode3 ??= FocusNode();
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -53,13 +58,24 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+        backgroundColor: FlutterFlowTheme.of(context).intro,
         body: SafeArea(
           top: true,
           child: SingleChildScrollView(
@@ -76,7 +92,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                     width: double.infinity,
                     height: 387.0,
                     decoration: BoxDecoration(
-                      color: FlutterFlowTheme.of(context).secondaryBackground,
+                      color: FlutterFlowTheme.of(context).intro,
                       image: DecorationImage(
                         fit: BoxFit.fill,
                         image: Image.asset(
@@ -87,7 +103,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                       ),
                       borderRadius: BorderRadius.circular(0.0),
                       border: Border.all(
-                        color: FlutterFlowTheme.of(context).secondaryBackground,
+                        color: FlutterFlowTheme.of(context).intro,
                       ),
                     ),
                     child: Stack(
@@ -95,7 +111,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                         Stack(
                           children: [
                             Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
                                   32.0, 58.0, 0.0, 0.0),
                               child: InkWell(
                                 splashColor: Colors.transparent,
@@ -120,7 +136,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                                       ),
                                     }.withoutNulls,
                                     extra: <String, dynamic>{
-                                      kTransitionInfoKey: TransitionInfo(
+                                      kTransitionInfoKey: const TransitionInfo(
                                         hasTransition: true,
                                         transitionType:
                                             PageTransitionType.leftToRight,
@@ -142,7 +158,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
                                   99.0, 81.0, 0.0, 0.0),
                               child: Container(
                                 width: 58.0,
@@ -153,7 +169,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
                                   99.0, 58.0, 0.0, 0.0),
                               child: Text(
                                 'Sighn up',
@@ -169,13 +185,13 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                           ],
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               32.0, 214.0, 55.0, 0.0),
                           child: Container(
                             width: 288.0,
                             height: 43.0,
                             decoration: BoxDecoration(
-                              color: Color(0x0014181B),
+                              color: const Color(0x0014181B),
                               image: DecorationImage(
                                 fit: BoxFit.contain,
                                 image: Image.asset(
@@ -186,7 +202,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               32.0, 269.0, 134.0, 0.0),
                           child: Text(
                             'ENTER YOUR INFORMATION BRLOW OR\nLOGIN WITH A OTHER ACCOUNT',
@@ -206,15 +222,16 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                 ),
                 Padding(
                   padding:
-                      EdgeInsetsDirectional.fromSTEB(32.0, 36.0, 32.0, 0.0),
+                      const EdgeInsetsDirectional.fromSTEB(32.0, 36.0, 32.0, 0.0),
                   child: TextFormField(
                     controller: _model.emailTextController,
+                    focusNode: _model.textFieldFocusNode1,
                     onChanged: (_) => EasyDebounce.debounce(
                       '_model.emailTextController',
-                      Duration(milliseconds: 2000),
+                      const Duration(milliseconds: 2000),
                       () => setState(() {}),
                     ),
-                    autofillHints: [AutofillHints.email],
+                    autofillHints: const [AutofillHints.email],
                     obscureText: false,
                     decoration: InputDecoration(
                       labelStyle: FlutterFlowTheme.of(context).labelMedium,
@@ -254,7 +271,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                                 _model.emailTextController?.clear();
                                 setState(() {});
                               },
-                              child: Icon(
+                              child: const Icon(
                                 Icons.clear,
                                 size: 18.0,
                               ),
@@ -269,9 +286,10 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                 ),
                 Padding(
                   padding:
-                      EdgeInsetsDirectional.fromSTEB(32.0, 36.0, 32.0, 0.0),
+                      const EdgeInsetsDirectional.fromSTEB(32.0, 36.0, 32.0, 0.0),
                   child: TextFormField(
                     controller: _model.passwordTextController,
+                    focusNode: _model.textFieldFocusNode2,
                     obscureText: !_model.passwordVisibility1,
                     decoration: InputDecoration(
                       labelStyle: FlutterFlowTheme.of(context).labelMedium,
@@ -327,9 +345,10 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                 ),
                 Padding(
                   padding:
-                      EdgeInsetsDirectional.fromSTEB(32.0, 36.0, 32.0, 0.0),
+                      const EdgeInsetsDirectional.fromSTEB(32.0, 36.0, 32.0, 0.0),
                   child: TextFormField(
                     controller: _model.confirmPasswordTextController,
+                    focusNode: _model.textFieldFocusNode3,
                     obscureText: !_model.passwordVisibility2,
                     decoration: InputDecoration(
                       labelStyle: FlutterFlowTheme.of(context).labelMedium,
@@ -384,13 +403,13 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(8.0, 8.0, 8.0, 8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
                             32.0, 48.0, 0.0, 44.0),
                         child: InkWell(
                           splashColor: Colors.transparent,
@@ -416,7 +435,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                               'Feed',
                               context.mounted,
                               extra: <String, dynamic>{
-                                kTransitionInfoKey: TransitionInfo(
+                                kTransitionInfoKey: const TransitionInfo(
                                   hasTransition: true,
                                   transitionType:
                                       PageTransitionType.bottomToTop,
@@ -428,7 +447,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                           child: Container(
                             width: 50.0,
                             height: 50.0,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Color(0xFF090F13),
                               boxShadow: [
                                 BoxShadow(
@@ -439,8 +458,8 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                               ],
                               shape: BoxShape.circle,
                             ),
-                            alignment: AlignmentDirectional(0.0, 0.0),
-                            child: FaIcon(
+                            alignment: const AlignmentDirectional(0.0, 0.0),
+                            child: const FaIcon(
                               FontAwesomeIcons.apple,
                               color: Colors.white,
                               size: 24.0,
@@ -449,7 +468,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
                             21.0, 48.0, 0.0, 44.0),
                         child: InkWell(
                           splashColor: Colors.transparent,
@@ -475,7 +494,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                               'Feed',
                               context.mounted,
                               extra: <String, dynamic>{
-                                kTransitionInfoKey: TransitionInfo(
+                                kTransitionInfoKey: const TransitionInfo(
                                   hasTransition: true,
                                   transitionType:
                                       PageTransitionType.bottomToTop,
@@ -487,7 +506,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                           child: Container(
                             width: 50.0,
                             height: 50.0,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Color(0xFF090F13),
                               boxShadow: [
                                 BoxShadow(
@@ -498,8 +517,8 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                               ],
                               shape: BoxShape.circle,
                             ),
-                            alignment: AlignmentDirectional(0.0, 0.0),
-                            child: FaIcon(
+                            alignment: const AlignmentDirectional(0.0, 0.0),
+                            child: const FaIcon(
                               FontAwesomeIcons.google,
                               color: Colors.white,
                               size: 24.0,
@@ -508,7 +527,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
                             56.0, 50.0, 32.0, 44.0),
                         child: FutureBuilder<List<AdministrativeRecord>>(
                           future: queryAdministrativeRecordOnce(
@@ -517,7 +536,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                           builder: (context, snapshot) {
                             // Customize what your widget looks like when it's loading.
                             if (!snapshot.hasData) {
-                              return Center(
+                              return const Center(
                                 child: SizedBox(
                                   width: 12.0,
                                   height: 12.0,
@@ -541,7 +560,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                                 if (_model.passwordTextController.text !=
                                     _model.confirmPasswordTextController.text) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
+                                    const SnackBar(
                                       content: Text(
                                         'Passwords don\'t match!',
                                       ),
@@ -564,10 +583,10 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                                     .doc(user.uid)
                                     .update({
                                   ...createUsersRecordData(
-                                    email: FFAppState().signupEmail,
+                                    email: _model.emailTextController.text,
                                     displayName: FFAppState().signupName,
                                     photoUrl:
-                                        'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg',
+                                        'https://s3-alpha-sig.figma.com/img/1f66/0f6b/0ae28255678cd801cb5f66b59349556b?Expires=1704067200&Signature=nledfebyYVoVBllXTy5YWmv0s6YkXhWoXoIT3hK-gBdEruA4ZSnPQSClcvOeCpHCdyVtjv2lfYqmKSnEQaMVX6QyEKHWEb-RMO28eRA9iY1fa-3blb1zAlPwEj-KAPph167hdKZPcs7zA4GPx84biwxQWEQW1HxgEv7u6YM3Nfcwh5HKWIe0h2nrAaNEgT3vGw~jKhGeZe5XVeOv89mVsp7LAKy~XgeKmckuBuwYPZ06bOspt7gSIm72IaOvS29Mc5vZx4S62adSnZLJdwyMFGrYcsf6U9XJAAax2ev1j7OT80LDZq7Vta9AIx7aEKC7CK9DLjHw55eBl7U-2kcoIQ__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4',
                                     username: FFAppState().signupUsername,
                                     createdTime: getCurrentTimestamp,
                                     bio: '',
@@ -577,38 +596,50 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                                     age: widget.age,
                                     weight: widget.weight,
                                   ),
-                                  'following': FFAppState().emptyList,
+                                  ...mapToFirestore(
+                                    {
+                                      'following': FFAppState().emptyList,
+                                    },
+                                  ),
                                 });
 
                                 await buttonAdministrativeRecord!.reference
                                     .update({
-                                  'usernames': FieldValue.arrayUnion(
-                                      [FFAppState().signupUsername]),
+                                  ...mapToFirestore(
+                                    {
+                                      'usernames': FieldValue.arrayUnion(
+                                          [FFAppState().signupUsername]),
+                                    },
+                                  ),
                                 });
 
                                 await FollowersRecord.createDoc(
                                         currentUserReference!)
                                     .set({
-                                  'userRefs': FFAppState().emptyList,
+                                  ...mapToFirestore(
+                                    {
+                                      'userRefs': FFAppState().emptyList,
+                                    },
+                                  ),
                                 });
 
                                 await BookmarksRecord.createDoc(
                                         currentUserReference!)
                                     .set(createBookmarksRecordData());
 
-                                context.goNamedAuth('Statics', context.mounted);
+                                context.goNamedAuth(
+                                    'HomePage', context.mounted);
                               },
                               text: 'Sighn Up',
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.play_arrow,
                                 size: 15.0,
                               ),
                               options: FFButtonOptions(
                                 width: 125.0,
                                 height: 50.0,
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 0.0, 0.0, 0.0),
-                                iconPadding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsets.all(0.0),
+                                iconPadding: const EdgeInsetsDirectional.fromSTEB(
                                     0.0, 0.0, 0.0, 0.0),
                                 color: FlutterFlowTheme.of(context).secondary,
                                 textStyle: FlutterFlowTheme.of(context)
@@ -618,7 +649,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                                       color: Colors.black,
                                     ),
                                 elevation: 3.0,
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Colors.transparent,
                                   width: 1.0,
                                 ),

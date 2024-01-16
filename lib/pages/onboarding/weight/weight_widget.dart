@@ -1,17 +1,17 @@
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'weight_model.dart';
 export 'weight_model.dart';
 
 class WeightWidget extends StatefulWidget {
   const WeightWidget({
-    Key? key,
+    super.key,
     required this.gender,
     required this.age,
-  }) : super(key: key);
+  });
 
   final String? gender;
   final double? age;
@@ -42,13 +42,24 @@ class _WeightWidgetState extends State<WeightWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+        backgroundColor: FlutterFlowTheme.of(context).intro,
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
             context.pushNamed(
@@ -68,7 +79,7 @@ class _WeightWidgetState extends State<WeightWidget> {
                 ),
               }.withoutNulls,
               extra: <String, dynamic>{
-                kTransitionInfoKey: TransitionInfo(
+                kTransitionInfoKey: const TransitionInfo(
                   hasTransition: true,
                   transitionType: PageTransitionType.rightToLeft,
                   duration: Duration(milliseconds: 300),
@@ -77,7 +88,7 @@ class _WeightWidgetState extends State<WeightWidget> {
             );
           },
           backgroundColor: FlutterFlowTheme.of(context).secondary,
-          icon: Icon(
+          icon: const Icon(
             Icons.play_arrow_rounded,
             color: Colors.black,
           ),
@@ -122,7 +133,7 @@ class _WeightWidgetState extends State<WeightWidget> {
               Flexible(
                 child: Padding(
                   padding:
-                      EdgeInsetsDirectional.fromSTEB(0.0, 100.0, 0.0, 100.0),
+                      const EdgeInsetsDirectional.fromSTEB(0.0, 100.0, 0.0, 100.0),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -143,7 +154,7 @@ class _WeightWidgetState extends State<WeightWidget> {
                       ),
                       Padding(
                         padding:
-                            EdgeInsetsDirectional.fromSTEB(5.0, 0.0, 0.0, 0.0),
+                            const EdgeInsetsDirectional.fromSTEB(5.0, 0.0, 0.0, 0.0),
                         child: Text(
                           'Kg',
                           style:
@@ -159,7 +170,7 @@ class _WeightWidgetState extends State<WeightWidget> {
                 ),
               ),
               SliderTheme(
-                data: SliderThemeData(
+                data: const SliderThemeData(
                   showValueIndicator: ShowValueIndicator.always,
                 ),
                 child: Slider(
@@ -175,7 +186,7 @@ class _WeightWidgetState extends State<WeightWidget> {
                   },
                 ),
               ),
-            ].divide(SizedBox(height: 50.0)).around(SizedBox(height: 50.0)),
+            ].divide(const SizedBox(height: 50.0)).around(const SizedBox(height: 50.0)),
           ),
         ),
       ),

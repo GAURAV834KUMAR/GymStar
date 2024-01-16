@@ -6,23 +6,20 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'dart:async';
-import 'dart:async';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:text_search/text_search.dart';
 import 'search_model.dart';
 export 'search_model.dart';
 
 class SearchWidget extends StatefulWidget {
-  const SearchWidget({Key? key}) : super(key: key);
+  const SearchWidget({super.key});
 
   @override
   _SearchWidgetState createState() => _SearchWidgetState();
@@ -45,8 +42,8 @@ class _SearchWidgetState extends State<SearchWidget>
           curve: Curves.easeInOut,
           delay: 0.ms,
           duration: 300.ms,
-          begin: Offset(50.0, 0.0),
-          end: Offset(0.0, 0.0),
+          begin: const Offset(50.0, 0.0),
+          end: const Offset(0.0, 0.0),
         ),
       ],
     ),
@@ -74,11 +71,13 @@ class _SearchWidgetState extends State<SearchWidget>
     }
 
     _model.searchFieldController ??= TextEditingController();
+    _model.searchFieldFocusNode ??= FocusNode();
+
     _model.tabBarController = TabController(
       vsync: this,
       length: 2,
       initialIndex: 0,
-    );
+    )..addListener(() => setState(() {}));
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
@@ -95,10 +94,21 @@ class _SearchWidgetState extends State<SearchWidget>
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -118,7 +128,7 @@ class _SearchWidgetState extends State<SearchWidget>
                       builder: (context, snapshot) {
                         // Customize what your widget looks like when it's loading.
                         if (!snapshot.hasData) {
-                          return Center(
+                          return const Center(
                             child: SizedBox(
                               width: 12.0,
                               height: 12.0,
@@ -134,26 +144,26 @@ class _SearchWidgetState extends State<SearchWidget>
                             .data!
                             .where((u) => u.uid != currentUserUid)
                             .toList();
-                        return Container(
+                        return SizedBox(
                           width: 50.0,
                           child: TextFormField(
                             controller: _model.searchFieldController,
+                            focusNode: _model.searchFieldFocusNode,
                             onChanged: (_) => EasyDebounce.debounce(
                               '_model.searchFieldController',
-                              Duration(milliseconds: 1000),
+                              const Duration(milliseconds: 1000),
                               () async {
-                                _model
-                                    .timerSearchFieldActionsController.onExecute
-                                    .add(StopWatchExecute.reset);
+                                _model.timerSearchFieldActionsController
+                                    .onResetTimer();
 
-                                setState(() {
+                                safeSetState(() {
                                   _model.simpleSearchResults1 = TextSearch(
                                     searchFieldUsersRecordList
                                         .map(
-                                          (record) => TextSearchItem(record, [
-                                            record.displayName!,
-                                            record.username!
-                                          ]),
+                                          (record) => TextSearchItem.fromTerms(
+                                              record, [
+                                            record.displayName,
+                                            record.username]),
                                         )
                                         .toList(),
                                   )
@@ -164,15 +174,13 @@ class _SearchWidgetState extends State<SearchWidget>
                                       .map((r) => r.object)
                                       .take(15)
                                       .toList();
-                                  ;
                                 });
                                 FFAppState().update(() {
                                   FFAppState().currentSearch =
                                       _model.searchFieldController.text;
                                 });
-                                _model
-                                    .timerSearchFieldActionsController.onExecute
-                                    .add(StopWatchExecute.start);
+                                _model.timerSearchFieldActionsController
+                                    .onStartTimer();
                               },
                             ),
                             obscureText: false,
@@ -187,28 +195,28 @@ class _SearchWidgetState extends State<SearchWidget>
                                     lineHeight: 1.5,
                                   ),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color(0x00000000),
                                   width: 1.0,
                                 ),
                                 borderRadius: BorderRadius.circular(16.0),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color(0x00000000),
                                   width: 1.0,
                                 ),
                                 borderRadius: BorderRadius.circular(16.0),
                               ),
                               errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color(0x00000000),
                                   width: 1.0,
                                 ),
                                 borderRadius: BorderRadius.circular(16.0),
                               ),
                               focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color(0x00000000),
                                   width: 1.0,
                                 ),
@@ -217,7 +225,7 @@ class _SearchWidgetState extends State<SearchWidget>
                               filled: true,
                               fillColor: FlutterFlowTheme.of(context)
                                   .primaryBackground,
-                              contentPadding: EdgeInsetsDirectional.fromSTEB(
+                              contentPadding: const EdgeInsetsDirectional.fromSTEB(
                                   24.0, 0.0, 24.0, 0.0),
                               prefixIcon: Icon(
                                 FFIcons.ksearch,
@@ -231,19 +239,18 @@ class _SearchWidgetState extends State<SearchWidget>
                                       onTap: () async {
                                         _model.searchFieldController?.clear();
                                         _model.timerSearchFieldActionsController
-                                            .onExecute
-                                            .add(StopWatchExecute.reset);
+                                            .onResetTimer();
 
-                                        setState(() {
+                                        safeSetState(() {
                                           _model.simpleSearchResults1 =
                                               TextSearch(
                                             searchFieldUsersRecordList
                                                 .map(
-                                                  (record) => TextSearchItem(
-                                                      record, [
-                                                    record.displayName!,
-                                                    record.username!
-                                                  ]),
+                                                  (record) =>
+                                                      TextSearchItem.fromTerms(
+                                                          record, [
+                                                    record.displayName,
+                                                    record.username]),
                                                 )
                                                 .toList(),
                                           )
@@ -256,15 +263,13 @@ class _SearchWidgetState extends State<SearchWidget>
                                                   .map((r) => r.object)
                                                   .take(15)
                                                   .toList();
-                                          ;
                                         });
                                         FFAppState().update(() {
                                           FFAppState().currentSearch =
                                               _model.searchFieldController.text;
                                         });
                                         _model.timerSearchFieldActionsController
-                                            .onExecute
-                                            .add(StopWatchExecute.start);
+                                            .onStartTimer();
                                         setState(() {});
                                       },
                                       child: Icon(
@@ -290,11 +295,10 @@ class _SearchWidgetState extends State<SearchWidget>
                       },
                     ),
                   ),
-                  if (_model.searchFieldController.text != null &&
-                      _model.searchFieldController.text != '')
+                  if (_model.searchFieldController.text != '')
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 0.0, 0.0),
+                          const EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 0.0, 0.0),
                       child: InkWell(
                         splashColor: Colors.transparent,
                         focusColor: Colors.transparent,
@@ -319,13 +323,15 @@ class _SearchWidgetState extends State<SearchWidget>
                     ),
                   StreamBuilder<List<PostsRecord>>(
                     stream: queryPostsRecord(
-                      queryBuilder: (postsRecord) =>
-                          postsRecord.where('deleted', isEqualTo: false),
+                      queryBuilder: (postsRecord) => postsRecord.where(
+                        'deleted',
+                        isEqualTo: false,
+                      ),
                     ),
                     builder: (context, snapshot) {
                       // Customize what your widget looks like when it's loading.
                       if (!snapshot.hasData) {
-                        return Center(
+                        return const Center(
                           child: SizedBox(
                             width: 12.0,
                             height: 12.0,
@@ -348,19 +354,19 @@ class _SearchWidgetState extends State<SearchWidget>
                           minute: false,
                           milliSecond: false,
                         ),
-                        timer: _model.timerSearchFieldActionsController,
+                        controller: _model.timerSearchFieldActionsController,
                         onChanged: (value, displayTime, shouldUpdate) {
                           _model.timerSearchFieldActionsMilliseconds = value;
                           _model.timerSearchFieldActionsValue = displayTime;
                           if (shouldUpdate) setState(() {});
                         },
                         onEnded: () async {
-                          setState(() {
+                          safeSetState(() {
                             _model.simpleSearchResults2 = TextSearch(
                               timerSearchFieldActionsPostsRecordList
                                   .map(
-                                    (record) => TextSearchItem(
-                                        record, [record.labels!]),
+                                    (record) => TextSearchItem.fromTerms(
+                                        record, [record.labels]),
                                   )
                                   .toList(),
                             )
@@ -368,7 +374,6 @@ class _SearchWidgetState extends State<SearchWidget>
                                 .map((r) => r.object)
                                 .take(15)
                                 .toList();
-                            ;
                           });
                         },
                         textAlign: TextAlign.start,
@@ -384,7 +389,7 @@ class _SearchWidgetState extends State<SearchWidget>
               ),
             ],
           ),
-          actions: [],
+          actions: const [],
           centerTitle: true,
           elevation: 0.0,
         ),
@@ -393,8 +398,7 @@ class _SearchWidgetState extends State<SearchWidget>
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              if ((_model.searchFieldController.text != null &&
-                      _model.searchFieldController.text != '') &&
+              if ((_model.searchFieldController.text != '') &&
                   !(isWeb
                       ? MediaQuery.viewInsetsOf(context).bottom > 0
                       : _isKeyboardVisible))
@@ -408,19 +412,19 @@ class _SearchWidgetState extends State<SearchWidget>
                     child: Column(
                       children: [
                         Align(
-                          alignment: Alignment(0.0, 0),
+                          alignment: const Alignment(0.0, 0),
                           child: TabBar(
                             labelColor: Colors.black,
-                            unselectedLabelColor: Color(0x80000000),
+                            unselectedLabelColor: const Color(0x80000000),
                             labelStyle: FlutterFlowTheme.of(context)
                                 .bodyMedium
                                 .override(
                                   fontFamily: 'Inter',
                                   fontSize: 16.0,
                                 ),
-                            unselectedLabelStyle: TextStyle(),
+                            unselectedLabelStyle: const TextStyle(),
                             indicatorColor: Colors.black,
-                            tabs: [
+                            tabs: const [
                               Tab(
                                 text: 'Profiles',
                               ),
@@ -429,7 +433,9 @@ class _SearchWidgetState extends State<SearchWidget>
                               ),
                             ],
                             controller: _model.tabBarController,
-                            onTap: (value) => setState(() {}),
+                            onTap: (i) async {
+                              [() async {}, () async {}][i]();
+                            },
                           ),
                         ),
                         Expanded(
@@ -437,7 +443,7 @@ class _SearchWidgetState extends State<SearchWidget>
                             controller: _model.tabBarController,
                             children: [
                               Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     15.0, 0.0, 15.0, 0.0),
                                 child: Builder(
                                   builder: (context) {
@@ -456,7 +462,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                             searchUsers[searchUsersIndex];
                                         return Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 12.0, 0.0, 0.0),
                                           child: InkWell(
                                             splashColor: Colors.transparent,
@@ -495,7 +501,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                                   width: 55.0,
                                                   height: 55.0,
                                                   clipBehavior: Clip.antiAlias,
-                                                  decoration: BoxDecoration(
+                                                  decoration: const BoxDecoration(
                                                     shape: BoxShape.circle,
                                                   ),
                                                   child: Image.network(
@@ -509,7 +515,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                                 Expanded(
                                                   child: Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .fromSTEB(12.0, 0.0,
                                                                 0.0, 0.0),
                                                     child: Column(
@@ -538,7 +544,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                                         ),
                                                         Padding(
                                                           padding:
-                                                              EdgeInsetsDirectional
+                                                              const EdgeInsetsDirectional
                                                                   .fromSTEB(
                                                                       0.0,
                                                                       2.0,
@@ -587,7 +593,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                   return GridView.builder(
                                     padding: EdgeInsets.zero,
                                     gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 3,
                                       crossAxisSpacing: 1.0,
                                       mainAxisSpacing: 1.0,
@@ -638,13 +644,12 @@ class _SearchWidgetState extends State<SearchWidget>
                     ),
                   ),
                 ),
-              if ((_model.searchFieldController.text == null ||
-                      _model.searchFieldController.text == '') &&
+              if ((_model.searchFieldController.text == '') &&
                   (isWeb
                       ? MediaQuery.viewInsetsOf(context).bottom > 0
                       : _isKeyboardVisible))
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
                   child: StreamBuilder<List<RecentSearchesRecord>>(
                     stream: queryRecentSearchesRecord(
                       parent: currentUserReference,
@@ -655,7 +660,7 @@ class _SearchWidgetState extends State<SearchWidget>
                     builder: (context, snapshot) {
                       // Customize what your widget looks like when it's loading.
                       if (!snapshot.hasData) {
-                        return Center(
+                        return const Center(
                           child: SizedBox(
                             width: 12.0,
                             height: 12.0,
@@ -679,7 +684,7 @@ class _SearchWidgetState extends State<SearchWidget>
                               recentSearchesRecentSearchesRecordList[
                                   recentSearchesIndex];
                           return Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 12.0, 0.0, 0.0),
                             child: StreamBuilder<UsersRecord>(
                               stream: UsersRecord.getDocument(
@@ -687,7 +692,7 @@ class _SearchWidgetState extends State<SearchWidget>
                               builder: (context, snapshot) {
                                 // Customize what your widget looks like when it's loading.
                                 if (!snapshot.hasData) {
-                                  return Center(
+                                  return const Center(
                                     child: SizedBox(
                                       width: 12.0,
                                       height: 12.0,
@@ -724,7 +729,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                         width: 55.0,
                                         height: 55.0,
                                         clipBehavior: Clip.antiAlias,
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                           shape: BoxShape.circle,
                                         ),
                                         child: Image.network(
@@ -738,7 +743,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                       Expanded(
                                         child: Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   12.0, 0.0, 0.0, 0.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
@@ -758,7 +763,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                                         ),
                                               ),
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         0.0, 2.0, 0.0, 0.0),
                                                 child: Text(
@@ -807,15 +812,14 @@ class _SearchWidgetState extends State<SearchWidget>
                     },
                   ),
                 ),
-              if ((_model.searchFieldController.text == null ||
-                      _model.searchFieldController.text == '') &&
+              if ((_model.searchFieldController.text == '') &&
                   !(isWeb
                       ? MediaQuery.viewInsetsOf(context).bottom > 0
                       : _isKeyboardVisible))
                 Expanded(
                   child: Padding(
                     padding:
-                        EdgeInsetsDirectional.fromSTEB(0.0, 12.0, 0.0, 0.0),
+                        const EdgeInsetsDirectional.fromSTEB(0.0, 12.0, 0.0, 0.0),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -826,15 +830,17 @@ class _SearchWidgetState extends State<SearchWidget>
                                     Completer<List<PostsRecord>>()
                                       ..complete(queryPostsRecordOnce(
                                         queryBuilder: (postsRecord) =>
-                                            postsRecord.where('deleted',
-                                                isEqualTo: false),
+                                            postsRecord.where(
+                                          'deleted',
+                                          isEqualTo: false,
+                                        ),
                                         limit: 18,
                                       )))
                                 .future,
                             builder: (context, snapshot) {
                               // Customize what your widget looks like when it's loading.
                               if (!snapshot.hasData) {
-                                return Center(
+                                return const Center(
                                   child: SizedBox(
                                     width: 12.0,
                                     height: 12.0,
@@ -858,7 +864,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                 child: GridView.builder(
                                   padding: EdgeInsets.zero,
                                   gridDelegate:
-                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 3,
                                     crossAxisSpacing: 1.0,
                                     mainAxisSpacing: 1.0,
@@ -933,7 +939,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                 Material(
                                   color: Colors.transparent,
                                   elevation: 0.0,
-                                  shape: RoundedRectangleBorder(
+                                  shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.only(
                                       bottomLeft: Radius.circular(0.0),
                                       bottomRight: Radius.circular(0.0),
@@ -947,7 +953,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                     decoration: BoxDecoration(
                                       color: FlutterFlowTheme.of(context)
                                           .secondaryBackground,
-                                      boxShadow: [
+                                      boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 10.0,
                                           color: Color(0x1A57636C),
@@ -955,7 +961,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                           spreadRadius: 0.1,
                                         )
                                       ],
-                                      borderRadius: BorderRadius.only(
+                                      borderRadius: const BorderRadius.only(
                                         bottomLeft: Radius.circular(0.0),
                                         bottomRight: Radius.circular(0.0),
                                         topLeft: Radius.circular(20.0),
@@ -1015,7 +1021,7 @@ class _SearchWidgetState extends State<SearchWidget>
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           0.0, 0.0, 0.0, 10.0),
                                       child: FlutterFlowIconButton(
                                         borderColor: Colors.transparent,
@@ -1032,10 +1038,10 @@ class _SearchWidgetState extends State<SearchWidget>
                                         ),
                                         onPressed: () async {
                                           context.goNamed(
-                                            'Reels',
+                                            'Home',
                                             extra: <String, dynamic>{
                                               kTransitionInfoKey:
-                                                  TransitionInfo(
+                                                  const TransitionInfo(
                                                 hasTransition: true,
                                                 transitionType:
                                                     PageTransitionType

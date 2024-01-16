@@ -3,14 +3,14 @@ import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'messages_model.dart';
 export 'messages_model.dart';
 
 class MessagesWidget extends StatefulWidget {
-  const MessagesWidget({Key? key}) : super(key: key);
+  const MessagesWidget({super.key});
 
   @override
   _MessagesWidgetState createState() => _MessagesWidgetState();
@@ -38,10 +38,21 @@ class _MessagesWidgetState extends State<MessagesWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -60,7 +71,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                   context.pushNamed(
                     'Feed',
                     extra: <String, dynamic>{
-                      kTransitionInfoKey: TransitionInfo(
+                      kTransitionInfoKey: const TransitionInfo(
                         hasTransition: true,
                         transitionType: PageTransitionType.leftToRight,
                       ),
@@ -74,7 +85,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                 ),
               ),
               Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 0.0, 0.0),
+                padding: const EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 0.0, 0.0),
                 child: AuthUserStreamWidget(
                   builder: (context) => Text(
                     valueOrDefault(currentUserDocument?.username, ''),
@@ -89,7 +100,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
           ),
           actions: [
             Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -125,13 +136,13 @@ class _MessagesWidgetState extends State<MessagesWidget> {
               Container(
                 width: double.infinity,
                 height: 0.5,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color(0xFFDADADA),
                 ),
               ),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
                   child: StreamBuilder<List<ChatsRecord>>(
                     stream: queryChatsRecord(
                       queryBuilder: (chatsRecord) => chatsRecord
@@ -140,7 +151,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                     builder: (context, snapshot) {
                       // Customize what your widget looks like when it's loading.
                       if (!snapshot.hasData) {
-                        return Center(
+                        return const Center(
                           child: SizedBox(
                             width: 12.0,
                             height: 12.0,
@@ -162,7 +173,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                           final listOfChatsChatsRecord =
                               listOfChatsChatsRecordList[listOfChatsIndex];
                           return Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 12.0, 0.0, 0.0),
                             child: StreamBuilder<UsersRecord>(
                               stream: UsersRecord.getDocument(
@@ -173,7 +184,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                               builder: (context, snapshot) {
                                 // Customize what your widget looks like when it's loading.
                                 if (!snapshot.hasData) {
-                                  return Center(
+                                  return const Center(
                                     child: SizedBox(
                                       width: 12.0,
                                       height: 12.0,
@@ -208,13 +219,13 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                     children: [
                                       Stack(
                                         alignment:
-                                            AlignmentDirectional(0.9, -0.9),
+                                            const AlignmentDirectional(0.9, -0.9),
                                         children: [
                                           Container(
                                             width: 55.0,
                                             height: 55.0,
                                             clipBehavior: Clip.antiAlias,
-                                            decoration: BoxDecoration(
+                                            decoration: const BoxDecoration(
                                               shape: BoxShape.circle,
                                             ),
                                             child: Image.network(
@@ -231,7 +242,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                             Container(
                                               width: 10.0,
                                               height: 10.0,
-                                              decoration: BoxDecoration(
+                                              decoration: const BoxDecoration(
                                                 color: Color(0xFFF83639),
                                                 shape: BoxShape.circle,
                                               ),
@@ -241,7 +252,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                       Expanded(
                                         child: Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   12.0, 0.0, 0.0, 0.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
@@ -273,7 +284,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                                 children: [
                                                   Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .fromSTEB(0.0, 2.0,
                                                                 0.0, 0.0),
                                                     child: StreamBuilder<
@@ -285,7 +296,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                                           (context, snapshot) {
                                                         // Customize what your widget looks like when it's loading.
                                                         if (!snapshot.hasData) {
-                                                          return Center(
+                                                          return const Center(
                                                             child: SizedBox(
                                                               width: 12.0,
                                                               height: 12.0,
@@ -326,7 +337,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                                   ),
                                                   Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .fromSTEB(0.0, 2.0,
                                                                 0.0, 0.0),
                                                     child: StreamBuilder<
@@ -338,7 +349,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                                           (context, snapshot) {
                                                         // Customize what your widget looks like when it's loading.
                                                         if (!snapshot.hasData) {
-                                                          return Center(
+                                                          return const Center(
                                                             child: SizedBox(
                                                               width: 12.0,
                                                               height: 12.0,
@@ -375,7 +386,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                                   ),
                                                   Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .fromSTEB(0.0, 2.0,
                                                                 0.0, 0.0),
                                                     child: StreamBuilder<
@@ -387,7 +398,7 @@ class _MessagesWidgetState extends State<MessagesWidget> {
                                                           (context, snapshot) {
                                                         // Customize what your widget looks like when it's loading.
                                                         if (!snapshot.hasData) {
-                                                          return Center(
+                                                          return const Center(
                                                             child: SizedBox(
                                                               width: 12.0,
                                                               height: 12.0,

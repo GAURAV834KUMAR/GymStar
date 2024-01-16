@@ -1,4 +1,4 @@
-package com.fluttergo.instagram
+package com.example.gymstar
 
 import io.flutter.embedding.android.FlutterActivity
 

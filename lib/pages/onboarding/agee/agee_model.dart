@@ -1,10 +1,8 @@
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'agee_widget.dart' show AgeeWidget;
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
-class AgeeModel extends FlutterFlowModel {
+class AgeeModel extends FlutterFlowModel<AgeeWidget> {
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
@@ -13,8 +11,10 @@ class AgeeModel extends FlutterFlowModel {
 
   /// Initialization and disposal methods.
 
+  @override
   void initState(BuildContext context) {}
 
+  @override
   void dispose() {
     unfocusNode.dispose();
   }

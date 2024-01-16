@@ -7,21 +7,18 @@ import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/custom_code/widgets/index.dart' as custom_widgets;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'comments_model.dart';
 export 'comments_model.dart';
 
 class CommentsWidget extends StatefulWidget {
   const CommentsWidget({
-    Key? key,
+    super.key,
     this.post,
-  }) : super(key: key);
+  });
 
   final DocumentReference? post;
 
@@ -43,8 +40,8 @@ class _CommentsWidgetState extends State<CommentsWidget>
           curve: Curves.elasticOut,
           delay: 0.ms,
           duration: 600.ms,
-          begin: Offset(0.2, 0.2),
-          end: Offset(1.0, 1.0),
+          begin: const Offset(0.2, 0.2),
+          end: const Offset(1.0, 1.0),
         ),
       ],
     ),
@@ -56,6 +53,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
     _model = createModel(context, () => CommentsModel());
 
     _model.commentController ??= TextEditingController();
+    _model.commentFocusNode ??= FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
@@ -69,10 +67,21 @@ class _CommentsWidgetState extends State<CommentsWidget>
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -104,13 +113,13 @@ class _CommentsWidgetState extends State<CommentsWidget>
           ),
           actions: [
             Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
               child: FutureBuilder<PostsRecord>(
                 future: PostsRecord.getDocumentOnce(widget.post!),
                 builder: (context, snapshot) {
                   // Customize what your widget looks like when it's loading.
                   if (!snapshot.hasData) {
-                    return Center(
+                    return const Center(
                       child: SizedBox(
                         width: 12.0,
                         height: 12.0,
@@ -127,7 +136,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                     children: [
                       if (stackPostsRecord.postUser != currentUserReference)
                         Align(
-                          alignment: AlignmentDirectional(0.0, 0.0),
+                          alignment: const AlignmentDirectional(0.0, 0.0),
                           child: InkWell(
                             splashColor: Colors.transparent,
                             focusColor: Colors.transparent,
@@ -137,12 +146,15 @@ class _CommentsWidgetState extends State<CommentsWidget>
                               await showModalBottomSheet(
                                 isScrollControlled: true,
                                 backgroundColor: Colors.transparent,
-                                barrierColor: Color(0x00000000),
+                                barrierColor: const Color(0x00000000),
                                 context: context,
                                 builder: (context) {
                                   return GestureDetector(
-                                    onTap: () => FocusScope.of(context)
-                                        .requestFocus(_model.unfocusNode),
+                                    onTap: () => _model
+                                            .unfocusNode.canRequestFocus
+                                        ? FocusScope.of(context)
+                                            .requestFocus(_model.unfocusNode)
+                                        : FocusScope.of(context).unfocus(),
                                     child: Padding(
                                       padding: MediaQuery.viewInsetsOf(context),
                                       child: SendPostWidget(
@@ -151,7 +163,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                     ),
                                   );
                                 },
-                              ).then((value) => setState(() {}));
+                              ).then((value) => safeSetState(() {}));
                             },
                             child: Icon(
                               FFIcons.kshare,
@@ -162,7 +174,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                         ),
                       if (stackPostsRecord.postUser == currentUserReference)
                         Align(
-                          alignment: AlignmentDirectional(0.0, 0.0),
+                          alignment: const AlignmentDirectional(0.0, 0.0),
                           child: InkWell(
                             splashColor: Colors.transparent,
                             focusColor: Colors.transparent,
@@ -172,12 +184,15 @@ class _CommentsWidgetState extends State<CommentsWidget>
                               await showModalBottomSheet(
                                 isScrollControlled: true,
                                 backgroundColor: Colors.transparent,
-                                barrierColor: Color(0x00000000),
+                                barrierColor: const Color(0x00000000),
                                 context: context,
                                 builder: (context) {
                                   return GestureDetector(
-                                    onTap: () => FocusScope.of(context)
-                                        .requestFocus(_model.unfocusNode),
+                                    onTap: () => _model
+                                            .unfocusNode.canRequestFocus
+                                        ? FocusScope.of(context)
+                                            .requestFocus(_model.unfocusNode)
+                                        : FocusScope.of(context).unfocus(),
                                     child: Padding(
                                       padding: MediaQuery.viewInsetsOf(context),
                                       child: PostOptionsWidget(
@@ -186,7 +201,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                     ),
                                   );
                                 },
-                              ).then((value) => setState(() {}));
+                              ).then((value) => safeSetState(() {}));
                             },
                             child: Icon(
                               FFIcons.kmore,
@@ -211,7 +226,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
             builder: (context, snapshot) {
               // Customize what your widget looks like when it's loading.
               if (!snapshot.hasData) {
-                return Center(
+                return const Center(
                   child: SizedBox(
                     width: 12.0,
                     height: 12.0,
@@ -230,7 +245,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                   Container(
                     width: double.infinity,
                     height: 0.5,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Color(0xFFDADADA),
                     ),
                   ),
@@ -241,7 +256,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                         builder: (context, snapshot) {
                           // Customize what your widget looks like when it's loading.
                           if (!snapshot.hasData) {
-                            return Center(
+                            return const Center(
                               child: SizedBox(
                                 width: 12.0,
                                 height: 12.0,
@@ -260,7 +275,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       0.0, 12.0, 0.0, 0.0),
                                   child: Column(
                                     mainAxisSize: MainAxisSize.max,
@@ -268,7 +283,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                         CrossAxisAlignment.start,
                                     children: [
                                       Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                             15.0, 0.0, 15.0, 12.0),
                                         child: FutureBuilder<UsersRecord>(
                                           future: UsersRecord.getDocumentOnce(
@@ -277,7 +292,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                           builder: (context, snapshot) {
                                             // Customize what your widget looks like when it's loading.
                                             if (!snapshot.hasData) {
-                                              return Center(
+                                              return const Center(
                                                 child: SizedBox(
                                                   width: 12.0,
                                                   height: 12.0,
@@ -300,27 +315,31 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           0.0, 0.0, 12.0, 0.0),
                                                   child: Stack(
                                                     alignment:
-                                                        AlignmentDirectional(
+                                                        const AlignmentDirectional(
                                                             0.0, 0.0),
                                                     children: [
                                                       StreamBuilder<
                                                           List<StoriesRecord>>(
                                                         stream:
                                                             queryStoriesRecord(
-                                                          queryBuilder: (storiesRecord) => storiesRecord
-                                                              .where('user',
-                                                                  isEqualTo:
-                                                                      rowUsersRecord
-                                                                          .reference)
-                                                              .where(
-                                                                  'expire_time',
-                                                                  isGreaterThan:
-                                                                      getCurrentTimestamp),
+                                                          queryBuilder:
+                                                              (storiesRecord) =>
+                                                                  storiesRecord
+                                                                      .where(
+                                                                        'user',
+                                                                        isEqualTo:
+                                                                            rowUsersRecord.reference,
+                                                                      )
+                                                                      .where(
+                                                                        'expire_time',
+                                                                        isGreaterThan:
+                                                                            getCurrentTimestamp,
+                                                                      ),
                                                           singleRecord: true,
                                                         ),
                                                         builder: (context,
@@ -328,7 +347,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                           // Customize what your widget looks like when it's loading.
                                                           if (!snapshot
                                                               .hasData) {
-                                                            return Center(
+                                                            return const Center(
                                                               child: SizedBox(
                                                                 width: 12.0,
                                                                 height: 12.0,
@@ -375,17 +394,20 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                                 backgroundColor:
                                                                     Colors
                                                                         .transparent,
-                                                                barrierColor: Color(
+                                                                barrierColor: const Color(
                                                                     0x00000000),
                                                                 context:
                                                                     context,
                                                                 builder:
                                                                     (context) {
                                                                   return GestureDetector(
-                                                                    onTap: () => FocusScope.of(
-                                                                            context)
-                                                                        .requestFocus(
-                                                                            _model.unfocusNode),
+                                                                    onTap: () => _model
+                                                                            .unfocusNode
+                                                                            .canRequestFocus
+                                                                        ? FocusScope.of(context).requestFocus(_model
+                                                                            .unfocusNode)
+                                                                        : FocusScope.of(context)
+                                                                            .unfocus(),
                                                                     child:
                                                                         Padding(
                                                                       padding: MediaQuery
@@ -400,14 +422,14 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                                   );
                                                                 },
                                                               ).then((value) =>
-                                                                  setState(
+                                                                  safeSetState(
                                                                       () {}));
                                                             },
                                                             child: Container(
                                                               width: 40.0,
                                                               height: 40.0,
                                                               decoration:
-                                                                  BoxDecoration(
+                                                                  const BoxDecoration(
                                                                 gradient:
                                                                     LinearGradient(
                                                                   colors: [
@@ -441,7 +463,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                       ),
                                                       Align(
                                                         alignment:
-                                                            AlignmentDirectional(
+                                                            const AlignmentDirectional(
                                                                 0.0, 0.0),
                                                         child: InkWell(
                                                           splashColor: Colors
@@ -568,7 +590,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     6.0,
@@ -607,7 +629,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                       Container(
                                         width: double.infinity,
                                         height: 0.5,
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                           color: Color(0xFFDADADA),
                                         ),
                                       ),
@@ -623,7 +645,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                   builder: (context, snapshot) {
                                     // Customize what your widget looks like when it's loading.
                                     if (!snapshot.hasData) {
-                                      return Center(
+                                      return const Center(
                                         child: SizedBox(
                                           width: 12.0,
                                           height: 12.0,
@@ -652,7 +674,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                 listViewIndex];
                                         return Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   15.0, 16.0, 15.0, 16.0),
                                           child: FutureBuilder<UsersRecord>(
                                             future: UsersRecord.getDocumentOnce(
@@ -661,7 +683,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                             builder: (context, snapshot) {
                                               // Customize what your widget looks like when it's loading.
                                               if (!snapshot.hasData) {
-                                                return Center(
+                                                return const Center(
                                                   child: SizedBox(
                                                     width: 12.0,
                                                     height: 12.0,
@@ -685,12 +707,12 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                 children: [
                                                   Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .fromSTEB(0.0, 0.0,
                                                                 12.0, 0.0),
                                                     child: Stack(
                                                       alignment:
-                                                          AlignmentDirectional(
+                                                          const AlignmentDirectional(
                                                               0.0, 0.0),
                                                       children: [
                                                         StreamBuilder<
@@ -698,15 +720,19 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                                 StoriesRecord>>(
                                                           stream:
                                                               queryStoriesRecord(
-                                                            queryBuilder: (storiesRecord) => storiesRecord
-                                                                .where('user',
-                                                                    isEqualTo:
-                                                                        rowUsersRecord
-                                                                            .reference)
-                                                                .where(
-                                                                    'expire_time',
-                                                                    isGreaterThan:
-                                                                        getCurrentTimestamp),
+                                                            queryBuilder:
+                                                                (storiesRecord) =>
+                                                                    storiesRecord
+                                                                        .where(
+                                                                          'user',
+                                                                          isEqualTo:
+                                                                              rowUsersRecord.reference,
+                                                                        )
+                                                                        .where(
+                                                                          'expire_time',
+                                                                          isGreaterThan:
+                                                                              getCurrentTimestamp,
+                                                                        ),
                                                             singleRecord: true,
                                                           ),
                                                           builder: (context,
@@ -714,7 +740,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -762,17 +788,20 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                                       Colors
                                                                           .transparent,
                                                                   barrierColor:
-                                                                      Color(
+                                                                      const Color(
                                                                           0x00000000),
                                                                   context:
                                                                       context,
                                                                   builder:
                                                                       (context) {
                                                                     return GestureDetector(
-                                                                      onTap: () => FocusScope.of(
-                                                                              context)
-                                                                          .requestFocus(
-                                                                              _model.unfocusNode),
+                                                                      onTap: () => _model
+                                                                              .unfocusNode
+                                                                              .canRequestFocus
+                                                                          ? FocusScope.of(context).requestFocus(_model
+                                                                              .unfocusNode)
+                                                                          : FocusScope.of(context)
+                                                                              .unfocus(),
                                                                       child:
                                                                           Padding(
                                                                         padding:
@@ -786,14 +815,14 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                                     );
                                                                   },
                                                                 ).then((value) =>
-                                                                    setState(
+                                                                    safeSetState(
                                                                         () {}));
                                                               },
                                                               child: Container(
                                                                 width: 40.0,
                                                                 height: 40.0,
                                                                 decoration:
-                                                                    BoxDecoration(
+                                                                    const BoxDecoration(
                                                                   gradient:
                                                                       LinearGradient(
                                                                     colors: [
@@ -826,7 +855,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                         ),
                                                         Align(
                                                           alignment:
-                                                              AlignmentDirectional(
+                                                              const AlignmentDirectional(
                                                                   0.0, 0.0),
                                                           child: InkWell(
                                                             splashColor: Colors
@@ -969,7 +998,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                         ),
                                                         Padding(
                                                           padding:
-                                                              EdgeInsetsDirectional
+                                                              const EdgeInsetsDirectional
                                                                   .fromSTEB(
                                                                       0.0,
                                                                       6.0,
@@ -1004,7 +1033,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                               ),
                                                               Padding(
                                                                 padding:
-                                                                    EdgeInsetsDirectional
+                                                                    const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             18.0,
                                                                             0.0,
@@ -1037,7 +1066,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                               ),
                                                               Padding(
                                                                 padding:
-                                                                    EdgeInsetsDirectional
+                                                                    const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             18.0,
                                                                             0.0,
@@ -1063,15 +1092,16 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                                           Colors
                                                                               .transparent,
                                                                       barrierColor:
-                                                                          Color(
+                                                                          const Color(
                                                                               0x00000000),
                                                                       context:
                                                                           context,
                                                                       builder:
                                                                           (context) {
                                                                         return GestureDetector(
-                                                                          onTap: () =>
-                                                                              FocusScope.of(context).requestFocus(_model.unfocusNode),
+                                                                          onTap: () => _model.unfocusNode.canRequestFocus
+                                                                              ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+                                                                              : FocusScope.of(context).unfocus(),
                                                                           child:
                                                                               Padding(
                                                                             padding:
@@ -1085,7 +1115,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                                         );
                                                                       },
                                                                     ).then((value) =>
-                                                                        setState(
+                                                                        safeSetState(
                                                                             () {}));
                                                                   },
                                                                   child: Text(
@@ -1111,7 +1141,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                                           .postUser ==
                                                                       currentUserReference))
                                                                 Padding(
-                                                                  padding: EdgeInsetsDirectional
+                                                                  padding: const EdgeInsetsDirectional
                                                                       .fromSTEB(
                                                                           18.0,
                                                                           0.0,
@@ -1140,8 +1170,12 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                                       await activeColumnPostsRecord
                                                                           .reference
                                                                           .update({
-                                                                        'num_comments':
-                                                                            FieldValue.increment(-(1)),
+                                                                        ...mapToFirestore(
+                                                                          {
+                                                                            'num_comments':
+                                                                                FieldValue.increment(-(1)),
+                                                                          },
+                                                                        ),
                                                                       });
                                                                     },
                                                                     child: Text(
@@ -1185,10 +1219,15 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                             await listViewCommentsRecord
                                                                 .reference
                                                                 .update({
-                                                              'likes': FieldValue
-                                                                  .arrayUnion([
-                                                                currentUserReference
-                                                              ]),
+                                                              ...mapToFirestore(
+                                                                {
+                                                                  'likes':
+                                                                      FieldValue
+                                                                          .arrayUnion([
+                                                                    currentUserReference
+                                                                  ]),
+                                                                },
+                                                              ),
                                                             });
                                                             HapticFeedback
                                                                 .lightImpact();
@@ -1235,13 +1274,17 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                               await rowUsersRecord
                                                                   .reference
                                                                   .update({
-                                                                'unreadNotifications':
-                                                                    FieldValue
-                                                                        .arrayUnion([
-                                                                  _model
-                                                                      .notification
-                                                                      ?.reference
-                                                                ]),
+                                                                ...mapToFirestore(
+                                                                  {
+                                                                    'unreadNotifications':
+                                                                        FieldValue
+                                                                            .arrayUnion([
+                                                                      _model
+                                                                          .notification
+                                                                          ?.reference
+                                                                    ]),
+                                                                  },
+                                                                ),
                                                               });
                                                             }
 
@@ -1272,13 +1315,18 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                             await listViewCommentsRecord
                                                                 .reference
                                                                 .update({
-                                                              'likes': FieldValue
-                                                                  .arrayRemove([
-                                                                currentUserReference
-                                                              ]),
+                                                              ...mapToFirestore(
+                                                                {
+                                                                  'likes':
+                                                                      FieldValue
+                                                                          .arrayRemove([
+                                                                    currentUserReference
+                                                                  ]),
+                                                                },
+                                                              ),
                                                             });
                                                           },
-                                                          child: Icon(
+                                                          child: const Icon(
                                                             FFIcons.kheart1,
                                                             color: Color(
                                                                 0xFFFF4963),
@@ -1311,12 +1359,12 @@ class _CommentsWidgetState extends State<CommentsWidget>
                         Container(
                           width: double.infinity,
                           height: 0.5,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Color(0xFFDADADA),
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               15.0, 16.0, 15.0, 16.0),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
@@ -1389,21 +1437,21 @@ class _CommentsWidgetState extends State<CommentsWidget>
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               15.0, 0.0, 15.0, 24.0),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     0.0, 0.0, 0.0, 1.0),
                                 child: AuthUserStreamWidget(
                                   builder: (context) => Container(
                                     width: 45.0,
                                     height: 45.0,
                                     clipBehavior: Clip.antiAlias,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
                                     ),
                                     child: Image.network(
@@ -1418,14 +1466,15 @@ class _CommentsWidgetState extends State<CommentsWidget>
                               ),
                               Expanded(
                                 child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       12.0, 0.0, 0.0, 0.0),
                                   child: Stack(
-                                    alignment: AlignmentDirectional(1.0, 1.0),
+                                    alignment: const AlignmentDirectional(1.0, 1.0),
                                     children: [
                                       AuthUserStreamWidget(
                                         builder: (context) => TextFormField(
                                           controller: _model.commentController,
+                                          focusNode: _model.commentFocusNode,
                                           obscureText: false,
                                           decoration: InputDecoration(
                                             labelStyle:
@@ -1444,7 +1493,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                   fontWeight: FontWeight.normal,
                                                 ),
                                             enabledBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
+                                              borderSide: const BorderSide(
                                                 color: Color(0xFFDADADA),
                                                 width: 1.0,
                                               ),
@@ -1452,7 +1501,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                   BorderRadius.circular(24.0),
                                             ),
                                             focusedBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
+                                              borderSide: const BorderSide(
                                                 color: Color(0x00000000),
                                                 width: 1.0,
                                               ),
@@ -1460,7 +1509,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                   BorderRadius.circular(24.0),
                                             ),
                                             errorBorder: OutlineInputBorder(
-                                              borderSide: BorderSide(
+                                              borderSide: const BorderSide(
                                                 color: Color(0x00000000),
                                                 width: 1.0,
                                               ),
@@ -1469,7 +1518,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                             ),
                                             focusedErrorBorder:
                                                 OutlineInputBorder(
-                                              borderSide: BorderSide(
+                                              borderSide: const BorderSide(
                                                 color: Color(0x00000000),
                                                 width: 1.0,
                                               ),
@@ -1477,7 +1526,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                   BorderRadius.circular(24.0),
                                             ),
                                             contentPadding:
-                                                EdgeInsetsDirectional.fromSTEB(
+                                                const EdgeInsetsDirectional.fromSTEB(
                                                     16.0, 16.0, 50.0, 16.0),
                                           ),
                                           style: FlutterFlowTheme.of(context)
@@ -1495,7 +1544,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                             0.0, 0.0, 16.0, 17.0),
                                         child: FutureBuilder<PostsRecord>(
                                           future: PostsRecord.getDocumentOnce(
@@ -1503,7 +1552,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                           builder: (context, snapshot) {
                                             // Customize what your widget looks like when it's loading.
                                             if (!snapshot.hasData) {
-                                              return Center(
+                                              return const Center(
                                                 child: SizedBox(
                                                   width: 12.0,
                                                   height: 12.0,
@@ -1540,8 +1589,12 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                     comment: _model
                                                         .commentController.text,
                                                   ),
-                                                  'likes':
-                                                      FFAppState().emptyList,
+                                                  ...mapToFirestore(
+                                                    {
+                                                      'likes': FFAppState()
+                                                          .emptyList,
+                                                    },
+                                                  ),
                                                 });
                                                 _model.comment = CommentsRecord
                                                     .getDocumentFromData({
@@ -1553,13 +1606,22 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                     comment: _model
                                                         .commentController.text,
                                                   ),
-                                                  'likes':
-                                                      FFAppState().emptyList,
+                                                  ...mapToFirestore(
+                                                    {
+                                                      'likes': FFAppState()
+                                                          .emptyList,
+                                                    },
+                                                  ),
                                                 }, commentsRecordReference);
 
                                                 await widget.post!.update({
-                                                  'num_comments':
-                                                      FieldValue.increment(1),
+                                                  ...mapToFirestore(
+                                                    {
+                                                      'num_comments':
+                                                          FieldValue.increment(
+                                                              1),
+                                                    },
+                                                  ),
                                                 });
                                                 setState(() {
                                                   _model.commentController
@@ -1607,11 +1669,16 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                                   await textPostsRecord
                                                       .postUser!
                                                       .update({
-                                                    'unreadNotifications':
-                                                        FieldValue.arrayUnion([
-                                                      _model.notification1
-                                                          ?.reference
-                                                    ]),
+                                                    ...mapToFirestore(
+                                                      {
+                                                        'unreadNotifications':
+                                                            FieldValue
+                                                                .arrayUnion([
+                                                          _model.notification1
+                                                              ?.reference
+                                                        ]),
+                                                      },
+                                                    ),
                                                   });
                                                 }
 
@@ -1652,9 +1719,9 @@ class _CommentsWidgetState extends State<CommentsWidget>
                               FlutterFlowTheme.of(context).secondaryBackground,
                         ),
                         child: Align(
-                          alignment: AlignmentDirectional(0.0, 0.0),
+                          alignment: const AlignmentDirectional(0.0, 0.0),
                           child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 48.0, 0.0, 48.0, 0.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.max,
@@ -1671,7 +1738,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                       ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       0.0, 24.0, 0.0, 0.0),
                                   child: Text(
                                     'The link you followed may be broken, or the post may have been removed.',
@@ -1687,7 +1754,7 @@ class _CommentsWidgetState extends State<CommentsWidget>
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       0.0, 24.0, 0.0, 0.0),
                                   child: InkWell(
                                     splashColor: Colors.transparent,

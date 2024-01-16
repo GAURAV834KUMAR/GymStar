@@ -8,18 +8,16 @@ import '/flutter_flow/flutter_flow_util.dart';
 import 'dart:async';
 import '/custom_code/widgets/index.dart' as custom_widgets;
 import '/flutter_flow/custom_functions.dart' as functions;
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'notifications_model.dart';
 export 'notifications_model.dart';
 
 class NotificationsWidget extends StatefulWidget {
-  const NotificationsWidget({Key? key}) : super(key: key);
+  const NotificationsWidget({super.key});
 
   @override
   _NotificationsWidgetState createState() => _NotificationsWidgetState();
@@ -42,7 +40,11 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
       await Future.delayed(const Duration(milliseconds: 500));
 
       await currentUserReference!.update({
-        'unreadNotifications': FieldValue.delete(),
+        ...mapToFirestore(
+          {
+            'unreadNotifications': FieldValue.delete(),
+          },
+        ),
       });
     });
 
@@ -70,10 +72,21 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -103,7 +116,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                   fontSize: 24.0,
                 ),
           ),
-          actions: [],
+          actions: const [],
           centerTitle: true,
           elevation: 0.0,
         ),
@@ -124,12 +137,10 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         if ((currentUserDocument?.unreadNotifications
-                                        ?.toList() ??
-                                    [])
-                                .length >
-                            0)
+                                        .toList() ??
+                                    []).isNotEmpty)
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 12.0, 0.0, 0.0),
                             child: AuthUserStreamWidget(
                               builder: (context) => Column(
@@ -137,7 +148,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         15.0, 0.0, 15.0, 18.0),
                                     child: Text(
                                       'New',
@@ -146,14 +157,14 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         15.0, 0.0, 15.0, 0.0),
                                     child: Builder(
                                       builder: (context) {
                                         final unreadNotifications = functions
                                                 .reverseList((currentUserDocument
                                                             ?.unreadNotifications
-                                                            ?.toList() ??
+                                                            .toList() ??
                                                         [])
                                                     .toList())
                                                 ?.toList() ??
@@ -169,7 +180,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                 unreadNotifications[
                                                     unreadNotificationsIndex];
                                             return Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       0.0, 0.0, 0.0, 12.0),
                                               child: StreamBuilder<
@@ -180,7 +191,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                 builder: (context, snapshot) {
                                                   // Customize what your widget looks like when it's loading.
                                                   if (!snapshot.hasData) {
-                                                    return Center(
+                                                    return const Center(
                                                       child: SizedBox(
                                                         width: 12.0,
                                                         height: 12.0,
@@ -224,7 +235,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -274,7 +285,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -289,7 +300,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -309,7 +320,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -352,7 +363,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -403,7 +414,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -453,7 +464,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -468,7 +479,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -488,7 +499,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -503,7 +514,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -555,7 +566,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -606,7 +617,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -656,7 +667,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -671,7 +682,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -691,7 +702,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -706,7 +717,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -758,7 +769,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -809,7 +820,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -859,7 +870,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -874,7 +885,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -894,7 +905,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -909,7 +920,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -961,7 +972,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -1009,12 +1020,12 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 12.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
                                       height: 0.5,
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                         color: Color(0xFFDADADA),
                                       ),
                                     ),
@@ -1024,22 +1035,23 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                             ),
                           ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               0.0, 12.0, 0.0, 0.0),
                           child: StreamBuilder<List<NotificationsRecord>>(
                             stream: queryNotificationsRecord(
                               parent: currentUserReference,
                               queryBuilder: (notificationsRecord) =>
-                                  notificationsRecord.where('time_created',
-                                      isGreaterThan:
-                                          functions.returnThisMorning(
-                                              getCurrentTimestamp)),
+                                  notificationsRecord.where(
+                                'time_created',
+                                isGreaterThan: functions
+                                    .returnThisMorning(getCurrentTimestamp),
+                              ),
                               singleRecord: true,
                             ),
                             builder: (context, snapshot) {
                               // Customize what your widget looks like when it's loading.
                               if (!snapshot.hasData) {
-                                return Center(
+                                return const Center(
                                   child: SizedBox(
                                     width: 12.0,
                                     height: 12.0,
@@ -1067,7 +1079,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         15.0, 0.0, 15.0, 18.0),
                                     child: Text(
                                       'Today',
@@ -1076,7 +1088,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         15.0, 0.0, 15.0, 0.0),
                                     child: StreamBuilder<
                                         List<NotificationsRecord>>(
@@ -1084,10 +1096,12 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                         parent: currentUserReference,
                                         queryBuilder: (notificationsRecord) =>
                                             notificationsRecord
-                                                .where('time_created',
-                                                    isGreaterThan: functions
-                                                        .returnThisMorning(
-                                                            getCurrentTimestamp))
+                                                .where(
+                                                  'time_created',
+                                                  isGreaterThan: functions
+                                                      .returnThisMorning(
+                                                          getCurrentTimestamp),
+                                                )
                                                 .orderBy('time_created',
                                                     descending: true),
                                         limit: 10,
@@ -1095,7 +1109,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                       builder: (context, snapshot) {
                                         // Customize what your widget looks like when it's loading.
                                         if (!snapshot.hasData) {
-                                          return Center(
+                                          return const Center(
                                             child: SizedBox(
                                               width: 12.0,
                                               height: 12.0,
@@ -1125,13 +1139,13 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                             return Visibility(
                                               visible: !(currentUserDocument
                                                           ?.unreadNotifications
-                                                          ?.toList() ??
+                                                          .toList() ??
                                                       [])
                                                   .contains(
                                                       columnNotificationsRecord
                                                           .reference),
                                               child: Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         0.0, 0.0, 0.0, 12.0),
                                                 child: AuthUserStreamWidget(
@@ -1162,7 +1176,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -1212,7 +1226,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -1227,7 +1241,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -1247,7 +1261,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -1290,7 +1304,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -1341,7 +1355,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -1391,7 +1405,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -1406,7 +1420,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -1426,7 +1440,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -1441,7 +1455,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -1493,7 +1507,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -1544,7 +1558,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -1594,7 +1608,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -1609,7 +1623,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -1629,7 +1643,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -1644,7 +1658,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -1696,7 +1710,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -1747,7 +1761,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -1797,7 +1811,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -1812,7 +1826,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -1832,7 +1846,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -1847,7 +1861,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -1899,7 +1913,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -1947,12 +1961,12 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 12.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
                                       height: 0.5,
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                         color: Color(0xFFDADADA),
                                       ),
                                     ),
@@ -1963,7 +1977,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               0.0, 12.0, 0.0, 0.0),
                           child: StreamBuilder<List<NotificationsRecord>>(
                             stream: queryNotificationsRecord(
@@ -1971,20 +1985,21 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                               queryBuilder: (notificationsRecord) =>
                                   notificationsRecord
                                       .where(
-                                          'time_created',
-                                          isGreaterThan:
-                                              functions.returnThisWeek(
-                                                  getCurrentTimestamp))
-                                      .where('time_created',
-                                          isLessThan:
-                                              functions.returnThisMorning(
-                                                  getCurrentTimestamp)),
+                                        'time_created',
+                                        isGreaterThan: functions.returnThisWeek(
+                                            getCurrentTimestamp),
+                                      )
+                                      .where(
+                                        'time_created',
+                                        isLessThan: functions.returnThisMorning(
+                                            getCurrentTimestamp),
+                                      ),
                               singleRecord: true,
                             ),
                             builder: (context, snapshot) {
                               // Customize what your widget looks like when it's loading.
                               if (!snapshot.hasData) {
-                                return Center(
+                                return const Center(
                                   child: SizedBox(
                                     width: 12.0,
                                     height: 12.0,
@@ -2012,7 +2027,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         15.0, 0.0, 15.0, 18.0),
                                     child: Text(
                                       'This Week',
@@ -2021,7 +2036,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         15.0, 0.0, 15.0, 0.0),
                                     child: StreamBuilder<
                                         List<NotificationsRecord>>(
@@ -2029,14 +2044,18 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                         parent: currentUserReference,
                                         queryBuilder: (notificationsRecord) =>
                                             notificationsRecord
-                                                .where('time_created',
-                                                    isGreaterThan: functions
-                                                        .returnThisWeek(
-                                                            getCurrentTimestamp))
-                                                .where('time_created',
-                                                    isLessThan: functions
-                                                        .returnThisMorning(
-                                                            getCurrentTimestamp))
+                                                .where(
+                                                  'time_created',
+                                                  isGreaterThan:
+                                                      functions.returnThisWeek(
+                                                          getCurrentTimestamp),
+                                                )
+                                                .where(
+                                                  'time_created',
+                                                  isLessThan: functions
+                                                      .returnThisMorning(
+                                                          getCurrentTimestamp),
+                                                )
                                                 .orderBy('time_created',
                                                     descending: true),
                                         limit: 10,
@@ -2044,7 +2063,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                       builder: (context, snapshot) {
                                         // Customize what your widget looks like when it's loading.
                                         if (!snapshot.hasData) {
-                                          return Center(
+                                          return const Center(
                                             child: SizedBox(
                                               width: 12.0,
                                               height: 12.0,
@@ -2074,13 +2093,13 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                             return Visibility(
                                               visible: !(currentUserDocument
                                                           ?.unreadNotifications
-                                                          ?.toList() ??
+                                                          .toList() ??
                                                       [])
                                                   .contains(
                                                       columnNotificationsRecord
                                                           .reference),
                                               child: Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         0.0, 0.0, 0.0, 12.0),
                                                 child: AuthUserStreamWidget(
@@ -2111,7 +2130,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -2161,7 +2180,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -2176,7 +2195,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -2196,7 +2215,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -2239,7 +2258,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -2290,7 +2309,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -2340,7 +2359,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -2355,7 +2374,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -2375,7 +2394,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -2390,7 +2409,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -2442,7 +2461,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -2493,7 +2512,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -2543,7 +2562,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -2558,7 +2577,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -2578,7 +2597,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -2593,7 +2612,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -2645,7 +2664,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -2696,7 +2715,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -2746,7 +2765,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -2761,7 +2780,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -2781,7 +2800,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -2796,7 +2815,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -2848,7 +2867,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -2896,12 +2915,12 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 12.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
                                       height: 0.5,
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                         color: Color(0xFFDADADA),
                                       ),
                                     ),
@@ -2912,7 +2931,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               0.0, 12.0, 0.0, 0.0),
                           child: StreamBuilder<List<NotificationsRecord>>(
                             stream: queryNotificationsRecord(
@@ -2920,19 +2939,22 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                               queryBuilder: (notificationsRecord) =>
                                   notificationsRecord
                                       .where(
-                                          'time_created',
-                                          isGreaterThan:
-                                              functions.returnThisMonth(
-                                                  getCurrentTimestamp))
-                                      .where('time_created',
-                                          isLessThan: functions.returnThisWeek(
-                                              getCurrentTimestamp)),
+                                        'time_created',
+                                        isGreaterThan:
+                                            functions.returnThisMonth(
+                                                getCurrentTimestamp),
+                                      )
+                                      .where(
+                                        'time_created',
+                                        isLessThan: functions.returnThisWeek(
+                                            getCurrentTimestamp),
+                                      ),
                               singleRecord: true,
                             ),
                             builder: (context, snapshot) {
                               // Customize what your widget looks like when it's loading.
                               if (!snapshot.hasData) {
-                                return Center(
+                                return const Center(
                                   child: SizedBox(
                                     width: 12.0,
                                     height: 12.0,
@@ -2960,7 +2982,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         15.0, 0.0, 15.0, 18.0),
                                     child: Text(
                                       'This Month',
@@ -2969,7 +2991,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         15.0, 0.0, 15.0, 0.0),
                                     child: StreamBuilder<
                                         List<NotificationsRecord>>(
@@ -2977,14 +2999,18 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                         parent: currentUserReference,
                                         queryBuilder: (notificationsRecord) =>
                                             notificationsRecord
-                                                .where('time_created',
-                                                    isGreaterThan: functions
-                                                        .returnThisMonth(
-                                                            getCurrentTimestamp))
-                                                .where('time_created',
-                                                    isLessThan: functions
-                                                        .returnThisWeek(
-                                                            getCurrentTimestamp))
+                                                .where(
+                                                  'time_created',
+                                                  isGreaterThan:
+                                                      functions.returnThisMonth(
+                                                          getCurrentTimestamp),
+                                                )
+                                                .where(
+                                                  'time_created',
+                                                  isLessThan:
+                                                      functions.returnThisWeek(
+                                                          getCurrentTimestamp),
+                                                )
                                                 .orderBy('time_created',
                                                     descending: true),
                                         limit: 10,
@@ -2992,7 +3018,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                       builder: (context, snapshot) {
                                         // Customize what your widget looks like when it's loading.
                                         if (!snapshot.hasData) {
-                                          return Center(
+                                          return const Center(
                                             child: SizedBox(
                                               width: 12.0,
                                               height: 12.0,
@@ -3022,13 +3048,13 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                             return Visibility(
                                               visible: !(currentUserDocument
                                                           ?.unreadNotifications
-                                                          ?.toList() ??
+                                                          .toList() ??
                                                       [])
                                                   .contains(
                                                       columnNotificationsRecord
                                                           .reference),
                                               child: Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         0.0, 0.0, 0.0, 12.0),
                                                 child: AuthUserStreamWidget(
@@ -3059,7 +3085,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -3109,7 +3135,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -3124,7 +3150,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -3144,7 +3170,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -3187,7 +3213,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -3238,7 +3264,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -3288,7 +3314,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -3303,7 +3329,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -3323,7 +3349,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -3338,7 +3364,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -3390,7 +3416,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -3441,7 +3467,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -3491,7 +3517,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -3506,7 +3532,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -3526,7 +3552,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -3541,7 +3567,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -3593,7 +3619,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -3644,7 +3670,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -3694,7 +3720,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -3709,7 +3735,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -3729,7 +3755,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -3744,7 +3770,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -3796,7 +3822,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -3844,12 +3870,12 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 12.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
                                       height: 0.5,
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                         color: Color(0xFFDADADA),
                                       ),
                                     ),
@@ -3860,21 +3886,23 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               0.0, 12.0, 0.0, 0.0),
                           child: StreamBuilder<List<NotificationsRecord>>(
                             stream: queryNotificationsRecord(
                               parent: currentUserReference,
                               queryBuilder: (notificationsRecord) =>
-                                  notificationsRecord.where('time_created',
-                                      isLessThan: functions.returnThisMonth(
-                                          getCurrentTimestamp)),
+                                  notificationsRecord.where(
+                                'time_created',
+                                isLessThan: functions
+                                    .returnThisMonth(getCurrentTimestamp),
+                              ),
                               singleRecord: true,
                             ),
                             builder: (context, snapshot) {
                               // Customize what your widget looks like when it's loading.
                               if (!snapshot.hasData) {
-                                return Center(
+                                return const Center(
                                   child: SizedBox(
                                     width: 12.0,
                                     height: 12.0,
@@ -3902,7 +3930,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         15.0, 0.0, 15.0, 18.0),
                                     child: Text(
                                       'Earlier',
@@ -3911,7 +3939,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         15.0, 0.0, 15.0, 0.0),
                                     child: StreamBuilder<
                                         List<NotificationsRecord>>(
@@ -3919,10 +3947,12 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                         parent: currentUserReference,
                                         queryBuilder: (notificationsRecord) =>
                                             notificationsRecord
-                                                .where('time_created',
-                                                    isLessThan: functions
-                                                        .returnThisMonth(
-                                                            getCurrentTimestamp))
+                                                .where(
+                                                  'time_created',
+                                                  isLessThan:
+                                                      functions.returnThisMonth(
+                                                          getCurrentTimestamp),
+                                                )
                                                 .orderBy('time_created',
                                                     descending: true),
                                         limit: 10,
@@ -3930,7 +3960,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                       builder: (context, snapshot) {
                                         // Customize what your widget looks like when it's loading.
                                         if (!snapshot.hasData) {
-                                          return Center(
+                                          return const Center(
                                             child: SizedBox(
                                               width: 12.0,
                                               height: 12.0,
@@ -3960,13 +3990,13 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                             return Visibility(
                                               visible: !(currentUserDocument
                                                           ?.unreadNotifications
-                                                          ?.toList() ??
+                                                          .toList() ??
                                                       [])
                                                   .contains(
                                                       columnNotificationsRecord
                                                           .reference),
                                               child: Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         0.0, 0.0, 0.0, 12.0),
                                                 child: AuthUserStreamWidget(
@@ -3997,7 +4027,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -4047,7 +4077,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -4062,7 +4092,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -4082,7 +4112,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -4125,7 +4155,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -4176,7 +4206,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -4226,7 +4256,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -4241,7 +4271,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -4261,7 +4291,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -4276,7 +4306,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -4328,7 +4358,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -4379,7 +4409,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -4429,7 +4459,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -4444,7 +4474,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -4464,7 +4494,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -4479,7 +4509,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -4531,7 +4561,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -4582,7 +4612,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -4632,7 +4662,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                         .max,
                                                                 children: [
                                                                   Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -4647,7 +4677,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       clipBehavior:
                                                                           Clip.antiAlias,
                                                                       decoration:
-                                                                          BoxDecoration(
+                                                                          const BoxDecoration(
                                                                         shape: BoxShape
                                                                             .circle,
                                                                       ),
@@ -4667,7 +4697,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                   Expanded(
                                                                     child:
                                                                         Padding(
-                                                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                                                           0.0,
                                                                           0.0,
                                                                           6.0,
@@ -4682,7 +4712,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                           // Customize what your widget looks like when it's loading.
                                                                           if (!snapshot
                                                                               .hasData) {
-                                                                            return Center(
+                                                                            return const Center(
                                                                               child: SizedBox(
                                                                                 width: 12.0,
                                                                                 height: 12.0,
@@ -4734,7 +4764,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -4782,12 +4812,12 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 12.0, 0.0, 0.0),
                                     child: Container(
                                       width: double.infinity,
                                       height: 0.5,
-                                      decoration: BoxDecoration(
+                                      decoration: const BoxDecoration(
                                         color: Color(0xFFDADADA),
                                       ),
                                     ),
@@ -4827,7 +4857,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                 Material(
                                   color: Colors.transparent,
                                   elevation: 0.0,
-                                  shape: RoundedRectangleBorder(
+                                  shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.only(
                                       bottomLeft: Radius.circular(0.0),
                                       bottomRight: Radius.circular(0.0),
@@ -4841,7 +4871,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                     decoration: BoxDecoration(
                                       color: FlutterFlowTheme.of(context)
                                           .secondaryBackground,
-                                      boxShadow: [
+                                      boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 10.0,
                                           color: Color(0x1A57636C),
@@ -4849,7 +4879,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                           spreadRadius: 0.1,
                                         )
                                       ],
-                                      borderRadius: BorderRadius.only(
+                                      borderRadius: const BorderRadius.only(
                                         bottomLeft: Radius.circular(0.0),
                                         bottomRight: Radius.circular(0.0),
                                         topLeft: Radius.circular(20.0),
@@ -4909,7 +4939,7 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           0.0, 0.0, 0.0, 10.0),
                                       child: FlutterFlowIconButton(
                                         borderColor: Colors.transparent,
@@ -4926,10 +4956,10 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
                                         ),
                                         onPressed: () async {
                                           context.goNamed(
-                                            'Reels',
+                                            'Home',
                                             extra: <String, dynamic>{
                                               kTransitionInfoKey:
-                                                  TransitionInfo(
+                                                  const TransitionInfo(
                                                 hasTransition: true,
                                                 transitionType:
                                                     PageTransitionType

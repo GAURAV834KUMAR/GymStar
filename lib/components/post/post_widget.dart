@@ -9,21 +9,18 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/custom_code/widgets/index.dart' as custom_widgets;
 import '/flutter_flow/custom_functions.dart' as functions;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'post_model.dart';
 export 'post_model.dart';
 
 class PostWidget extends StatefulWidget {
   const PostWidget({
-    Key? key,
+    super.key,
     this.post,
-  }) : super(key: key);
+  });
 
   final PostsRecord? post;
 
@@ -44,15 +41,15 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
           curve: Curves.elasticOut,
           delay: 0.ms,
           duration: 600.ms,
-          begin: Offset(0.2, 0.2),
-          end: Offset(1.0, 1.0),
+          begin: const Offset(0.2, 0.2),
+          end: const Offset(1.0, 1.0),
         ),
         ScaleEffect(
           curve: Curves.easeOut,
           delay: 1000.ms,
           duration: 150.ms,
-          begin: Offset(1.0, 1.0),
-          end: Offset(0.0, 0.0),
+          begin: const Offset(1.0, 1.0),
+          end: const Offset(0.0, 0.0),
         ),
       ],
     ),
@@ -63,8 +60,8 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
           curve: Curves.elasticOut,
           delay: 0.ms,
           duration: 600.ms,
-          begin: Offset(0.2, 0.2),
-          end: Offset(1.0, 1.0),
+          begin: const Offset(0.2, 0.2),
+          end: const Offset(1.0, 1.0),
         ),
       ],
     ),
@@ -75,8 +72,8 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
           curve: Curves.elasticOut,
           delay: 0.ms,
           duration: 600.ms,
-          begin: Offset(0.2, 0.2),
-          end: Offset(1.0, 1.0),
+          begin: const Offset(0.2, 0.2),
+          end: const Offset(1.0, 1.0),
         ),
       ],
     ),
@@ -115,13 +112,13 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
     context.watch<FFAppState>();
 
     return Padding(
-      padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 25.0),
+      padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 25.0),
       child: FutureBuilder<UsersRecord>(
         future: UsersRecord.getDocumentOnce(widget.post!.postUser!),
         builder: (context, snapshot) {
           // Customize what your widget looks like when it's loading.
           if (!snapshot.hasData) {
-            return Center(
+            return const Center(
               child: SizedBox(
                 width: 12.0,
                 height: 12.0,
@@ -139,7 +136,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 10.0),
+                padding: const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 10.0),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -206,14 +203,14 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                 ),
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: Color(0xFFDADADA),
+                                  color: const Color(0xFFDADADA),
                                   width: 0.5,
                                 ),
                               ),
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 12.0, 0.0, 0.0, 0.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.max,
@@ -277,7 +274,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                           await showModalBottomSheet(
                             isScrollControlled: true,
                             backgroundColor: Colors.transparent,
-                            barrierColor: Color(0x00000000),
+                            barrierColor: const Color(0x00000000),
                             context: context,
                             builder: (context) {
                               return Padding(
@@ -287,12 +284,12 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                 ),
                               );
                             },
-                          ).then((value) => setState(() {}));
+                          ).then((value) => safeSetState(() {}));
                         } else {
                           await showModalBottomSheet(
                             isScrollControlled: true,
                             backgroundColor: Colors.transparent,
-                            barrierColor: Color(0x00000000),
+                            barrierColor: const Color(0x00000000),
                             context: context,
                             builder: (context) {
                               return Padding(
@@ -302,7 +299,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                 ),
                               );
                             },
-                          ).then((value) => setState(() {}));
+                          ).then((value) => safeSetState(() {}));
                         }
                       },
                       child: Icon(
@@ -317,18 +314,18 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
               Container(
                 width: double.infinity,
                 height: 0.5,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color(0xFFDADADA),
                 ),
               ),
-              Container(
+              SizedBox(
                 width: double.infinity,
                 height: 350.0,
                 child: Stack(
-                  alignment: AlignmentDirectional(0.0, 0.0),
+                  alignment: const AlignmentDirectional(0.0, 0.0),
                   children: [
                     Align(
-                      alignment: AlignmentDirectional(0.0, 0.0),
+                      alignment: const AlignmentDirectional(0.0, 0.0),
                       child: InkWell(
                         splashColor: Colors.transparent,
                         focusColor: Colors.transparent,
@@ -339,8 +336,12 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                             if (widget.post!.likes
                                 .contains(currentUserReference)) {
                               await widget.post!.reference.update({
-                                'likes': FieldValue.arrayRemove(
-                                    [columnUsersRecord.reference]),
+                                ...mapToFirestore(
+                                  {
+                                    'likes': FieldValue.arrayRemove(
+                                        [columnUsersRecord.reference]),
+                                  },
+                                ),
                               });
                             } else {
                               if (animationsMap[
@@ -352,8 +353,12 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                               }
 
                               await widget.post!.reference.update({
-                                'likes': FieldValue.arrayUnion(
-                                    [currentUserReference]),
+                                ...mapToFirestore(
+                                  {
+                                    'likes': FieldValue.arrayUnion(
+                                        [currentUserReference]),
+                                  },
+                                ),
                               });
                               HapticFeedback.lightImpact();
                               if (widget.post?.postUser !=
@@ -379,8 +384,13 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                         notificationsRecordReference);
 
                                 await columnUsersRecord.reference.update({
-                                  'unreadNotifications': FieldValue.arrayUnion(
-                                      [_model.notification?.reference]),
+                                  ...mapToFirestore(
+                                    {
+                                      'unreadNotifications':
+                                          FieldValue.arrayUnion(
+                                              [_model.notification?.reference]),
+                                    },
+                                  ),
                                 });
                               }
                             }
@@ -389,7 +399,10 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                           setState(() {});
                         },
                         child: Image.network(
-                          widget.post!.postPhoto,
+                          valueOrDefault<String>(
+                            widget.post?.postPhoto,
+                            'https://img.freepik.com/free-photo/young-shirtless-bodybuilder-with-muscular-body-doing-exercise-with-dumbbells-dark-background_613910-20606.jpg?w=360',
+                          ),
                           width: double.infinity,
                           height: 350.0,
                           fit: BoxFit.cover,
@@ -397,8 +410,8 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                       ),
                     ),
                     Align(
-                      alignment: AlignmentDirectional(0.0, 0.0),
-                      child: Icon(
+                      alignment: const AlignmentDirectional(0.0, 0.0),
+                      child: const Icon(
                         Icons.favorite_rounded,
                         color: Color(0xFFFF4963),
                         size: 120.0,
@@ -408,7 +421,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                     ),
                     if (widget.post?.callToActionEnabled ?? true)
                       Align(
-                        alignment: AlignmentDirectional(0.0, 1.0),
+                        alignment: const AlignmentDirectional(0.0, 1.0),
                         child: InkWell(
                           splashColor: Colors.transparent,
                           focusColor: Colors.transparent,
@@ -424,9 +437,9 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                               color: FlutterFlowTheme.of(context).secondary,
                             ),
                             child: Align(
-                              alignment: AlignmentDirectional(0.0, 0.0),
+                              alignment: const AlignmentDirectional(0.0, 0.0),
                               child: Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     15.0, 0.0, 15.0, 0.0),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
@@ -447,7 +460,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                             fontWeight: FontWeight.w500,
                                           ),
                                     ),
-                                    Icon(
+                                    const Icon(
                                       FFIcons.karrowRight,
                                       color: Colors.white,
                                       size: 24.0,
@@ -459,11 +472,11 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                           ),
                         ),
                       ),
-                    if (widget.post!.taggedUsers.length > 0)
+                    if (widget.post!.taggedUsers.isNotEmpty)
                       Align(
-                        alignment: AlignmentDirectional(1.0, -1.0),
+                        alignment: const AlignmentDirectional(1.0, -1.0),
                         child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               0.0, 12.0, 12.0, 0.0),
                           child: InkWell(
                             splashColor: Colors.transparent,
@@ -474,7 +487,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                               await showModalBottomSheet(
                                 isScrollControlled: true,
                                 backgroundColor: Colors.transparent,
-                                barrierColor: Color(0x00000000),
+                                barrierColor: const Color(0x00000000),
                                 context: context,
                                 builder: (context) {
                                   return Padding(
@@ -484,16 +497,16 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                     ),
                                   );
                                 },
-                              ).then((value) => setState(() {}));
+                              ).then((value) => safeSetState(() {}));
                             },
                             child: Container(
                               width: 30.0,
                               height: 30.0,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Color(0x80000000),
                                 shape: BoxShape.circle,
                               ),
-                              child: Align(
+                              child: const Align(
                                 alignment: AlignmentDirectional(0.0, 0.0),
                                 child: Icon(
                                   Icons.person_rounded,
@@ -509,7 +522,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                 ),
               ),
               Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(15.0, 12.0, 15.0, 12.0),
+                padding: const EdgeInsetsDirectional.fromSTEB(15.0, 12.0, 15.0, 12.0),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -519,7 +532,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                       children: [
                         if (widget.post?.allowLikes ?? true)
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 0.0, 16.0, 0.0),
                             child: Stack(
                               children: [
@@ -541,8 +554,12 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                       }
 
                                       await widget.post!.reference.update({
-                                        'likes': FieldValue.arrayUnion(
-                                            [currentUserReference]),
+                                        ...mapToFirestore(
+                                          {
+                                            'likes': FieldValue.arrayUnion(
+                                                [currentUserReference]),
+                                          },
+                                        ),
                                       });
                                       HapticFeedback.lightImpact();
                                       if (widget.post?.postUser !=
@@ -571,10 +588,14 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
 
                                         await columnUsersRecord.reference
                                             .update({
-                                          'unreadNotifications':
-                                              FieldValue.arrayUnion([
-                                            _model.notification1?.reference
-                                          ]),
+                                          ...mapToFirestore(
+                                            {
+                                              'unreadNotifications':
+                                                  FieldValue.arrayUnion([
+                                                _model.notification1?.reference
+                                              ]),
+                                            },
+                                          ),
                                         });
                                       }
 
@@ -588,7 +609,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 if (widget.post?.likes
-                                        ?.contains(currentUserReference) ??
+                                        .contains(currentUserReference) ??
                                     true)
                                   InkWell(
                                     splashColor: Colors.transparent,
@@ -597,18 +618,26 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                     highlightColor: Colors.transparent,
                                     onTap: () async {
                                       await widget.post!.reference.update({
-                                        'likes': FieldValue.arrayRemove(
-                                            [columnUsersRecord.reference]),
+                                        ...mapToFirestore(
+                                          {
+                                            'likes': FieldValue.arrayRemove(
+                                                [columnUsersRecord.reference]),
+                                          },
+                                        ),
                                       });
 
                                       await columnUsersRecord.reference.update({
-                                        'unreadNotifications':
-                                            FieldValue.arrayUnion([
-                                          _model.notification?.reference
-                                        ]),
+                                        ...mapToFirestore(
+                                          {
+                                            'unreadNotifications':
+                                                FieldValue.arrayUnion([
+                                              _model.notification?.reference
+                                            ]),
+                                          },
+                                        ),
                                       });
                                     },
-                                    child: Icon(
+                                    child: const Icon(
                                       FFIcons.kheart1,
                                       color: Color(0xFFFF4963),
                                       size: 28.0,
@@ -620,7 +649,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                           ),
                         if (widget.post?.allowComments ?? true)
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 0.0, 16.0, 0.0),
                             child: InkWell(
                               splashColor: Colors.transparent,
@@ -654,7 +683,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                             await showModalBottomSheet(
                               isScrollControlled: true,
                               backgroundColor: Colors.transparent,
-                              barrierColor: Color(0x00000000),
+                              barrierColor: const Color(0x00000000),
                               context: context,
                               builder: (context) {
                                 return Padding(
@@ -664,7 +693,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                   ),
                                 );
                               },
-                            ).then((value) => setState(() {}));
+                            ).then((value) => safeSetState(() {}));
                           },
                           child: Icon(
                             FFIcons.kshare,
@@ -682,7 +711,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                       builder: (context, snapshot) {
                         // Customize what your widget looks like when it's loading.
                         if (!snapshot.hasData) {
-                          return Center(
+                          return const Center(
                             child: SizedBox(
                               width: 12.0,
                               height: 12.0,
@@ -710,9 +739,13 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                 hoverColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () async {
-                                  await stackBookmarksRecord!.reference.update({
-                                    'postRefs': FieldValue.arrayUnion(
-                                        [widget.post?.reference]),
+                                  await stackBookmarksRecord.reference.update({
+                                    ...mapToFirestore(
+                                      {
+                                        'postRefs': FieldValue.arrayUnion(
+                                            [widget.post?.reference]),
+                                      },
+                                    ),
                                   });
                                   HapticFeedback.selectionClick();
                                 },
@@ -723,8 +756,8 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                   size: 24.0,
                                 ),
                               ),
-                            if (stackBookmarksRecord?.postRefs
-                                    ?.contains(widget.post?.reference) ??
+                            if (stackBookmarksRecord.postRefs
+                                    .contains(widget.post?.reference) ??
                                 true)
                               InkWell(
                                 splashColor: Colors.transparent,
@@ -732,9 +765,13 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                 hoverColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
                                 onTap: () async {
-                                  await stackBookmarksRecord!.reference.update({
-                                    'postRefs': FieldValue.arrayRemove(
-                                        [widget.post?.reference]),
+                                  await stackBookmarksRecord.reference.update({
+                                    ...mapToFirestore(
+                                      {
+                                        'postRefs': FieldValue.arrayRemove(
+                                            [widget.post?.reference]),
+                                      },
+                                    ),
                                   });
                                 },
                                 child: Icon(
@@ -753,7 +790,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                 ),
               ),
               Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
+                padding: const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -761,7 +798,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                     if (widget.post?.allowLikes ?? true)
                       Padding(
                         padding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 8.0),
+                            const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 8.0),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
                           children: [
@@ -774,7 +811,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                   builder: (context, snapshot) {
                                     // Customize what your widget looks like when it's loading.
                                     if (!snapshot.hasData) {
-                                      return Center(
+                                      return const Center(
                                         child: SizedBox(
                                           width: 12.0,
                                           height: 12.0,
@@ -799,7 +836,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                         formatNumber(
                                           functions
                                               .totalLikes(valueOrDefault<int>(
-                                            widget.post?.likes?.length,
+                                            widget.post?.likes.length,
                                             1,
                                           )),
                                           formatType: FormatType.compact,
@@ -814,11 +851,11 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                               Text(
                                 '${valueOrDefault<String>(
                                   formatNumber(
-                                    widget.post?.likes?.length,
+                                    widget.post?.likes.length,
                                     formatType: FormatType.compact,
                                   ),
                                   '0',
-                                )}${widget.post?.likes?.length == 1 ? ' like' : ' likes'}',
+                                )}${widget.post?.likes.length == 1 ? ' like' : ' likes'}',
                                 style: FlutterFlowTheme.of(context).bodyMedium,
                               ),
                           ],
@@ -826,7 +863,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                       ),
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 8.0),
+                          const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 8.0),
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         children: [
@@ -876,7 +913,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                               builder: (context, snapshot) {
                                 // Customize what your widget looks like when it's loading.
                                 if (!snapshot.hasData) {
-                                  return Center(
+                                  return const Center(
                                     child: SizedBox(
                                       width: 12.0,
                                       height: 12.0,
@@ -932,7 +969,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                               builder: (context, snapshot) {
                                 // Customize what your widget looks like when it's loading.
                                 if (!snapshot.hasData) {
-                                  return Center(
+                                  return const Center(
                                     child: SizedBox(
                                       width: 12.0,
                                       height: 12.0,
@@ -982,7 +1019,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                     if (widget.post?.allowComments ?? true)
                       Padding(
                         padding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 0.0, 0.0),
+                            const EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 0.0, 0.0),
                         child: StreamBuilder<List<CommentsRecord>>(
                           stream: queryCommentsRecord(
                             parent: widget.post?.reference,
@@ -993,7 +1030,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                           builder: (context, snapshot) {
                             // Customize what your widget looks like when it's loading.
                             if (!snapshot.hasData) {
-                              return Center(
+                              return const Center(
                                 child: SizedBox(
                                   width: 12.0,
                                   height: 12.0,
@@ -1031,7 +1068,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                   final columnCommentsRecord =
                                       columnCommentsRecordList[columnIndex];
                                   return Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 0.0, 0.0, 6.0),
                                     child: FutureBuilder<UsersRecord>(
                                       future: UsersRecord.getDocumentOnce(
@@ -1039,7 +1076,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                       builder: (context, snapshot) {
                                         // Customize what your widget looks like when it's loading.
                                         if (!snapshot.hasData) {
-                                          return Center(
+                                          return const Center(
                                             child: SizedBox(
                                               width: 12.0,
                                               height: 12.0,
@@ -1076,7 +1113,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                     if (widget.post?.allowComments ?? true)
                       Padding(
                         padding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 0.0, 0.0),
+                            const EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 0.0, 0.0),
                         child: InkWell(
                           splashColor: Colors.transparent,
                           focusColor: Colors.transparent,
@@ -1123,7 +1160,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         10.0, 0.0, 0.0, 0.0),
                                     child: Text(
                                       'Add a comment...',
@@ -1143,7 +1180,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 0.0, 8.0, 0.0),
                                     child: Text(
                                       '🎉',
@@ -1152,7 +1189,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 0.0, 8.0, 0.0),
                                     child: Text(
                                       '🤩',
@@ -1173,7 +1210,7 @@ class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {
                       ),
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 0.0, 0.0),
+                          const EdgeInsetsDirectional.fromSTEB(0.0, 8.0, 0.0, 0.0),
                       child: Text(
                         valueOrDefault<String>(
                           dateTimeFormat(

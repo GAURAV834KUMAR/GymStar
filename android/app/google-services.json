@@ -7,9 +7,45 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:291152191748:android:09b7c43497a904f77bb051",
+        "mobilesdk_app_id": "1:291152191748:android:a5227c5c034194a87bb051",
         "android_client_info": {
-          "package_name": "com.fluttergo.instagram"
+          "package_name": "com.example.gymstar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "291152191748-bslv7tcbdd1jnscvl2etgqpeb025o6i9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNVPpCcpp5Z-MM1SV9spkAQ1xEm3swIS4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "291152191748-bslv7tcbdd1jnscvl2etgqpeb025o6i9.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "291152191748-tdg6o29v8rvtd765cgnnrne4bvg0bab0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fluttergo.instagram"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:291152191748:android:5983f2fd587d94087bb051",
+        "android_client_info": {
+          "package_name": "com.mycompany.gymstarbeta"
         }
       },
       "oauth_client": [

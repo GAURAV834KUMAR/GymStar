@@ -3,21 +3,19 @@ import '/components/nav_bar1/nav_bar1_widget.dart';
 import '/components/post/post_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'dart:async';
 import '/flutter_flow/custom_functions.dart' as functions;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'post_details_model.dart';
 export 'post_details_model.dart';
 
 class PostDetailsWidget extends StatefulWidget {
   const PostDetailsWidget({
-    Key? key,
+    super.key,
     this.post,
-  }) : super(key: key);
+  });
 
   final DocumentReference? post;
 
@@ -61,10 +59,21 @@ class _PostDetailsWidgetState extends State<PostDetailsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -92,7 +101,7 @@ class _PostDetailsWidgetState extends State<PostDetailsWidget> {
             builder: (context, snapshot) {
               // Customize what your widget looks like when it's loading.
               if (!snapshot.hasData) {
-                return Center(
+                return const Center(
                   child: SizedBox(
                     width: 12.0,
                     height: 12.0,
@@ -114,7 +123,7 @@ class _PostDetailsWidgetState extends State<PostDetailsWidget> {
                     builder: (context, snapshot) {
                       // Customize what your widget looks like when it's loading.
                       if (!snapshot.hasData) {
-                        return Center(
+                        return const Center(
                           child: SizedBox(
                             width: 12.0,
                             height: 12.0,
@@ -148,7 +157,7 @@ class _PostDetailsWidgetState extends State<PostDetailsWidget> {
               );
             },
           ),
-          actions: [],
+          actions: const [],
           centerTitle: true,
           elevation: 0.0,
         ),
@@ -169,7 +178,7 @@ class _PostDetailsWidgetState extends State<PostDetailsWidget> {
                     builder: (context, snapshot) {
                       // Customize what your widget looks like when it's loading.
                       if (!snapshot.hasData) {
-                        return Center(
+                        return const Center(
                           child: SizedBox(
                             width: 12.0,
                             height: 12.0,
@@ -188,14 +197,14 @@ class _PostDetailsWidgetState extends State<PostDetailsWidget> {
                           Container(
                             width: double.infinity,
                             height: 0.5,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Color(0xFFDADADA),
                             ),
                           ),
                           if (!columnPostsRecord.deleted)
                             Expanded(
                               child: Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     0.0, 12.0, 0.0, 0.0),
                                 child: wrapWithModel(
                                   model: _model.postModel,
@@ -216,9 +225,9 @@ class _PostDetailsWidgetState extends State<PostDetailsWidget> {
                                       .secondaryBackground,
                                 ),
                                 child: Align(
-                                  alignment: AlignmentDirectional(0.0, 0.0),
+                                  alignment: const AlignmentDirectional(0.0, 0.0),
                                   child: Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         48.0, 0.0, 48.0, 0.0),
                                     child: Column(
                                       mainAxisSize: MainAxisSize.max,
@@ -237,7 +246,7 @@ class _PostDetailsWidgetState extends State<PostDetailsWidget> {
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 24.0, 0.0, 0.0),
                                           child: Text(
                                             'The link you followed may be broken, or the post may have been removed.',
@@ -254,7 +263,7 @@ class _PostDetailsWidgetState extends State<PostDetailsWidget> {
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 24.0, 0.0, 0.0),
                                           child: InkWell(
                                             splashColor: Colors.transparent,
@@ -305,14 +314,14 @@ class _PostDetailsWidgetState extends State<PostDetailsWidget> {
                     Container(
                       width: double.infinity,
                       height: 0.5,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Color(0xFFDADADA),
                       ),
                     ),
                     wrapWithModel(
                       model: _model.navBar1Model,
                       updateCallback: () => setState(() {}),
-                      child: NavBar1Widget(),
+                      child: const NavBar1Widget(),
                     ),
                   ],
                 ),

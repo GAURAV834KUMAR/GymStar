@@ -3,15 +3,14 @@ import '/backend/backend.dart';
 import '/components/follower_componant/follower_componant_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'followers_following_model.dart';
 export 'followers_following_model.dart';
 
 class FollowersFollowingWidget extends StatefulWidget {
-  const FollowersFollowingWidget({Key? key}) : super(key: key);
+  const FollowersFollowingWidget({super.key});
 
   @override
   _FollowersFollowingWidgetState createState() =>
@@ -33,7 +32,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
       vsync: this,
       length: 2,
       initialIndex: 0,
-    );
+    )..addListener(() => setState(() {}));
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -46,10 +45,21 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -79,7 +89,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                   ),
             ),
           ),
-          actions: [],
+          actions: const [],
           centerTitle: true,
           elevation: 0.0,
         ),
@@ -99,7 +109,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
               builder: (context, snapshot) {
                 // Customize what your widget looks like when it's loading.
                 if (!snapshot.hasData) {
-                  return Center(
+                  return const Center(
                     child: SizedBox(
                       width: 12.0,
                       height: 12.0,
@@ -120,7 +130,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                 return Column(
                   children: [
                     Align(
-                      alignment: Alignment(0.0, 0),
+                      alignment: const Alignment(0.0, 0),
                       child: TabBar(
                         labelColor: FlutterFlowTheme.of(context).primaryText,
                         unselectedLabelColor:
@@ -130,14 +140,14 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                   fontFamily: 'Inter',
                                   fontSize: 15.0,
                                 ),
-                        unselectedLabelStyle: TextStyle(),
+                        unselectedLabelStyle: const TextStyle(),
                         indicatorColor: FlutterFlowTheme.of(context).secondary,
                         indicatorWeight: 2.0,
                         tabs: [
                           Tab(
                             text: valueOrDefault<String>(
                               '${formatNumber(
-                                tabBarFollowersRecord?.userRefs?.length,
+                                tabBarFollowersRecord?.userRefs.length,
                                 formatType: FormatType.compact,
                               )} Followers',
                               '0 Followers',
@@ -147,7 +157,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                             builder: (context) => Tab(
                               text: valueOrDefault<String>(
                                 '${formatNumber(
-                                  (currentUserDocument?.following?.toList() ??
+                                  (currentUserDocument?.following.toList() ??
                                           [])
                                       .length,
                                   formatType: FormatType.compact,
@@ -158,7 +168,9 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                           ),
                         ],
                         controller: _model.tabBarController,
-                        onTap: (value) => setState(() {}),
+                        onTap: (i) async {
+                          [() async {}, () async {}][i]();
+                        },
                       ),
                     ),
                     Expanded(
@@ -167,13 +179,13 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                         children: [
                           KeepAliveWidgetWrapper(
                             builder: (context) => Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
                                   15.0, 0.0, 15.0, 0.0),
                               child: Builder(
                                 builder: (context) {
                                   final followers = tabBarFollowersRecord
                                           ?.userRefs
-                                          ?.toList() ??
+                                          .toList() ??
                                       [];
                                   return ListView.builder(
                                     padding: EdgeInsets.zero,
@@ -184,7 +196,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                       final followersItem =
                                           followers[followersIndex];
                                       return Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                             0.0, 12.0, 0.0, 0.0),
                                         child: StreamBuilder<UsersRecord>(
                                           stream: UsersRecord.getDocument(
@@ -192,7 +204,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                           builder: (context, snapshot) {
                                             // Customize what your widget looks like when it's loading.
                                             if (!snapshot.hasData) {
-                                              return Center(
+                                              return const Center(
                                                 child: SizedBox(
                                                   width: 12.0,
                                                   height: 12.0,
@@ -240,7 +252,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                                     height: 55.0,
                                                     clipBehavior:
                                                         Clip.antiAlias,
-                                                    decoration: BoxDecoration(
+                                                    decoration: const BoxDecoration(
                                                       shape: BoxShape.circle,
                                                     ),
                                                     child: Image.network(
@@ -254,7 +266,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                                   Expanded(
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsetsDirectional
+                                                          const EdgeInsetsDirectional
                                                               .fromSTEB(
                                                                   12.0,
                                                                   0.0,
@@ -296,7 +308,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                                               ),
                                                               if (!(currentUserDocument
                                                                           ?.following
-                                                                          ?.toList() ??
+                                                                          .toList() ??
                                                                       [])
                                                                   .contains(
                                                                       rowUsersRecord
@@ -320,7 +332,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                                                 ),
                                                               if (!(currentUserDocument
                                                                           ?.following
-                                                                          ?.toList() ??
+                                                                          .toList() ??
                                                                       [])
                                                                   .contains(
                                                                       rowUsersRecord
@@ -343,7 +355,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                                                       // Customize what your widget looks like when it's loading.
                                                                       if (!snapshot
                                                                           .hasData) {
-                                                                        return Center(
+                                                                        return const Center(
                                                                           child:
                                                                               SizedBox(
                                                                             width:
@@ -381,19 +393,25 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                                                             () async {
                                                                           await currentUserReference!
                                                                               .update({
-                                                                            'following':
-                                                                                FieldValue.arrayUnion([
-                                                                              rowUsersRecord.reference
-                                                                            ]),
+                                                                            ...mapToFirestore(
+                                                                              {
+                                                                                'following': FieldValue.arrayUnion([
+                                                                                  rowUsersRecord.reference
+                                                                                ]),
+                                                                              },
+                                                                            ),
                                                                           });
 
                                                                           await textFollowersRecord!
                                                                               .reference
                                                                               .update({
-                                                                            'userRefs':
-                                                                                FieldValue.arrayUnion([
-                                                                              currentUserReference
-                                                                            ]),
+                                                                            ...mapToFirestore(
+                                                                              {
+                                                                                'userRefs': FieldValue.arrayUnion([
+                                                                                  currentUserReference
+                                                                                ]),
+                                                                              },
+                                                                            ),
                                                                           });
                                                                         },
                                                                         child:
@@ -418,7 +436,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                                           ),
                                                           Padding(
                                                             padding:
-                                                                EdgeInsetsDirectional
+                                                                const EdgeInsetsDirectional
                                                                     .fromSTEB(
                                                                         0.0,
                                                                         2.0,
@@ -446,7 +464,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                                   ),
                                                   Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .fromSTEB(0.0, 0.0,
                                                                 6.0, 0.0),
                                                     child: StreamBuilder<
@@ -461,7 +479,7 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                                           (context, snapshot) {
                                                         // Customize what your widget looks like when it's loading.
                                                         if (!snapshot.hasData) {
-                                                          return Center(
+                                                          return const Center(
                                                             child: SizedBox(
                                                               width: 12.0,
                                                               height: 12.0,
@@ -498,21 +516,30 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                                             await rowUsersRecord
                                                                 .reference
                                                                 .update({
-                                                              'following':
-                                                                  FieldValue
-                                                                      .arrayRemove([
-                                                                currentUserReference
-                                                              ]),
+                                                              ...mapToFirestore(
+                                                                {
+                                                                  'following':
+                                                                      FieldValue
+                                                                          .arrayRemove([
+                                                                    currentUserReference
+                                                                  ]),
+                                                                },
+                                                              ),
                                                             });
 
                                                             await tabBarFollowersRecord!
                                                                 .reference
                                                                 .update({
-                                                              'userRefs': FieldValue
-                                                                  .arrayRemove([
-                                                                rowUsersRecord
-                                                                    .reference
-                                                              ]),
+                                                              ...mapToFirestore(
+                                                                {
+                                                                  'userRefs':
+                                                                      FieldValue
+                                                                          .arrayRemove([
+                                                                    rowUsersRecord
+                                                                        .reference
+                                                                  ]),
+                                                                },
+                                                              ),
                                                             });
                                                           },
                                                           child: Container(
@@ -530,11 +557,11 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                                                             ),
                                                             child: Align(
                                                               alignment:
-                                                                  AlignmentDirectional(
+                                                                  const AlignmentDirectional(
                                                                       0.0, 0.0),
                                                               child: Padding(
                                                                 padding:
-                                                                    EdgeInsetsDirectional
+                                                                    const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             8.0,
                                                                             6.0,
@@ -585,14 +612,14 @@ class _FollowersFollowingWidgetState extends State<FollowersFollowingWidget>
                           ),
                           KeepAliveWidgetWrapper(
                             builder: (context) => Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
                                   15.0, 0.0, 15.0, 0.0),
                               child: AuthUserStreamWidget(
                                 builder: (context) => Builder(
                                   builder: (context) {
                                     final following = (currentUserDocument
                                                 ?.following
-                                                ?.toList() ??
+                                                .toList() ??
                                             [])
                                         .toList();
                                     return ListView.builder(

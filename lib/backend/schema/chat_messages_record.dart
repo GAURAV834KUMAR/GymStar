@@ -6,13 +6,12 @@ import '/backend/schema/util/firestore_util.dart';
 import '/backend/schema/util/schema_util.dart';
 
 import 'index.dart';
-import '/flutter_flow/flutter_flow_util.dart';
 
 class ChatMessagesRecord extends FirestoreRecord {
   ChatMessagesRecord._(
-    DocumentReference reference,
-    Map<String, dynamic> data,
-  ) : super(reference, data) {
+    super.reference,
+    super.data,
+  ) {
     _initializeFields();
   }
 
@@ -46,6 +45,11 @@ class ChatMessagesRecord extends FirestoreRecord {
   DocumentReference? get commentRef => _commentRef;
   bool hasCommentRef() => _commentRef != null;
 
+  // "image" field.
+  String? _image;
+  String get image => _image ?? '';
+  bool hasImage() => _image != null;
+
   void _initializeFields() {
     _user = snapshotData['user'] as DocumentReference?;
     _chat = snapshotData['chat'] as DocumentReference?;
@@ -53,6 +57,7 @@ class ChatMessagesRecord extends FirestoreRecord {
     _timestamp = snapshotData['timestamp'] as DateTime?;
     _postRef = snapshotData['postRef'] as DocumentReference?;
     _commentRef = snapshotData['commentRef'] as DocumentReference?;
+    _image = snapshotData['image'] as String?;
   }
 
   static CollectionReference get collection =>
@@ -96,6 +101,7 @@ Map<String, dynamic> createChatMessagesRecordData({
   DateTime? timestamp,
   DocumentReference? postRef,
   DocumentReference? commentRef,
+  String? image,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -105,6 +111,7 @@ Map<String, dynamic> createChatMessagesRecordData({
       'timestamp': timestamp,
       'postRef': postRef,
       'commentRef': commentRef,
+      'image': image,
     }.withoutNulls,
   );
 
@@ -122,12 +129,20 @@ class ChatMessagesRecordDocumentEquality
         e1?.text == e2?.text &&
         e1?.timestamp == e2?.timestamp &&
         e1?.postRef == e2?.postRef &&
-        e1?.commentRef == e2?.commentRef;
+        e1?.commentRef == e2?.commentRef &&
+        e1?.image == e2?.image;
   }
 
   @override
-  int hash(ChatMessagesRecord? e) => const ListEquality().hash(
-      [e?.user, e?.chat, e?.text, e?.timestamp, e?.postRef, e?.commentRef]);
+  int hash(ChatMessagesRecord? e) => const ListEquality().hash([
+        e?.user,
+        e?.chat,
+        e?.text,
+        e?.timestamp,
+        e?.postRef,
+        e?.commentRef,
+        e?.image
+      ]);
 
   @override
   bool isValidKey(Object? o) => o is ChatMessagesRecord;

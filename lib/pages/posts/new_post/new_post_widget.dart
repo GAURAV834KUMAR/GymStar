@@ -5,21 +5,18 @@ import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_expanded_image_view.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'dart:async';
 import '/flutter_flow/custom_functions.dart' as functions;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'new_post_model.dart';
 export 'new_post_model.dart';
 
 class NewPostWidget extends StatefulWidget {
-  const NewPostWidget({Key? key}) : super(key: key);
+  const NewPostWidget({super.key});
 
   @override
   _NewPostWidgetState createState() => _NewPostWidgetState();
@@ -62,12 +59,9 @@ class _NewPostWidgetState extends State<NewPostWidget>
       if ((_model.apiResulto66?.succeeded ?? true)) {
         FFAppState().update(() {
           FFAppState().imageLabels =
-              functions.listToString((ImageTestCall.labels(
+              functions.listToString(ImageTestCall.labels(
             (_model.apiResulto66?.jsonBody ?? ''),
-          ) as List)
-                  .map<String>((s) => s.toString())
-                  .toList()
-                  ?.toList());
+          )?.toList());
         });
       }
     });
@@ -82,6 +76,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
     }
 
     _model.textController ??= TextEditingController();
+    _model.textFieldFocusNode ??= FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
@@ -98,10 +93,21 @@ class _NewPostWidgetState extends State<NewPostWidget>
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -131,7 +137,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
           ),
           actions: [
             Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -158,8 +164,12 @@ class _NewPostWidgetState extends State<NewPostWidget>
                           labels: FFAppState().imageLabels,
                           deleted: false,
                         ),
-                        'likes': FFAppState().emptyList,
-                        'tagged_users': FFAppState().taggedUsers,
+                        ...mapToFirestore(
+                          {
+                            'likes': FFAppState().emptyList,
+                            'tagged_users': FFAppState().taggedUsers,
+                          },
+                        ),
                       });
                       _model.post = PostsRecord.getDocumentFromData({
                         ...createPostsRecordData(
@@ -177,8 +187,12 @@ class _NewPostWidgetState extends State<NewPostWidget>
                           labels: FFAppState().imageLabels,
                           deleted: false,
                         ),
-                        'likes': FFAppState().emptyList,
-                        'tagged_users': FFAppState().taggedUsers,
+                        ...mapToFirestore(
+                          {
+                            'likes': FFAppState().emptyList,
+                            'tagged_users': FFAppState().taggedUsers,
+                          },
+                        ),
                       }, postsRecordReference);
 
                       context.goNamed('Feed');
@@ -210,7 +224,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
               Container(
                 width: double.infinity,
                 height: 0.5,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color(0xFFDADADA),
                 ),
               ),
@@ -221,10 +235,9 @@ class _NewPostWidgetState extends State<NewPostWidget>
                   color: FlutterFlowTheme.of(context).secondaryBackground,
                 ),
                 child: Align(
-                  alignment: AlignmentDirectional(0.0, 0.0),
+                  alignment: const AlignmentDirectional(0.0, 0.0),
                   child: Padding(
-                    padding:
-                        EdgeInsetsDirectional.fromSTEB(15.0, 15.0, 15.0, 15.0),
+                    padding: const EdgeInsets.all(15.0),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,10 +277,11 @@ class _NewPostWidgetState extends State<NewPostWidget>
                         ),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 12.0, 0.0, 0.0, 0.0),
                             child: TextFormField(
                               controller: _model.textController,
+                              focusNode: _model.textFieldFocusNode,
                               obscureText: false,
                               decoration: InputDecoration(
                                 labelStyle: FlutterFlowTheme.of(context)
@@ -285,42 +299,42 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                       fontSize: 14.0,
                                       fontWeight: FontWeight.normal,
                                     ),
-                                enabledBorder: UnderlineInputBorder(
+                                enabledBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: Color(0x00000000),
                                     width: 1.0,
                                   ),
-                                  borderRadius: const BorderRadius.only(
+                                  borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(4.0),
                                     topRight: Radius.circular(4.0),
                                   ),
                                 ),
-                                focusedBorder: UnderlineInputBorder(
+                                focusedBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: Color(0x00000000),
                                     width: 1.0,
                                   ),
-                                  borderRadius: const BorderRadius.only(
+                                  borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(4.0),
                                     topRight: Radius.circular(4.0),
                                   ),
                                 ),
-                                errorBorder: UnderlineInputBorder(
+                                errorBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: Color(0x00000000),
                                     width: 1.0,
                                   ),
-                                  borderRadius: const BorderRadius.only(
+                                  borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(4.0),
                                     topRight: Radius.circular(4.0),
                                   ),
                                 ),
-                                focusedErrorBorder: UnderlineInputBorder(
+                                focusedErrorBorder: const UnderlineInputBorder(
                                   borderSide: BorderSide(
                                     color: Color(0x00000000),
                                     width: 1.0,
                                   ),
-                                  borderRadius: const BorderRadius.only(
+                                  borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(4.0),
                                     topRight: Radius.circular(4.0),
                                   ),
@@ -348,16 +362,16 @@ class _NewPostWidgetState extends State<NewPostWidget>
               Stack(
                 children: [
                   Align(
-                    alignment: AlignmentDirectional(0.0, -7.07),
+                    alignment: const AlignmentDirectional(0.0, -7.07),
                     child: Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(0.0, 15.0, 0.0, 15.0),
+                          const EdgeInsetsDirectional.fromSTEB(0.0, 15.0, 0.0, 15.0),
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 0.0, 0.0, 24.0),
                             child: InkWell(
                               splashColor: Colors.transparent,
@@ -368,7 +382,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                 context.pushNamed(
                                   'TagUsers',
                                   extra: <String, dynamic>{
-                                    kTransitionInfoKey: TransitionInfo(
+                                    kTransitionInfoKey: const TransitionInfo(
                                       hasTransition: true,
                                       transitionType:
                                           PageTransitionType.bottomToTop,
@@ -382,7 +396,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         15.0, 0.0, 0.0, 0.0),
                                     child: Text(
                                       'Tag people',
@@ -396,7 +410,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 0.0, 15.0, 0.0),
                                     child: Icon(
                                       Icons.arrow_forward_ios_rounded,
@@ -410,7 +424,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 0.0, 0.0, 26.0),
                             child: Stack(
                               children: [
@@ -424,7 +438,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                       context.pushNamed(
                                         'CallToAction',
                                         extra: <String, dynamic>{
-                                          kTransitionInfoKey: TransitionInfo(
+                                          kTransitionInfoKey: const TransitionInfo(
                                             hasTransition: true,
                                             transitionType:
                                                 PageTransitionType.bottomToTop,
@@ -439,7 +453,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                       children: [
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   15.0, 0.0, 0.0, 0.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
@@ -459,7 +473,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                                         ),
                                               ),
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         0.0, 2.0, 0.0, 0.0),
                                                 child: Text(
@@ -484,7 +498,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 0.0, 15.0, 0.0),
                                           child: InkWell(
                                             splashColor: Colors.transparent,
@@ -504,7 +518,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                                     '';
                                               });
                                             },
-                                            child: Icon(
+                                            child: const Icon(
                                               Icons.close_rounded,
                                               color: Color(0x80000000),
                                               size: 18.0,
@@ -524,7 +538,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                       context.pushNamed(
                                         'CallToAction',
                                         extra: <String, dynamic>{
-                                          kTransitionInfoKey: TransitionInfo(
+                                          kTransitionInfoKey: const TransitionInfo(
                                             hasTransition: true,
                                             transitionType:
                                                 PageTransitionType.bottomToTop,
@@ -539,7 +553,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                       children: [
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   15.0, 0.0, 0.0, 0.0),
                                           child: Text(
                                             'Add call to action',
@@ -554,7 +568,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 0.0, 15.0, 0.0),
                                           child: Icon(
                                             Icons.arrow_forward_ios_rounded,
@@ -572,10 +586,9 @@ class _NewPostWidgetState extends State<NewPostWidget>
                           Column(
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                              if (FFAppState().location == null ||
-                                  FFAppState().location == '')
+                              if (FFAppState().location == '')
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       0.0, 0.0, 0.0, 16.0),
                                   child: InkWell(
                                     splashColor: Colors.transparent,
@@ -586,7 +599,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                       context.pushNamed(
                                         'Location',
                                         extra: <String, dynamic>{
-                                          kTransitionInfoKey: TransitionInfo(
+                                          kTransitionInfoKey: const TransitionInfo(
                                             hasTransition: true,
                                             transitionType:
                                                 PageTransitionType.bottomToTop,
@@ -601,7 +614,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                       children: [
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   15.0, 0.0, 0.0, 0.0),
                                           child: Text(
                                             'Add location',
@@ -616,7 +629,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 0.0, 15.0, 0.0),
                                           child: Icon(
                                             Icons.arrow_forward_ios_rounded,
@@ -629,10 +642,9 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                     ),
                                   ),
                                 ),
-                              if (FFAppState().location == null ||
-                                  FFAppState().location == '')
+                              if (FFAppState().location == '')
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       0.0, 0.0, 0.0, 16.0),
                                   child: SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
@@ -643,7 +655,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                       children: [
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   15.0, 0.0, 10.0, 0.0),
                                           child: InkWell(
                                             splashColor: Colors.transparent,
@@ -665,10 +677,10 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                                     BorderRadius.circular(8.0),
                                               ),
                                               child: Align(
-                                                alignment: AlignmentDirectional(
+                                                alignment: const AlignmentDirectional(
                                                     0.0, 0.0),
                                                 child: Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           8.0, 6.0, 8.0, 6.0),
                                                   child: Row(
@@ -701,7 +713,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 0.0, 10.0, 0.0),
                                           child: InkWell(
                                             splashColor: Colors.transparent,
@@ -723,10 +735,10 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                                     BorderRadius.circular(8.0),
                                               ),
                                               child: Align(
-                                                alignment: AlignmentDirectional(
+                                                alignment: const AlignmentDirectional(
                                                     0.0, 0.0),
                                                 child: Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           8.0, 6.0, 8.0, 6.0),
                                                   child: Row(
@@ -759,7 +771,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 0.0, 10.0, 0.0),
                                           child: InkWell(
                                             splashColor: Colors.transparent,
@@ -781,10 +793,10 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                                     BorderRadius.circular(8.0),
                                               ),
                                               child: Align(
-                                                alignment: AlignmentDirectional(
+                                                alignment: const AlignmentDirectional(
                                                     0.0, 0.0),
                                                 child: Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           8.0, 6.0, 8.0, 6.0),
                                                   child: Row(
@@ -817,7 +829,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 0.0, 10.0, 0.0),
                                           child: InkWell(
                                             splashColor: Colors.transparent,
@@ -839,10 +851,10 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                                     BorderRadius.circular(8.0),
                                               ),
                                               child: Align(
-                                                alignment: AlignmentDirectional(
+                                                alignment: const AlignmentDirectional(
                                                     0.0, 0.0),
                                                 child: Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           8.0, 6.0, 8.0, 6.0),
                                                   child: Row(
@@ -877,10 +889,9 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                     ),
                                   ),
                                 ),
-                              if (FFAppState().location != null &&
-                                  FFAppState().location != '')
+                              if (FFAppState().location != '')
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       0.0, 0.0, 0.0, 16.0),
                                   child: InkWell(
                                     splashColor: Colors.transparent,
@@ -891,7 +902,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                       context.pushNamed(
                                         'CallToAction',
                                         extra: <String, dynamic>{
-                                          kTransitionInfoKey: TransitionInfo(
+                                          kTransitionInfoKey: const TransitionInfo(
                                             hasTransition: true,
                                             transitionType:
                                                 PageTransitionType.bottomToTop,
@@ -906,7 +917,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                       children: [
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   15.0, 0.0, 0.0, 0.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
@@ -930,7 +941,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 0.0, 15.0, 0.0),
                                           child: InkWell(
                                             splashColor: Colors.transparent,
@@ -942,7 +953,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                                 FFAppState().location = '';
                                               });
                                             },
-                                            child: Icon(
+                                            child: const Icon(
                                               Icons.close_rounded,
                                               color: Color(0x80000000),
                                               size: 18.0,
@@ -956,14 +967,14 @@ class _NewPostWidgetState extends State<NewPostWidget>
                             ],
                           ),
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 0.0, 0.0, 6.0),
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       15.0, 0.0, 0.0, 0.0),
                                   child: Text(
                                     'Hide like and view counts on post',
@@ -977,18 +988,18 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       0.0, 0.0, 12.0, 0.0),
                                   child: Switch(
                                     value: _model.switchValue1 ??= false,
                                     onChanged: (newValue) async {
                                       setState(() =>
-                                          _model.switchValue1 = newValue!);
+                                          _model.switchValue1 = newValue);
                                     },
                                     activeColor: Colors.white,
                                     activeTrackColor:
                                         FlutterFlowTheme.of(context).secondary,
-                                    inactiveTrackColor: Color(0xFFDADADA),
+                                    inactiveTrackColor: const Color(0xFFDADADA),
                                     inactiveThumbColor: Colors.white,
                                   ),
                                 ),
@@ -996,14 +1007,14 @@ class _NewPostWidgetState extends State<NewPostWidget>
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 0.0, 0.0, 16.0),
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       15.0, 0.0, 0.0, 0.0),
                                   child: Text(
                                     'Hide comments on post',
@@ -1017,18 +1028,18 @@ class _NewPostWidgetState extends State<NewPostWidget>
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       0.0, 0.0, 12.0, 0.0),
                                   child: Switch(
                                     value: _model.switchValue2 ??= false,
                                     onChanged: (newValue) async {
                                       setState(() =>
-                                          _model.switchValue2 = newValue!);
+                                          _model.switchValue2 = newValue);
                                     },
                                     activeColor: Colors.white,
                                     activeTrackColor:
                                         FlutterFlowTheme.of(context).secondary,
-                                    inactiveTrackColor: Color(0xFFDADADA),
+                                    inactiveTrackColor: const Color(0xFFDADADA),
                                     inactiveThumbColor: Colors.white,
                                   ),
                                 ),
@@ -1045,7 +1056,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                     Container(
                       width: double.infinity,
                       height: MediaQuery.sizeOf(context).height * 1.0,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Color(0xC0000000),
                       ),
                     ).animateOnPageLoad(

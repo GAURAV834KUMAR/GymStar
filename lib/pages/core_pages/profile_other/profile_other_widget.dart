@@ -5,12 +5,11 @@ import '/components/story/story_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'dart:async';
+import '/flutter_flow/flutter_flow_video_player.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,9 +18,9 @@ export 'profile_other_model.dart';
 
 class ProfileOtherWidget extends StatefulWidget {
   const ProfileOtherWidget({
-    Key? key,
+    super.key,
     this.username,
-  }) : super(key: key);
+  });
 
   final String? username;
 
@@ -55,7 +54,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
       vsync: this,
       length: 2,
       initialIndex: 0,
-    );
+    )..addListener(() => setState(() {}));
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -71,10 +70,21 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -111,7 +121,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                 Builder(
                   builder: (context) => Padding(
                     padding:
-                        EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
+                        const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
                     child: InkWell(
                       splashColor: Colors.transparent,
                       focusColor: Colors.transparent,
@@ -123,7 +133,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                           sharePositionOrigin: getWidgetBoundingBox(context),
                         );
                       },
-                      child: Icon(
+                      child: const Icon(
                         FFIcons.kmore,
                         color: Colors.black,
                         size: 28.0,
@@ -151,14 +161,16 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                   ),
                   child: StreamBuilder<List<UsersRecord>>(
                     stream: queryUsersRecord(
-                      queryBuilder: (usersRecord) => usersRecord
-                          .where('username', isEqualTo: widget.username),
+                      queryBuilder: (usersRecord) => usersRecord.where(
+                        'username',
+                        isEqualTo: widget.username,
+                      ),
                       singleRecord: true,
                     ),
                     builder: (context, snapshot) {
                       // Customize what your widget looks like when it's loading.
                       if (!snapshot.hasData) {
-                        return Center(
+                        return const Center(
                           child: SizedBox(
                             width: 12.0,
                             height: 12.0,
@@ -184,34 +196,38 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
                                   15.0, 0.0, 15.0, 0.0),
                               child: Row(
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 0.0, 20.0, 0.0),
                                     child: Stack(
-                                      alignment: AlignmentDirectional(0.0, 0.0),
+                                      alignment: const AlignmentDirectional(0.0, 0.0),
                                       children: [
                                         StreamBuilder<List<StoriesRecord>>(
                                           stream: queryStoriesRecord(
                                             queryBuilder: (storiesRecord) =>
                                                 storiesRecord
-                                                    .where('user',
-                                                        isEqualTo:
-                                                            columnUsersRecord
-                                                                ?.reference)
-                                                    .where('expire_time',
-                                                        isGreaterThan:
-                                                            getCurrentTimestamp),
+                                                    .where(
+                                                      'user',
+                                                      isEqualTo:
+                                                          columnUsersRecord
+                                                              ?.reference,
+                                                    )
+                                                    .where(
+                                                      'expire_time',
+                                                      isGreaterThan:
+                                                          getCurrentTimestamp,
+                                                    ),
                                             singleRecord: true,
                                           ),
                                           builder: (context, snapshot) {
                                             // Customize what your widget looks like when it's loading.
                                             if (!snapshot.hasData) {
-                                              return Center(
+                                              return const Center(
                                                 child: SizedBox(
                                                   width: 12.0,
                                                   height: 12.0,
@@ -251,14 +267,20 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                   backgroundColor:
                                                       Colors.transparent,
                                                   barrierColor:
-                                                      Color(0x00000000),
+                                                      const Color(0x00000000),
                                                   context: context,
                                                   builder: (context) {
                                                     return GestureDetector(
-                                                      onTap: () => FocusScope
-                                                              .of(context)
-                                                          .requestFocus(_model
-                                                              .unfocusNode),
+                                                      onTap: () => _model
+                                                              .unfocusNode
+                                                              .canRequestFocus
+                                                          ? FocusScope.of(
+                                                                  context)
+                                                              .requestFocus(_model
+                                                                  .unfocusNode)
+                                                          : FocusScope.of(
+                                                                  context)
+                                                              .unfocus(),
                                                       child: Padding(
                                                         padding: MediaQuery
                                                             .viewInsetsOf(
@@ -270,13 +292,13 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                       ),
                                                     );
                                                   },
-                                                ).then(
-                                                    (value) => setState(() {}));
+                                                ).then((value) =>
+                                                    safeSetState(() {}));
                                               },
                                               child: Container(
                                                 width: 100.0,
                                                 height: 100.0,
-                                                decoration: BoxDecoration(
+                                                decoration: const BoxDecoration(
                                                   gradient: LinearGradient(
                                                     colors: [
                                                       Color(0xFF7C1E51),
@@ -297,7 +319,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                         ),
                                         Align(
                                           alignment:
-                                              AlignmentDirectional(0.0, 0.0),
+                                              const AlignmentDirectional(0.0, 0.0),
                                           child: Container(
                                             width: 93.0,
                                             height: 93.0,
@@ -334,7 +356,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                         Expanded(
                                           child: Padding(
                                             padding:
-                                                EdgeInsetsDirectional.fromSTEB(
+                                                const EdgeInsetsDirectional.fromSTEB(
                                                     10.0, 0.0, 0.0, 0.0),
                                             child: Column(
                                               mainAxisSize: MainAxisSize.max,
@@ -344,17 +366,19 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                 StreamBuilder<
                                                     List<PostsRecord>>(
                                                   stream: queryPostsRecord(
-                                                    queryBuilder: (postsRecord) =>
-                                                        postsRecord.where(
-                                                            'post_user',
-                                                            isEqualTo:
-                                                                columnUsersRecord
-                                                                    ?.reference),
+                                                    queryBuilder:
+                                                        (postsRecord) =>
+                                                            postsRecord.where(
+                                                      'post_user',
+                                                      isEqualTo:
+                                                          columnUsersRecord
+                                                              ?.reference,
+                                                    ),
                                                   ),
                                                   builder: (context, snapshot) {
                                                     // Customize what your widget looks like when it's loading.
                                                     if (!snapshot.hasData) {
-                                                      return Center(
+                                                      return const Center(
                                                         child: SizedBox(
                                                           width: 12.0,
                                                           height: 12.0,
@@ -390,7 +414,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                   },
                                                 ),
                                                 Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           0.0, 2.0, 0.0, 0.0),
                                                   child: Text(
@@ -441,7 +465,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                   builder: (context, snapshot) {
                                                     // Customize what your widget looks like when it's loading.
                                                     if (!snapshot.hasData) {
-                                                      return Center(
+                                                      return const Center(
                                                         child: SizedBox(
                                                           width: 12.0,
                                                           height: 12.0,
@@ -470,7 +494,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                         formatNumber(
                                                           numberFollowersRecord
                                                               ?.userRefs
-                                                              ?.length,
+                                                              .length,
                                                           formatType: FormatType
                                                               .compact,
                                                         ),
@@ -487,7 +511,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                   },
                                                 ),
                                                 Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           0.0, 2.0, 0.0, 0.0),
                                                   child: Text(
@@ -532,7 +556,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                   valueOrDefault<String>(
                                                     formatNumber(
                                                       columnUsersRecord
-                                                          ?.following?.length,
+                                                          ?.following.length,
                                                       formatType:
                                                           FormatType.compact,
                                                     ),
@@ -547,7 +571,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                       ),
                                                 ),
                                                 Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           0.0, 2.0, 0.0, 0.0),
                                                   child: Text(
@@ -576,7 +600,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                             if (columnUsersRecord?.displayName != null &&
                                 columnUsersRecord?.displayName != '')
                               Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     15.0, 6.0, 0.0, 0.0),
                                 child: Text(
                                   columnUsersRecord!.displayName,
@@ -591,7 +615,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                             if (columnUsersRecord?.bio != null &&
                                 columnUsersRecord?.bio != '')
                               Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     15.0, 4.0, 0.0, 0.0),
                                 child: Text(
                                   columnUsersRecord!.bio,
@@ -607,7 +631,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                             if (columnUsersRecord?.website != null &&
                                 columnUsersRecord?.website != '')
                               Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     15.0, 4.0, 0.0, 0.0),
                                 child: InkWell(
                                   splashColor: Colors.transparent,
@@ -615,7 +639,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                   hoverColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
                                   onTap: () async {
-                                    await launchURL(columnUsersRecord!.website);
+                                    await launchURL(columnUsersRecord.website);
                                   },
                                   child: Text(
                                     columnUsersRecord!.website,
@@ -632,14 +656,14 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                 ),
                               ),
                             Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
                                   15.0, 15.0, 15.0, 0.0),
                               child: Row(
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Expanded(
                                     child: Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           0.0, 0.0, 6.0, 0.0),
                                       child: AuthUserStreamWidget(
                                         builder: (context) => StreamBuilder<
@@ -652,7 +676,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                           builder: (context, snapshot) {
                                             // Customize what your widget looks like when it's loading.
                                             if (!snapshot.hasData) {
-                                              return Center(
+                                              return const Center(
                                                 child: SizedBox(
                                                   width: 12.0,
                                                   height: 12.0,
@@ -685,55 +709,67 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                               onTap: () async {
                                                 if ((currentUserDocument
                                                             ?.following
-                                                            ?.toList() ??
+                                                            .toList() ??
                                                         [])
                                                     .contains(columnUsersRecord
                                                         ?.reference)) {
                                                   await currentUserReference!
                                                       .update({
-                                                    'following':
-                                                        FieldValue.arrayRemove([
-                                                      columnUsersRecord
-                                                          ?.reference
-                                                    ]),
+                                                    ...mapToFirestore(
+                                                      {
+                                                        'following': FieldValue
+                                                            .arrayRemove([
+                                                          columnUsersRecord
+                                                              ?.reference
+                                                        ]),
+                                                      },
+                                                    ),
                                                   });
 
                                                   await followUnfollowButtonFollowersRecord!
                                                       .reference
                                                       .update({
-                                                    'userRefs':
-                                                        FieldValue.arrayRemove([
-                                                      currentUserReference
-                                                    ]),
+                                                    ...mapToFirestore(
+                                                      {
+                                                        'userRefs': FieldValue
+                                                            .arrayRemove([
+                                                          currentUserReference
+                                                        ]),
+                                                      },
+                                                    ),
                                                   });
                                                   _model
                                                       .timerFollowButtonActionsController
-                                                      .onExecute
-                                                      .add(StopWatchExecute
-                                                          .reset);
+                                                      .onResetTimer();
                                                 } else {
                                                   await currentUserReference!
                                                       .update({
-                                                    'following':
-                                                        FieldValue.arrayUnion([
-                                                      columnUsersRecord
-                                                          ?.reference
-                                                    ]),
+                                                    ...mapToFirestore(
+                                                      {
+                                                        'following': FieldValue
+                                                            .arrayUnion([
+                                                          columnUsersRecord
+                                                              ?.reference
+                                                        ]),
+                                                      },
+                                                    ),
                                                   });
 
                                                   await followUnfollowButtonFollowersRecord!
                                                       .reference
                                                       .update({
-                                                    'userRefs':
-                                                        FieldValue.arrayUnion([
-                                                      currentUserReference
-                                                    ]),
+                                                    ...mapToFirestore(
+                                                      {
+                                                        'userRefs': FieldValue
+                                                            .arrayUnion([
+                                                          currentUserReference
+                                                        ]),
+                                                      },
+                                                    ),
                                                   });
                                                   _model
                                                       .timerFollowButtonActionsController
-                                                      .onExecute
-                                                      .add(StopWatchExecute
-                                                          .start);
+                                                      .onStartTimer();
                                                 }
                                               },
                                               child: Container(
@@ -742,7 +778,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                   color: valueOrDefault<Color>(
                                                     (currentUserDocument
                                                                     ?.following
-                                                                    ?.toList() ??
+                                                                    .toList() ??
                                                                 [])
                                                             .contains(
                                                                 columnUsersRecord
@@ -762,11 +798,11 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                 ),
                                                 child: Align(
                                                   alignment:
-                                                      AlignmentDirectional(
+                                                      const AlignmentDirectional(
                                                           0.0, 0.0),
                                                   child: Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
+                                                        const EdgeInsetsDirectional
                                                             .fromSTEB(8.0, 6.0,
                                                                 8.0, 6.0),
                                                     child: Row(
@@ -784,23 +820,22 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                                         currentUserReference) &&
                                                                 !(currentUserDocument
                                                                             ?.following
-                                                                            ?.toList() ??
+                                                                            .toList() ??
                                                                         [])
                                                                     .contains(
                                                                         columnUsersRecord
-                                                                            ?.reference)) {
+                                                                            .reference)) {
                                                               return 'Follow back';
-                                                            } else if (!columnUsersRecord!
-                                                                    .following
+                                                            } else if (!columnUsersRecord.following
                                                                     .contains(
                                                                         currentUserReference) &&
                                                                 !(currentUserDocument
                                                                             ?.following
-                                                                            ?.toList() ??
+                                                                            .toList() ??
                                                                         [])
                                                                     .contains(
                                                                         columnUsersRecord
-                                                                            ?.reference)) {
+                                                                            .reference)) {
                                                               return 'Follow';
                                                             } else {
                                                               return 'Unfollow';
@@ -812,7 +847,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                               .override(
                                                                 fontFamily:
                                                                     'Inter',
-                                                                color: (currentUserDocument?.following?.toList() ??
+                                                                color: (currentUserDocument?.following.toList() ??
                                                                             [])
                                                                         .contains(columnUsersRecord
                                                                             ?.reference)
@@ -840,7 +875,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                   ),
                                   Expanded(
                                     child: Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           6.0, 0.0, 0.0, 0.0),
                                       child: Stack(
                                         children: [
@@ -875,11 +910,15 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                   lastMessageSentBy:
                                                       currentUserReference,
                                                 ),
-                                                'last_message_seen_by': [
-                                                  currentUserReference
-                                                ],
-                                                'users':
-                                                    FFAppState().tempUserList,
+                                                ...mapToFirestore(
+                                                  {
+                                                    'last_message_seen_by': [
+                                                      currentUserReference
+                                                    ],
+                                                    'users': FFAppState()
+                                                        .tempUserList,
+                                                  },
+                                                ),
                                               });
                                               _model.chat = ChatsRecord
                                                   .getDocumentFromData({
@@ -894,11 +933,15 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                   lastMessageSentBy:
                                                       currentUserReference,
                                                 ),
-                                                'last_message_seen_by': [
-                                                  currentUserReference
-                                                ],
-                                                'users':
-                                                    FFAppState().tempUserList,
+                                                ...mapToFirestore(
+                                                  {
+                                                    'last_message_seen_by': [
+                                                      currentUserReference
+                                                    ],
+                                                    'users': FFAppState()
+                                                        .tempUserList,
+                                                  },
+                                                ),
                                               }, chatsRecordReference);
 
                                               context.pushNamed(
@@ -923,10 +966,10 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                     BorderRadius.circular(8.0),
                                               ),
                                               child: Align(
-                                                alignment: AlignmentDirectional(
+                                                alignment: const AlignmentDirectional(
                                                     0.0, 0.0),
                                                 child: Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           8.0, 6.0, 8.0, 6.0),
                                                   child: Row(
@@ -961,19 +1004,22 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                               queryBuilder: (chatsRecord) =>
                                                   chatsRecord
                                                       .where(
-                                                          'user_a',
-                                                          isEqualTo:
-                                                              columnUsersRecord
-                                                                  ?.reference)
-                                                      .where('user_b',
-                                                          isEqualTo:
-                                                              currentUserReference),
+                                                        'user_a',
+                                                        isEqualTo:
+                                                            columnUsersRecord
+                                                                ?.reference,
+                                                      )
+                                                      .where(
+                                                        'user_b',
+                                                        isEqualTo:
+                                                            currentUserReference,
+                                                      ),
                                               singleRecord: true,
                                             ),
                                             builder: (context, snapshot) {
                                               // Customize what your widget looks like when it's loading.
                                               if (!snapshot.hasData) {
-                                                return Center(
+                                                return const Center(
                                                   child: SizedBox(
                                                     width: 12.0,
                                                     height: 12.0,
@@ -1032,11 +1078,11 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                   ),
                                                   child: Align(
                                                     alignment:
-                                                        AlignmentDirectional(
+                                                        const AlignmentDirectional(
                                                             0.0, 0.0),
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsetsDirectional
+                                                          const EdgeInsetsDirectional
                                                               .fromSTEB(
                                                                   8.0,
                                                                   6.0,
@@ -1077,19 +1123,22 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                               queryBuilder: (chatsRecord) =>
                                                   chatsRecord
                                                       .where(
-                                                          'user_a',
-                                                          isEqualTo:
-                                                              currentUserReference)
-                                                      .where('user_b',
-                                                          isEqualTo:
-                                                              columnUsersRecord
-                                                                  ?.reference),
+                                                        'user_a',
+                                                        isEqualTo:
+                                                            currentUserReference,
+                                                      )
+                                                      .where(
+                                                        'user_b',
+                                                        isEqualTo:
+                                                            columnUsersRecord
+                                                                ?.reference,
+                                                      ),
                                               singleRecord: true,
                                             ),
                                             builder: (context, snapshot) {
                                               // Customize what your widget looks like when it's loading.
                                               if (!snapshot.hasData) {
-                                                return Center(
+                                                return const Center(
                                                   child: SizedBox(
                                                     width: 12.0,
                                                     height: 12.0,
@@ -1148,11 +1197,11 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                   ),
                                                   child: Align(
                                                     alignment:
-                                                        AlignmentDirectional(
+                                                        const AlignmentDirectional(
                                                             0.0, 0.0),
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsetsDirectional
+                                                          const EdgeInsetsDirectional
                                                               .fromSTEB(
                                                                   8.0,
                                                                   6.0,
@@ -1195,7 +1244,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                   if (columnUsersRecord?.enableEmail ?? true)
                                     Expanded(
                                       child: Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                             12.0, 0.0, 0.0, 0.0),
                                         child: InkWell(
                                           splashColor: Colors.transparent,
@@ -1218,10 +1267,10 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                   BorderRadius.circular(8.0),
                                             ),
                                             child: Align(
-                                              alignment: AlignmentDirectional(
+                                              alignment: const AlignmentDirectional(
                                                   0.0, 0.0),
                                               child: Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         8.0, 6.0, 8.0, 6.0),
                                                 child: Row(
@@ -1256,7 +1305,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                     getDisplayTime: (value) =>
                                         StopWatchTimer.getDisplayTime(value,
                                             milliSecond: false),
-                                    timer: _model
+                                    controller: _model
                                         .timerFollowButtonActionsController,
                                     onChanged:
                                         (value, displayTime, shouldUpdate) {
@@ -1286,12 +1335,16 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                               ),
                                               notificationsRecordReference);
 
-                                      await columnUsersRecord!.reference
+                                      await columnUsersRecord.reference
                                           .update({
-                                        'unreadNotifications':
-                                            FieldValue.arrayUnion([
-                                          _model.notification?.reference
-                                        ]),
+                                        ...mapToFirestore(
+                                          {
+                                            'unreadNotifications':
+                                                FieldValue.arrayUnion([
+                                              _model.notification?.reference
+                                            ]),
+                                          },
+                                        ),
                                       });
 
                                       setState(() {});
@@ -1317,41 +1370,42 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                     .secondaryBackground,
                               ),
                               child: Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     0.0, 12.0, 0.0, 0.0),
                                 child: Column(
                                   children: [
                                     Align(
-                                      alignment: Alignment(0.0, 0),
+                                      alignment: const Alignment(0.0, 0),
                                       child: TabBar(
-                                        labelColor: Colors.black,
-                                        unselectedLabelColor: Color(0x80000000),
+                                        labelColor: FlutterFlowTheme.of(context)
+                                            .primaryText,
+                                        unselectedLabelColor:
+                                            FlutterFlowTheme.of(context)
+                                                .secondaryText,
                                         labelStyle: FlutterFlowTheme.of(context)
                                             .bodyMedium
                                             .override(
                                               fontFamily: 'Inter',
-                                              fontSize: 0.0,
+                                              fontSize: 18.0,
                                               lineHeight: 0.0,
                                             ),
-                                        unselectedLabelStyle: TextStyle(),
-                                        indicatorColor: Colors.black,
+                                        unselectedLabelStyle: const TextStyle(),
+                                        indicatorColor:
+                                            FlutterFlowTheme.of(context)
+                                                .secondary,
                                         indicatorWeight: 2.0,
-                                        tabs: [
+                                        tabs: const [
                                           Tab(
-                                            icon: Icon(
-                                              FFIcons.kgrid,
-                                              size: 30.0,
-                                            ),
+                                            text: 'Posts',
                                           ),
                                           Tab(
-                                            icon: Icon(
-                                              FFIcons.kmentions,
-                                              size: 28.0,
-                                            ),
+                                            text: 'Shorts',
                                           ),
                                         ],
                                         controller: _model.tabBarController,
-                                        onTap: (value) => setState(() {}),
+                                        onTap: (i) async {
+                                          [() async {}, () async {}][i]();
+                                        },
                                       ),
                                     ),
                                     Expanded(
@@ -1364,19 +1418,22 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                               stream: queryPostsRecord(
                                                 queryBuilder: (postsRecord) =>
                                                     postsRecord
-                                                        .where('post_user',
-                                                            isEqualTo:
-                                                                columnUsersRecord
-                                                                    ?.reference)
-                                                        .where('deleted',
-                                                            isEqualTo: false)
+                                                        .where(
+                                                          'post_user',
+                                                          isEqualTo:
+                                                              currentUserReference,
+                                                        )
+                                                        .where(
+                                                          'deleted',
+                                                          isEqualTo: false,
+                                                        )
                                                         .orderBy('time_posted',
                                                             descending: true),
                                               ),
                                               builder: (context, snapshot) {
                                                 // Customize what your widget looks like when it's loading.
                                                 if (!snapshot.hasData) {
-                                                  return Center(
+                                                  return const Center(
                                                     child: SizedBox(
                                                       width: 12.0,
                                                       height: 12.0,
@@ -1397,7 +1454,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                 return GridView.builder(
                                                   padding: EdgeInsets.zero,
                                                   gridDelegate:
-                                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                                      const SliverGridDelegateWithFixedCrossAxisCount(
                                                     crossAxisCount: 3,
                                                     crossAxisSpacing: 1.0,
                                                     mainAxisSpacing: 1.0,
@@ -1459,103 +1516,113 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                             ),
                                           ),
                                           KeepAliveWidgetWrapper(
-                                            builder: (context) => StreamBuilder<
-                                                List<PostsRecord>>(
-                                              stream: queryPostsRecord(
-                                                queryBuilder: (postsRecord) =>
-                                                    postsRecord
-                                                        .where('tagged_users',
-                                                            arrayContains:
-                                                                columnUsersRecord
-                                                                    ?.reference)
-                                                        .where('deleted',
-                                                            isEqualTo: false)
-                                                        .orderBy('time_posted',
-                                                            descending: true),
-                                              ),
-                                              builder: (context, snapshot) {
-                                                // Customize what your widget looks like when it's loading.
-                                                if (!snapshot.hasData) {
-                                                  return Center(
-                                                    child: SizedBox(
-                                                      width: 12.0,
-                                                      height: 12.0,
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation<
-                                                                Color>(
-                                                          Colors.white,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                                List<PostsRecord>
-                                                    taggedPhotosPostsRecordList =
-                                                    snapshot.data!;
-                                                return GridView.builder(
-                                                  padding: EdgeInsets.zero,
-                                                  gridDelegate:
-                                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                                    crossAxisCount: 3,
-                                                    crossAxisSpacing: 1.0,
-                                                    mainAxisSpacing: 1.0,
-                                                    childAspectRatio: 1.0,
-                                                  ),
-                                                  primary: false,
-                                                  shrinkWrap: true,
-                                                  scrollDirection:
-                                                      Axis.vertical,
-                                                  itemCount:
-                                                      taggedPhotosPostsRecordList
-                                                          .length,
-                                                  itemBuilder: (context,
-                                                      taggedPhotosIndex) {
-                                                    final taggedPhotosPostsRecord =
-                                                        taggedPhotosPostsRecordList[
-                                                            taggedPhotosIndex];
-                                                    return InkWell(
-                                                      splashColor:
-                                                          Colors.transparent,
-                                                      focusColor:
-                                                          Colors.transparent,
-                                                      hoverColor:
-                                                          Colors.transparent,
-                                                      highlightColor:
-                                                          Colors.transparent,
-                                                      onTap: () async {
-                                                        context.pushNamed(
-                                                          'PostDetails',
-                                                          queryParameters: {
-                                                            'post':
-                                                                serializeParam(
-                                                              taggedPhotosPostsRecord
-                                                                  .reference,
-                                                              ParamType
-                                                                  .DocumentReference,
-                                                            ),
-                                                          }.withoutNulls,
-                                                        );
-                                                      },
-                                                      child: Hero(
-                                                        tag:
-                                                            taggedPhotosPostsRecord
-                                                                .postPhoto,
-                                                        transitionOnUserGestures:
-                                                            true,
-                                                        child: Image.network(
-                                                          taggedPhotosPostsRecord
-                                                              .postPhoto,
-                                                          width: 100.0,
-                                                          height: 100.0,
-                                                          fit: BoxFit.cover,
+                                            builder: (context) => Padding(
+                                              padding: const EdgeInsets.all(5.0),
+                                              child: StreamBuilder<
+                                                  List<ReelsRecord>>(
+                                                stream: queryReelsRecord(
+                                                  queryBuilder: (reelsRecord) =>
+                                                      reelsRecord
+                                                          .where(
+                                                            'User_id',
+                                                            isEqualTo:
+                                                                currentUserReference,
+                                                          )
+                                                          .orderBy('Post_date',
+                                                              descending: true),
+                                                ),
+                                                builder: (context, snapshot) {
+                                                  // Customize what your widget looks like when it's loading.
+                                                  if (!snapshot.hasData) {
+                                                    return const Center(
+                                                      child: SizedBox(
+                                                        width: 12.0,
+                                                        height: 12.0,
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          valueColor:
+                                                              AlwaysStoppedAnimation<
+                                                                  Color>(
+                                                            Colors.white,
+                                                          ),
                                                         ),
                                                       ),
                                                     );
-                                                  },
-                                                );
-                                              },
+                                                  }
+                                                  List<ReelsRecord>
+                                                      gridViewReelsRecordList =
+                                                      snapshot.data!;
+                                                  return GridView.builder(
+                                                    padding: EdgeInsets.zero,
+                                                    gridDelegate:
+                                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisCount: 2,
+                                                      crossAxisSpacing: 2.0,
+                                                      mainAxisSpacing: 2.0,
+                                                      childAspectRatio: 0.7,
+                                                    ),
+                                                    scrollDirection:
+                                                        Axis.vertical,
+                                                    itemCount:
+                                                        gridViewReelsRecordList
+                                                            .length,
+                                                    itemBuilder: (context,
+                                                        gridViewIndex) {
+                                                      final gridViewReelsRecord =
+                                                          gridViewReelsRecordList[
+                                                              gridViewIndex];
+                                                      return Card(
+                                                        clipBehavior: Clip
+                                                            .antiAliasWithSaveLayer,
+                                                        color: FlutterFlowTheme
+                                                                .of(context)
+                                                            .secondaryBackground,
+                                                        elevation: 0.0,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      8.0),
+                                                        ),
+                                                        child: Container(
+                                                          width:
+                                                              MediaQuery.sizeOf(
+                                                                          context)
+                                                                      .width *
+                                                                  0.48,
+                                                          height:
+                                                              MediaQuery.sizeOf(
+                                                                          context)
+                                                                      .height *
+                                                                  0.3,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .secondaryBackground,
+                                                          ),
+                                                          child:
+                                                              FlutterFlowVideoPlayer(
+                                                            path:
+                                                                gridViewReelsRecord
+                                                                    .video,
+                                                            videoType: VideoType
+                                                                .network,
+                                                            autoPlay: true,
+                                                            looping: true,
+                                                            showControls: false,
+                                                            allowFullScreen:
+                                                                true,
+                                                            allowPlaybackSpeedMenu:
+                                                                false,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                },
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -1581,14 +1648,14 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                     Container(
                       width: double.infinity,
                       height: 0.5,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Color(0xFFDADADA),
                       ),
                     ),
                     wrapWithModel(
                       model: _model.navBar1Model,
                       updateCallback: () => setState(() {}),
-                      child: NavBar1Widget(),
+                      child: const NavBar1Widget(),
                     ),
                   ],
                 ),

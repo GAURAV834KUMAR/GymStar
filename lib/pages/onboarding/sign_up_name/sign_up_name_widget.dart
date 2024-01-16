@@ -2,18 +2,18 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'sign_up_name_model.dart';
 export 'sign_up_name_model.dart';
 
 class SignUpNameWidget extends StatefulWidget {
   const SignUpNameWidget({
-    Key? key,
+    super.key,
     required this.gender,
     required this.age,
     required this.weight,
-  }) : super(key: key);
+  });
 
   final String? gender;
   final double? age;
@@ -34,6 +34,8 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
     _model = createModel(context, () => SignUpNameModel());
 
     _model.fullNameController ??= TextEditingController();
+    _model.fullNameFocusNode ??= FocusNode();
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -46,17 +48,28 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+        backgroundColor: FlutterFlowTheme.of(context).intro,
         body: SafeArea(
           top: true,
           child: Align(
-            alignment: AlignmentDirectional(0.0, 0.0),
+            alignment: const AlignmentDirectional(0.0, 0.0),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
@@ -67,7 +80,7 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
                     children: [
                       Padding(
                         padding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 58.0, 0.0, 0.0),
+                            const EdgeInsetsDirectional.fromSTEB(0.0, 58.0, 0.0, 0.0),
                         child: Text(
                           'Add Your Name',
                           textAlign: TextAlign.center,
@@ -81,7 +94,7 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
                       ),
                       Padding(
                         padding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 18.0, 0.0, 0.0),
+                            const EdgeInsetsDirectional.fromSTEB(0.0, 18.0, 0.0, 0.0),
                         child: Text(
                           'Add your name so friends can find you.ody',
                           textAlign: TextAlign.center,
@@ -97,10 +110,11 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
                         key: _model.formKey,
                         autovalidateMode: AutovalidateMode.disabled,
                         child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               40.0, 24.0, 40.0, 12.0),
                           child: TextFormField(
                             controller: _model.fullNameController,
+                            focusNode: _model.fullNameFocusNode,
                             obscureText: false,
                             decoration: InputDecoration(
                               hintText: 'Full Name',
@@ -112,28 +126,28 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
                                     fontWeight: FontWeight.normal,
                                   ),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color(0x00000000),
                                   width: 1.0,
                                 ),
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color(0x00000000),
                                   width: 1.0,
                                 ),
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color(0x00000000),
                                   width: 1.0,
                                 ),
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color(0x00000000),
                                   width: 1.0,
                                 ),
@@ -157,7 +171,7 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
                             40.0, 12.0, 40.0, 0.0),
                         child: FFButtonWidget(
                           onPressed: () async {
@@ -192,9 +206,9 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
                           options: FFButtonOptions(
                             width: double.infinity,
                             height: 50.0,
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 0.0, 0.0, 0.0),
-                            iconPadding: EdgeInsetsDirectional.fromSTEB(
+                            iconPadding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 0.0, 0.0, 0.0),
                             color: FlutterFlowTheme.of(context).secondary,
                             textStyle: FlutterFlowTheme.of(context)
@@ -205,7 +219,7 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
                                   fontSize: 14.0,
                                 ),
                             elevation: 0.0,
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                               color: Colors.transparent,
                               width: 1.0,
                             ),
@@ -219,7 +233,7 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
                 Container(
                   width: double.infinity,
                   height: 0.5,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFFDADADA),
                   ),
                 ),
@@ -227,8 +241,7 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(
-                          24.0, 24.0, 24.0, 24.0),
+                      padding: const EdgeInsets.all(24.0),
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -245,7 +258,7 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
                                 ),
                           ),
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 3.0, 0.0, 0.0, 0.0),
                             child: InkWell(
                               splashColor: Colors.transparent,
@@ -270,7 +283,7 @@ class _SignUpNameWidgetState extends State<SignUpNameWidget> {
                                     ),
                                   }.withoutNulls,
                                   extra: <String, dynamic>{
-                                    kTransitionInfoKey: TransitionInfo(
+                                    kTransitionInfoKey: const TransitionInfo(
                                       hasTransition: true,
                                       transitionType:
                                           PageTransitionType.leftToRight,

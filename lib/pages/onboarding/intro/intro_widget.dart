@@ -4,13 +4,13 @@ import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart'
     as smooth_page_indicator;
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'intro_model.dart';
 export 'intro_model.dart';
 
 class IntroWidget extends StatefulWidget {
-  const IntroWidget({Key? key}) : super(key: key);
+  const IntroWidget({super.key});
 
   @override
   _IntroWidgetState createState() => _IntroWidgetState();
@@ -38,34 +38,45 @@ class _IntroWidgetState extends State<IntroWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+        backgroundColor: FlutterFlowTheme.of(context).intro,
         body: SafeArea(
           top: true,
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
               Expanded(
-                child: Container(
+                child: SizedBox(
                   width: double.infinity,
                   height: 500.0,
                   child: Stack(
                     children: [
                       Padding(
                         padding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 40.0),
+                            const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 40.0),
                         child: PageView(
                           controller: _model.pageViewController ??=
                               PageController(initialPage: 0),
                           scrollDirection: Axis.horizontal,
                           children: [
                             Align(
-                              alignment: AlignmentDirectional(0.0, 0.0),
+                              alignment: const AlignmentDirectional(0.0, 0.0),
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
@@ -79,8 +90,6 @@ class _IntroWidgetState extends State<IntroWidget> {
                                       width: double.infinity,
                                       height: 460.0,
                                       decoration: BoxDecoration(
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryBackground,
                                         image: DecorationImage(
                                           fit: BoxFit.cover,
                                           image: Image.asset(
@@ -92,15 +101,11 @@ class _IntroWidgetState extends State<IntroWidget> {
                                         ),
                                         borderRadius:
                                             BorderRadius.circular(0.0),
-                                        border: Border.all(
-                                          color: FlutterFlowTheme.of(context)
-                                              .secondaryBackground,
-                                        ),
                                       ),
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 62.0, 0.0, 0.0),
                                     child: Text(
                                       'MEET YOUR COACH,',
@@ -127,7 +132,7 @@ class _IntroWidgetState extends State<IntroWidget> {
                               ),
                             ),
                             Align(
-                              alignment: AlignmentDirectional(0.0, 0.0),
+                              alignment: const AlignmentDirectional(0.0, 0.0),
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
@@ -141,8 +146,8 @@ class _IntroWidgetState extends State<IntroWidget> {
                                       width: double.infinity,
                                       height: 460.0,
                                       decoration: BoxDecoration(
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryBackground,
+                                        color:
+                                            FlutterFlowTheme.of(context).intro,
                                         image: DecorationImage(
                                           fit: BoxFit.cover,
                                           image: Image.asset(
@@ -156,13 +161,13 @@ class _IntroWidgetState extends State<IntroWidget> {
                                             BorderRadius.circular(0.0),
                                         border: Border.all(
                                           color: FlutterFlowTheme.of(context)
-                                              .secondaryBackground,
+                                              .intro,
                                         ),
                                       ),
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 62.0, 0.0, 0.0),
                                     child: Text(
                                       'CREATE A WORKOUT PLAN',
@@ -189,7 +194,7 @@ class _IntroWidgetState extends State<IntroWidget> {
                               ),
                             ),
                             Align(
-                              alignment: AlignmentDirectional(0.0, -1.0),
+                              alignment: const AlignmentDirectional(0.0, -1.0),
                               child: SingleChildScrollView(
                                 child: Column(
                                   mainAxisSize: MainAxisSize.max,
@@ -205,8 +210,6 @@ class _IntroWidgetState extends State<IntroWidget> {
                                         width: double.infinity,
                                         height: 460.0,
                                         decoration: BoxDecoration(
-                                          color: FlutterFlowTheme.of(context)
-                                              .secondaryBackground,
                                           image: DecorationImage(
                                             fit: BoxFit.fill,
                                             image: Image.asset(
@@ -218,15 +221,11 @@ class _IntroWidgetState extends State<IntroWidget> {
                                           ),
                                           borderRadius:
                                               BorderRadius.circular(0.0),
-                                          border: Border.all(
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryBackground,
-                                          ),
                                         ),
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           0.0, 62.0, 0.0, 0.0),
                                       child: Text(
                                         'ACTION IS THE,',
@@ -250,7 +249,7 @@ class _IntroWidgetState extends State<IntroWidget> {
                                           ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           0.0, 53.0, 0.0, 0.0),
                                       child: FFButtonWidget(
                                         onPressed: () async {
@@ -258,7 +257,7 @@ class _IntroWidgetState extends State<IntroWidget> {
                                             'Gender',
                                             extra: <String, dynamic>{
                                               kTransitionInfoKey:
-                                                  TransitionInfo(
+                                                  const TransitionInfo(
                                                 hasTransition: true,
                                                 transitionType:
                                                     PageTransitionType
@@ -270,18 +269,16 @@ class _IntroWidgetState extends State<IntroWidget> {
                                           );
                                         },
                                         text: 'Start Now',
-                                        icon: Icon(
+                                        icon: const Icon(
                                           Icons.play_arrow_rounded,
                                           size: 30.0,
                                         ),
                                         options: FFButtonOptions(
                                           width: 185.0,
                                           height: 50.0,
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  0.0, 0.0, 0.0, 0.0),
+                                          padding: const EdgeInsets.all(0.0),
                                           iconPadding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 0.0, 0.0, 0.0),
                                           color: FlutterFlowTheme.of(context)
                                               .secondary,
@@ -294,7 +291,7 @@ class _IntroWidgetState extends State<IntroWidget> {
                                                     fontWeight: FontWeight.w600,
                                                   ),
                                           elevation: 3.0,
-                                          borderSide: BorderSide(
+                                          borderSide: const BorderSide(
                                             color: Colors.transparent,
                                             width: 1.0,
                                           ),
@@ -311,9 +308,9 @@ class _IntroWidgetState extends State<IntroWidget> {
                         ),
                       ),
                       Align(
-                        alignment: AlignmentDirectional(0.0, 0.8),
+                        alignment: const AlignmentDirectional(0.0, 0.8),
                         child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               16.0, 0.0, 0.0, 16.0),
                           child: smooth_page_indicator.SmoothPageIndicator(
                             controller: _model.pageViewController ??=
@@ -323,7 +320,7 @@ class _IntroWidgetState extends State<IntroWidget> {
                             onDotClicked: (i) async {
                               await _model.pageViewController!.animateToPage(
                                 i,
-                                duration: Duration(milliseconds: 500),
+                                duration: const Duration(milliseconds: 500),
                                 curve: Curves.ease,
                               );
                             },
@@ -333,7 +330,7 @@ class _IntroWidgetState extends State<IntroWidget> {
                               radius: 16.0,
                               dotWidth: 16.0,
                               dotHeight: 8.0,
-                              dotColor: Color(0xFF3A3A3C),
+                              dotColor: const Color(0xFF3A3A3C),
                               activeDotColor:
                                   FlutterFlowTheme.of(context).secondary,
                               paintStyle: PaintingStyle.fill,

@@ -2,13 +2,13 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'call_to_action_model.dart';
 export 'call_to_action_model.dart';
 
 class CallToActionWidget extends StatefulWidget {
-  const CallToActionWidget({Key? key}) : super(key: key);
+  const CallToActionWidget({super.key});
 
   @override
   _CallToActionWidgetState createState() => _CallToActionWidgetState();
@@ -26,8 +26,12 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
 
     _model.textController1 ??=
         TextEditingController(text: FFAppState().calltoactiontext);
+    _model.textFieldFocusNode1 ??= FocusNode();
+
     _model.textController2 ??=
         TextEditingController(text: FFAppState().calltoactionurl);
+    _model.textFieldFocusNode2 ??= FocusNode();
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -40,10 +44,21 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -73,7 +88,7 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
           ),
           actions: [
             Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -125,7 +140,7 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(15.0, 15.0, 0.0, 6.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(15.0, 15.0, 0.0, 6.0),
                   child: Text(
                     'Call to action button',
                     style: FlutterFlowTheme.of(context).titleMedium,
@@ -133,7 +148,7 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
                 ),
                 Padding(
                   padding:
-                      EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 15.0),
+                      const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 15.0),
                   child: Text(
                     'Create a call to action button that will appear at the bottom of your uploaded image.',
                     style: FlutterFlowTheme.of(context).bodySmall.override(
@@ -145,17 +160,17 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
                 Container(
                   width: double.infinity,
                   height: 0.5,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFFDADADA),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 6.0, 0.0, 0.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 6.0, 0.0, 0.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
                             15.0, 0.0, 15.0, 6.0),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
@@ -177,9 +192,10 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
                               flex: 6,
                               child: TextFormField(
                                 controller: _model.textController1,
+                                focusNode: _model.textFieldFocusNode1,
                                 onChanged: (_) => EasyDebounce.debounce(
                                   '_model.textController1',
-                                  Duration(milliseconds: 500),
+                                  const Duration(milliseconds: 500),
                                   () => setState(() {}),
                                 ),
                                 autofocus: true,
@@ -197,42 +213,42 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
                                         fontSize: 14.0,
                                         fontWeight: FontWeight.normal,
                                       ),
-                                  enabledBorder: UnderlineInputBorder(
+                                  enabledBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(
                                       color: Color(0x00000000),
                                       width: 1.0,
                                     ),
-                                    borderRadius: const BorderRadius.only(
+                                    borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(4.0),
                                       topRight: Radius.circular(4.0),
                                     ),
                                   ),
-                                  focusedBorder: UnderlineInputBorder(
+                                  focusedBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(
                                       color: Color(0x00000000),
                                       width: 1.0,
                                     ),
-                                    borderRadius: const BorderRadius.only(
+                                    borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(4.0),
                                       topRight: Radius.circular(4.0),
                                     ),
                                   ),
-                                  errorBorder: UnderlineInputBorder(
+                                  errorBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(
                                       color: Color(0x00000000),
                                       width: 1.0,
                                     ),
-                                    borderRadius: const BorderRadius.only(
+                                    borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(4.0),
                                       topRight: Radius.circular(4.0),
                                     ),
                                   ),
-                                  focusedErrorBorder: UnderlineInputBorder(
+                                  focusedErrorBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(
                                       color: Color(0x00000000),
                                       width: 1.0,
                                     ),
-                                    borderRadius: const BorderRadius.only(
+                                    borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(4.0),
                                       topRight: Radius.circular(4.0),
                                     ),
@@ -257,12 +273,12 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
                 Container(
                   width: double.infinity,
                   height: 0.5,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFFDADADA),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(15.0, 6.0, 15.0, 6.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(15.0, 6.0, 15.0, 6.0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     children: [
@@ -282,6 +298,7 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
                         flex: 6,
                         child: TextFormField(
                           controller: _model.textController2,
+                          focusNode: _model.textFieldFocusNode2,
                           autofocus: true,
                           obscureText: false,
                           decoration: InputDecoration(
@@ -296,42 +313,42 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.normal,
                                 ),
-                            enabledBorder: UnderlineInputBorder(
+                            enabledBorder: const UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color: Color(0x00000000),
                                 width: 1.0,
                               ),
-                              borderRadius: const BorderRadius.only(
+                              borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(4.0),
                                 topRight: Radius.circular(4.0),
                               ),
                             ),
-                            focusedBorder: UnderlineInputBorder(
+                            focusedBorder: const UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color: Color(0x00000000),
                                 width: 1.0,
                               ),
-                              borderRadius: const BorderRadius.only(
+                              borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(4.0),
                                 topRight: Radius.circular(4.0),
                               ),
                             ),
-                            errorBorder: UnderlineInputBorder(
+                            errorBorder: const UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color: Color(0x00000000),
                                 width: 1.0,
                               ),
-                              borderRadius: const BorderRadius.only(
+                              borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(4.0),
                                 topRight: Radius.circular(4.0),
                               ),
                             ),
-                            focusedErrorBorder: UnderlineInputBorder(
+                            focusedErrorBorder: const UnderlineInputBorder(
                               borderSide: BorderSide(
                                 color: Color(0x00000000),
                                 width: 1.0,
                               ),
-                              borderRadius: const BorderRadius.only(
+                              borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(4.0),
                                 topRight: Radius.circular(4.0),
                               ),
@@ -353,12 +370,12 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
                 Container(
                   width: double.infinity,
                   height: 0.5,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFFDADADA),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 48.0, 0.0, 0.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 48.0, 0.0, 0.0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -377,7 +394,7 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
                           ),
                         ),
                         child: Align(
-                          alignment: AlignmentDirectional(0.0, 0.0),
+                          alignment: const AlignmentDirectional(0.0, 0.0),
                           child: Container(
                             width: 300.0,
                             height: 300.0,
@@ -386,7 +403,7 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
                                   .primaryBackground,
                             ),
                             child: Align(
-                              alignment: AlignmentDirectional(0.0, 1.0),
+                              alignment: const AlignmentDirectional(0.0, 1.0),
                               child: Container(
                                 width: double.infinity,
                                 height: 50.0,
@@ -394,9 +411,9 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
                                   color: FlutterFlowTheme.of(context).secondary,
                                 ),
                                 child: Align(
-                                  alignment: AlignmentDirectional(0.0, 0.0),
+                                  alignment: const AlignmentDirectional(0.0, 0.0),
                                   child: Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         15.0, 0.0, 15.0, 0.0),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.max,
@@ -417,7 +434,7 @@ class _CallToActionWidgetState extends State<CallToActionWidget> {
                                                 fontWeight: FontWeight.w500,
                                               ),
                                         ),
-                                        Icon(
+                                        const Icon(
                                           FFIcons.karrowRight,
                                           color: Colors.white,
                                           size: 24.0,

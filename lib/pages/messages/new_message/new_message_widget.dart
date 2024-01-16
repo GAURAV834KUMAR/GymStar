@@ -4,18 +4,17 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:text_search/text_search.dart';
 import 'new_message_model.dart';
 export 'new_message_model.dart';
 
 class NewMessageWidget extends StatefulWidget {
-  const NewMessageWidget({Key? key}) : super(key: key);
+  const NewMessageWidget({super.key});
 
   @override
   _NewMessageWidgetState createState() => _NewMessageWidgetState();
@@ -39,6 +38,8 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
     });
 
     _model.searchInnputController ??= TextEditingController();
+    _model.searchInnputFocusNode ??= FocusNode();
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -51,10 +52,21 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -88,7 +100,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                       builder: (context, snapshot) {
                         // Customize what your widget looks like when it's loading.
                         if (!snapshot.hasData) {
-                          return Center(
+                          return const Center(
                             child: SizedBox(
                               width: 12.0,
                               height: 12.0,
@@ -104,28 +116,29 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                             .data!
                             .where((u) => u.uid != currentUserUid)
                             .toList();
-                        return Container(
+                        return SizedBox(
                           width: 50.0,
                           child: TextFormField(
                             controller: _model.searchInnputController,
+                            focusNode: _model.searchInnputFocusNode,
                             onChanged: (_) => EasyDebounce.debounce(
                               '_model.searchInnputController',
-                              Duration(milliseconds: 1000),
+                              const Duration(milliseconds: 1000),
                               () async {
-                                setState(() {
+                                safeSetState(() {
                                   _model.simpleSearchResults = TextSearch(
                                     searchInnputUsersRecordList
                                         .where((e) => (currentUserDocument
                                                     ?.following
-                                                    ?.toList() ??
+                                                    .toList() ??
                                                 [])
                                             .contains(e.reference))
                                         .toList()
                                         .map(
-                                          (record) => TextSearchItem(record, [
-                                            record.displayName!,
-                                            record.username!
-                                          ]),
+                                          (record) => TextSearchItem.fromTerms(
+                                              record, [
+                                            record.displayName,
+                                            record.username]),
                                         )
                                         .toList(),
                                   )
@@ -136,7 +149,6 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                       .map((r) => r.object)
                                       .take(15)
                                       .toList();
-                                  ;
                                 });
                               },
                             ),
@@ -152,28 +164,28 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                     lineHeight: 1.5,
                                   ),
                               enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color(0x00000000),
                                   width: 1.0,
                                 ),
                                 borderRadius: BorderRadius.circular(16.0),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color(0x00000000),
                                   width: 1.0,
                                 ),
                                 borderRadius: BorderRadius.circular(16.0),
                               ),
                               errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color(0x00000000),
                                   width: 1.0,
                                 ),
                                 borderRadius: BorderRadius.circular(16.0),
                               ),
                               focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
+                                borderSide: const BorderSide(
                                   color: Color(0x00000000),
                                   width: 1.0,
                                 ),
@@ -182,7 +194,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                               filled: true,
                               fillColor: FlutterFlowTheme.of(context)
                                   .primaryBackground,
-                              contentPadding: EdgeInsetsDirectional.fromSTEB(
+                              contentPadding: const EdgeInsetsDirectional.fromSTEB(
                                   24.0, 0.0, 24.0, 0.0),
                               prefixIcon: Icon(
                                 FFIcons.ksearch,
@@ -195,23 +207,23 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                   ? InkWell(
                                       onTap: () async {
                                         _model.searchInnputController?.clear();
-                                        setState(() {
+                                        safeSetState(() {
                                           _model
                                               .simpleSearchResults = TextSearch(
                                             searchInnputUsersRecordList
                                                 .where((e) =>
                                                     (currentUserDocument
                                                                 ?.following
-                                                                ?.toList() ??
+                                                                .toList() ??
                                                             [])
                                                         .contains(e.reference))
                                                 .toList()
                                                 .map(
-                                                  (record) => TextSearchItem(
-                                                      record, [
-                                                    record.displayName!,
-                                                    record.username!
-                                                  ]),
+                                                  (record) =>
+                                                      TextSearchItem.fromTerms(
+                                                          record, [
+                                                    record.displayName,
+                                                    record.username]),
                                                 )
                                                 .toList(),
                                           )
@@ -223,7 +235,6 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                               .map((r) => r.object)
                                               .take(15)
                                               .toList();
-                                          ;
                                         });
                                         setState(() {});
                                       },
@@ -258,7 +269,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                       minute: false,
                       milliSecond: false,
                     ),
-                    timer: _model.timerController,
+                    controller: _model.timerController,
                     onChanged: (value, displayTime, shouldUpdate) {
                       _model.timerMilliseconds = value;
                       _model.timerValue = displayTime;
@@ -266,7 +277,12 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                     },
                     onEnded: () async {
                       await FFAppState().tempUserRecord!.update({
-                        'chats': FieldValue.arrayUnion([currentUserReference]),
+                        ...mapToFirestore(
+                          {
+                            'chats':
+                                FieldValue.arrayUnion([currentUserReference]),
+                          },
+                        ),
                       });
                     },
                     textAlign: TextAlign.start,
@@ -280,7 +296,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
               ),
             ],
           ),
-          actions: [],
+          actions: const [],
           centerTitle: false,
           elevation: 0.0,
         ),
@@ -295,18 +311,17 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                if (_model.searchInnputController.text != null &&
-                    _model.searchInnputController.text != '')
+                if (_model.searchInnputController.text != '')
                   Expanded(
                     child: Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
+                          const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
                       child: AuthUserStreamWidget(
                         builder: (context) => Builder(
                           builder: (context) {
                             final searchUsers = _model.simpleSearchResults
                                 .where((e) =>
-                                    !(currentUserDocument?.chats?.toList() ??
+                                    !(currentUserDocument?.chats.toList() ??
                                             [])
                                         .contains(e.reference))
                                 .toList();
@@ -317,7 +332,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                 final searchUsersItem =
                                     searchUsers[searchUsersIndex];
                                 return Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       0.0, 12.0, 0.0, 0.0),
                                   child: InkWell(
                                     splashColor: Colors.transparent,
@@ -348,10 +363,14 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                           lastMessageSentBy:
                                               currentUserReference,
                                         ),
-                                        'last_message_seen_by': [
-                                          currentUserReference
-                                        ],
-                                        'users': FFAppState().tempUserList,
+                                        ...mapToFirestore(
+                                          {
+                                            'last_message_seen_by': [
+                                              currentUserReference
+                                            ],
+                                            'users': FFAppState().tempUserList,
+                                          },
+                                        ),
                                       });
                                       _model.chat =
                                           ChatsRecord.getDocumentFromData({
@@ -363,17 +382,24 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                           lastMessageSentBy:
                                               currentUserReference,
                                         ),
-                                        'last_message_seen_by': [
-                                          currentUserReference
-                                        ],
-                                        'users': FFAppState().tempUserList,
+                                        ...mapToFirestore(
+                                          {
+                                            'last_message_seen_by': [
+                                              currentUserReference
+                                            ],
+                                            'users': FFAppState().tempUserList,
+                                          },
+                                        ),
                                       }, chatsRecordReference);
-                                      _model.timerController.onExecute
-                                          .add(StopWatchExecute.start);
+                                      _model.timerController.onStartTimer();
 
                                       await currentUserReference!.update({
-                                        'chats': FieldValue.arrayUnion(
-                                            [searchUsersItem.reference]),
+                                        ...mapToFirestore(
+                                          {
+                                            'chats': FieldValue.arrayUnion(
+                                                [searchUsersItem.reference]),
+                                          },
+                                        ),
                                       });
 
                                       context.pushNamed(
@@ -395,7 +421,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                           width: 55.0,
                                           height: 55.0,
                                           clipBehavior: Clip.antiAlias,
-                                          decoration: BoxDecoration(
+                                          decoration: const BoxDecoration(
                                             shape: BoxShape.circle,
                                           ),
                                           child: Image.network(
@@ -409,7 +435,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                         Expanded(
                                           child: Padding(
                                             padding:
-                                                EdgeInsetsDirectional.fromSTEB(
+                                                const EdgeInsetsDirectional.fromSTEB(
                                                     12.0, 0.0, 0.0, 0.0),
                                             child: Column(
                                               mainAxisSize: MainAxisSize.max,
@@ -431,7 +457,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                                       ),
                                                 ),
                                                 Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           0.0, 2.0, 0.0, 0.0),
                                                   child: Text(
@@ -471,12 +497,11 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                       ),
                     ),
                   ),
-                if (_model.searchInnputController.text == null ||
-                    _model.searchInnputController.text == '')
+                if (_model.searchInnputController.text == '')
                   Expanded(
                     child: Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
+                          const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
                       child: AuthUserStreamWidget(
                         builder: (context) =>
                             StreamBuilder<List<RecentSearchesRecord>>(
@@ -487,14 +512,14 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                     .whereIn(
                                         'userRef',
                                         (currentUserDocument?.following
-                                                ?.toList() ??
+                                                .toList() ??
                                             []))
                                     .orderBy('time_searched', descending: true),
                           ),
                           builder: (context, snapshot) {
                             // Customize what your widget looks like when it's loading.
                             if (!snapshot.hasData) {
-                              return Center(
+                              return const Center(
                                 child: SizedBox(
                                   width: 12.0,
                                   height: 12.0,
@@ -519,13 +544,13 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                         recentSearchesIndex];
                                 return Visibility(
                                   visible:
-                                      !(currentUserDocument?.chats?.toList() ??
+                                      !(currentUserDocument?.chats.toList() ??
                                               [])
                                           .contains(
                                               recentSearchesRecentSearchesRecord
                                                   .userRef),
                                   child: Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 12.0, 0.0, 0.0),
                                     child: StreamBuilder<UsersRecord>(
                                       stream: UsersRecord.getDocument(
@@ -534,7 +559,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                       builder: (context, snapshot) {
                                         // Customize what your widget looks like when it's loading.
                                         if (!snapshot.hasData) {
-                                          return Center(
+                                          return const Center(
                                             child: SizedBox(
                                               width: 12.0,
                                               height: 12.0,
@@ -584,11 +609,15 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                                 lastMessageSentBy:
                                                     currentUserReference,
                                               ),
-                                              'last_message_seen_by': [
-                                                currentUserReference
-                                              ],
-                                              'users':
-                                                  FFAppState().tempUserList,
+                                              ...mapToFirestore(
+                                                {
+                                                  'last_message_seen_by': [
+                                                    currentUserReference
+                                                  ],
+                                                  'users':
+                                                      FFAppState().tempUserList,
+                                                },
+                                              ),
                                             });
                                             _model.chat1 = ChatsRecord
                                                 .getDocumentFromData({
@@ -603,21 +632,30 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                                 lastMessageSentBy:
                                                     currentUserReference,
                                               ),
-                                              'last_message_seen_by': [
-                                                currentUserReference
-                                              ],
-                                              'users':
-                                                  FFAppState().tempUserList,
+                                              ...mapToFirestore(
+                                                {
+                                                  'last_message_seen_by': [
+                                                    currentUserReference
+                                                  ],
+                                                  'users':
+                                                      FFAppState().tempUserList,
+                                                },
+                                              ),
                                             }, chatsRecordReference);
 
                                             await currentUserReference!.update({
-                                              'chats': FieldValue.arrayUnion([
-                                                profileDetailsUsersRecord
-                                                    .reference
-                                              ]),
+                                              ...mapToFirestore(
+                                                {
+                                                  'chats':
+                                                      FieldValue.arrayUnion([
+                                                    profileDetailsUsersRecord
+                                                        .reference
+                                                  ]),
+                                                },
+                                              ),
                                             });
-                                            _model.timerController.onExecute
-                                                .add(StopWatchExecute.start);
+                                            _model.timerController
+                                                .onStartTimer();
 
                                             context.pushNamed(
                                               'IndividualMessage',
@@ -638,7 +676,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                                 width: 55.0,
                                                 height: 55.0,
                                                 clipBehavior: Clip.antiAlias,
-                                                decoration: BoxDecoration(
+                                                decoration: const BoxDecoration(
                                                   shape: BoxShape.circle,
                                                 ),
                                                 child: Image.network(
@@ -652,7 +690,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                               ),
                                               Expanded(
                                                 child: Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           12.0, 0.0, 0.0, 0.0),
                                                   child: Column(
@@ -677,7 +715,7 @@ class _NewMessageWidgetState extends State<NewMessageWidget> {
                                                       ),
                                                       Padding(
                                                         padding:
-                                                            EdgeInsetsDirectional
+                                                            const EdgeInsetsDirectional
                                                                 .fromSTEB(
                                                                     0.0,
                                                                     2.0,

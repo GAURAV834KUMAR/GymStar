@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
-import '../../flutter_flow/flutter_flow_util.dart';
-
+import '/flutter_flow/flutter_flow_util.dart';
 import 'api_manager.dart';
 
 export 'api_manager.dart' show ApiCallResponse;
@@ -12,14 +10,14 @@ const _kPrivateApiFunctionName = 'ffPrivateApiCall';
 class ImageTestCall {
   static Future<ApiCallResponse> call({
     String? image = '',
-  }) {
-    final body = '''
+  }) async {
+    final ffApiRequestBody = '''
 {
   "inputs": [
     {
       "data": {
         "image": {
-          "url": "${image}"
+          "url": "$image"
         }
       }
     }
@@ -35,20 +33,25 @@ class ImageTestCall {
         'Content-Type': 'application/json',
       },
       params: {},
-      body: body,
+      body: ffApiRequestBody,
       bodyType: BodyType.JSON,
       returnBody: true,
       encodeBodyUtf8: false,
       decodeUtf8: false,
       cache: false,
+      alwaysAllowBody: false,
     );
   }
 
-  static dynamic labels(dynamic response) => getJsonField(
+  static List<String>? labels(dynamic response) => (getJsonField(
         response,
         r'''$.outputs[:].data.concepts[:].name''',
         true,
-      );
+      ) as List?)
+          ?.withoutNulls
+          .map((x) => castToType<String>(x))
+          .withoutNulls
+          .toList();
 }
 
 class ApiPagingParams {

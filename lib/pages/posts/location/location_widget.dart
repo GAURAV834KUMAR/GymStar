@@ -2,13 +2,13 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'location_model.dart';
 export 'location_model.dart';
 
 class LocationWidget extends StatefulWidget {
-  const LocationWidget({Key? key}) : super(key: key);
+  const LocationWidget({super.key});
 
   @override
   _LocationWidgetState createState() => _LocationWidgetState();
@@ -26,6 +26,8 @@ class _LocationWidgetState extends State<LocationWidget> {
 
     _model.textController ??=
         TextEditingController(text: FFAppState().location);
+    _model.textFieldFocusNode ??= FocusNode();
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -38,10 +40,21 @@ class _LocationWidgetState extends State<LocationWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -71,7 +84,7 @@ class _LocationWidgetState extends State<LocationWidget> {
           ),
           actions: [
             Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -117,7 +130,7 @@ class _LocationWidgetState extends State<LocationWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(15.0, 15.0, 0.0, 6.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(15.0, 15.0, 0.0, 6.0),
                   child: Text(
                     'Add a location',
                     style: FlutterFlowTheme.of(context).titleMedium,
@@ -125,7 +138,7 @@ class _LocationWidgetState extends State<LocationWidget> {
                 ),
                 Padding(
                   padding:
-                      EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 15.0),
+                      const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 15.0),
                   child: Text(
                     'Add a location so users know where your photo was taken or what it might be a picture of.',
                     style: FlutterFlowTheme.of(context).bodySmall.override(
@@ -137,17 +150,17 @@ class _LocationWidgetState extends State<LocationWidget> {
                 Container(
                   width: double.infinity,
                   height: 0.5,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFFDADADA),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 6.0, 0.0, 0.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 6.0, 0.0, 0.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
                             15.0, 0.0, 15.0, 6.0),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
@@ -169,9 +182,10 @@ class _LocationWidgetState extends State<LocationWidget> {
                               flex: 6,
                               child: TextFormField(
                                 controller: _model.textController,
+                                focusNode: _model.textFieldFocusNode,
                                 onChanged: (_) => EasyDebounce.debounce(
                                   '_model.textController',
-                                  Duration(milliseconds: 500),
+                                  const Duration(milliseconds: 500),
                                   () => setState(() {}),
                                 ),
                                 autofocus: true,
@@ -189,42 +203,42 @@ class _LocationWidgetState extends State<LocationWidget> {
                                         fontSize: 14.0,
                                         fontWeight: FontWeight.normal,
                                       ),
-                                  enabledBorder: UnderlineInputBorder(
+                                  enabledBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(
                                       color: Color(0x00000000),
                                       width: 1.0,
                                     ),
-                                    borderRadius: const BorderRadius.only(
+                                    borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(4.0),
                                       topRight: Radius.circular(4.0),
                                     ),
                                   ),
-                                  focusedBorder: UnderlineInputBorder(
+                                  focusedBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(
                                       color: Color(0x00000000),
                                       width: 1.0,
                                     ),
-                                    borderRadius: const BorderRadius.only(
+                                    borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(4.0),
                                       topRight: Radius.circular(4.0),
                                     ),
                                   ),
-                                  errorBorder: UnderlineInputBorder(
+                                  errorBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(
                                       color: Color(0x00000000),
                                       width: 1.0,
                                     ),
-                                    borderRadius: const BorderRadius.only(
+                                    borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(4.0),
                                       topRight: Radius.circular(4.0),
                                     ),
                                   ),
-                                  focusedErrorBorder: UnderlineInputBorder(
+                                  focusedErrorBorder: const UnderlineInputBorder(
                                     borderSide: BorderSide(
                                       color: Color(0x00000000),
                                       width: 1.0,
                                     ),
-                                    borderRadius: const BorderRadius.only(
+                                    borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(4.0),
                                       topRight: Radius.circular(4.0),
                                     ),
@@ -249,7 +263,7 @@ class _LocationWidgetState extends State<LocationWidget> {
                 Container(
                   width: double.infinity,
                   height: 0.5,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFFDADADA),
                   ),
                 ),

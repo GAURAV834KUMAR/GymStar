@@ -43,6 +43,20 @@
       ]
     },
     {
+      "collectionGroup": "Reels",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "User_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "Post_date",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "posts",
       "queryScope": "COLLECTION",
       "fields": [
@@ -53,24 +67,6 @@
         {
           "fieldPath": "deleted",
           "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "time_posted",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "posts",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "deleted",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "tagged_users",
-          "arrayConfig": "CONTAINS"
         },
         {
           "fieldPath": "time_posted",

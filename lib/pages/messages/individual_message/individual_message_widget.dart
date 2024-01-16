@@ -4,19 +4,18 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'dart:ui';
 import '/custom_code/widgets/index.dart' as custom_widgets;
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'individual_message_model.dart';
 export 'individual_message_model.dart';
 
 class IndividualMessageWidget extends StatefulWidget {
   const IndividualMessageWidget({
-    Key? key,
+    super.key,
     this.chat,
-  }) : super(key: key);
+  });
 
   final DocumentReference? chat;
 
@@ -38,11 +37,18 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await widget.chat!.update({
-        'last_message_seen_by': FieldValue.arrayUnion([currentUserReference]),
+        ...mapToFirestore(
+          {
+            'last_message_seen_by':
+                FieldValue.arrayUnion([currentUserReference]),
+          },
+        ),
       });
     });
 
     _model.messageController ??= TextEditingController();
+    _model.messageFocusNode ??= FocusNode();
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -55,10 +61,21 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -70,7 +87,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
             builder: (context, snapshot) {
               // Customize what your widget looks like when it's loading.
               if (!snapshot.hasData) {
-                return Center(
+                return const Center(
                   child: SizedBox(
                     width: 12.0,
                     height: 12.0,
@@ -95,7 +112,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                       context.pushNamed(
                         'Messages',
                         extra: <String, dynamic>{
-                          kTransitionInfoKey: TransitionInfo(
+                          kTransitionInfoKey: const TransitionInfo(
                             hasTransition: true,
                             transitionType: PageTransitionType.leftToRight,
                           ),
@@ -109,7 +126,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 0.0, 0.0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(6.0, 0.0, 0.0, 0.0),
                     child: StreamBuilder<UsersRecord>(
                       stream: UsersRecord.getDocument(
                           rowChatsRecord.userA == currentUserReference
@@ -118,7 +135,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                       builder: (context, snapshot) {
                         // Customize what your widget looks like when it's loading.
                         if (!snapshot.hasData) {
-                          return Center(
+                          return const Center(
                             child: SizedBox(
                               width: 12.0,
                               height: 12.0,
@@ -148,7 +165,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
           ),
           actions: [
             Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -181,7 +198,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
               Container(
                 width: double.infinity,
                 height: 0.5,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Color(0xFFDADADA),
                 ),
               ),
@@ -193,24 +210,27 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                     color: FlutterFlowTheme.of(context).secondaryBackground,
                   ),
                   child: Stack(
-                    alignment: AlignmentDirectional(0.0, 1.0),
+                    alignment: const AlignmentDirectional(0.0, 1.0),
                     children: [
                       Align(
-                        alignment: AlignmentDirectional(0.0, 1.0),
+                        alignment: const AlignmentDirectional(0.0, 1.0),
                         child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               0.0, 0.0, 0.0, 100.0),
                           child: StreamBuilder<List<ChatMessagesRecord>>(
                             stream: queryChatMessagesRecord(
                               queryBuilder: (chatMessagesRecord) =>
                                   chatMessagesRecord
-                                      .where('chat', isEqualTo: widget.chat)
+                                      .where(
+                                        'chat',
+                                        isEqualTo: widget.chat,
+                                      )
                                       .orderBy('timestamp', descending: true),
                             ),
                             builder: (context, snapshot) {
                               // Customize what your widget looks like when it's loading.
                               if (!snapshot.hasData) {
-                                return Center(
+                                return const Center(
                                   child: SizedBox(
                                     width: 12.0,
                                     height: 12.0,
@@ -242,7 +262,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                           currentUserReference)
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   15.0, 0.0, 15.0, 4.0),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.max,
@@ -254,10 +274,10 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                     MediaQuery.sizeOf(context)
                                                             .width *
                                                         0.75,
-                                                decoration: BoxDecoration(),
+                                                decoration: const BoxDecoration(),
                                                 child: Align(
                                                   alignment:
-                                                      AlignmentDirectional(
+                                                      const AlignmentDirectional(
                                                           1.0, 0.0),
                                                   child: Column(
                                                     mainAxisSize:
@@ -290,7 +310,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                             context)
                                                                         .secondary,
                                                                     borderRadius:
-                                                                        BorderRadius
+                                                                        const BorderRadius
                                                                             .only(
                                                                       bottomLeft:
                                                                           Radius.circular(
@@ -308,7 +328,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                   ),
                                                                   child:
                                                                       Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             16.0,
                                                                             10.0,
@@ -370,12 +390,12 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                           },
                                                           child: Stack(
                                                             alignment:
-                                                                AlignmentDirectional(
+                                                                const AlignmentDirectional(
                                                                     1.0, 1.0),
                                                             children: [
                                                               Padding(
                                                                 padding:
-                                                                    EdgeInsetsDirectional
+                                                                    const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -392,7 +412,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                     // Customize what your widget looks like when it's loading.
                                                                     if (!snapshot
                                                                         .hasData) {
-                                                                      return Center(
+                                                                      return const Center(
                                                                         child:
                                                                             SizedBox(
                                                                           width:
@@ -433,7 +453,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                               ),
                                                               Padding(
                                                                 padding:
-                                                                    EdgeInsetsDirectional
+                                                                    const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -450,7 +470,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                     // Customize what your widget looks like when it's loading.
                                                                     if (!snapshot
                                                                         .hasData) {
-                                                                      return Center(
+                                                                      return const Center(
                                                                         child:
                                                                             SizedBox(
                                                                           width:
@@ -486,19 +506,19 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                           child:
                                                                               Align(
                                                                             alignment:
-                                                                                AlignmentDirectional(0.0, 0.0),
+                                                                                const AlignmentDirectional(0.0, 0.0),
                                                                             child:
                                                                                 Column(
                                                                               mainAxisSize: MainAxisSize.max,
                                                                               children: [
                                                                                 Padding(
-                                                                                  padding: EdgeInsetsDirectional.fromSTEB(8.0, 8.0, 8.0, 8.0),
+                                                                                  padding: const EdgeInsets.all(8.0),
                                                                                   child: FutureBuilder<UsersRecord>(
                                                                                     future: UsersRecord.getDocumentOnce(postCommentCommentsRecord.postUser!),
                                                                                     builder: (context, snapshot) {
                                                                                       // Customize what your widget looks like when it's loading.
                                                                                       if (!snapshot.hasData) {
-                                                                                        return Center(
+                                                                                        return const Center(
                                                                                           child: SizedBox(
                                                                                             width: 12.0,
                                                                                             height: 12.0,
@@ -516,9 +536,9 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                                                         children: [
                                                                                           Align(
-                                                                                            alignment: AlignmentDirectional(0.0, 0.0),
+                                                                                            alignment: const AlignmentDirectional(0.0, 0.0),
                                                                                             child: Padding(
-                                                                                              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
+                                                                                              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
                                                                                               child: InkWell(
                                                                                                 splashColor: Colors.transparent,
                                                                                                 focusColor: Colors.transparent,
@@ -569,7 +589,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                                               mainAxisAlignment: MainAxisAlignment.center,
                                                                                               children: [
                                                                                                 Padding(
-                                                                                                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 9.0, 0.0, 0.0),
+                                                                                                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 9.0, 0.0, 0.0),
                                                                                                   child: InkWell(
                                                                                                     splashColor: Colors.transparent,
                                                                                                     focusColor: Colors.transparent,
@@ -638,7 +658,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -704,7 +724,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                     // Customize what your widget looks like when it's loading.
                                                                     if (!snapshot
                                                                         .hasData) {
-                                                                      return Center(
+                                                                      return const Center(
                                                                         child:
                                                                             SizedBox(
                                                                           width:
@@ -733,7 +753,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                               .start,
                                                                       children: [
                                                                         Padding(
-                                                                          padding: EdgeInsetsDirectional.fromSTEB(
+                                                                          padding: const EdgeInsetsDirectional.fromSTEB(
                                                                               16.0,
                                                                               8.0,
                                                                               16.0,
@@ -746,9 +766,9 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                                 CrossAxisAlignment.center,
                                                                             children: [
                                                                               Align(
-                                                                                alignment: AlignmentDirectional(0.0, 0.0),
+                                                                                alignment: const AlignmentDirectional(0.0, 0.0),
                                                                                 child: Padding(
-                                                                                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
+                                                                                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
                                                                                   child: Container(
                                                                                     width: 37.0,
                                                                                     height: 37.0,
@@ -795,7 +815,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                               .cover,
                                                                         ),
                                                                         Padding(
-                                                                          padding: EdgeInsetsDirectional.fromSTEB(
+                                                                          padding: const EdgeInsetsDirectional.fromSTEB(
                                                                               16.0,
                                                                               9.0,
                                                                               16.0,
@@ -831,7 +851,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                           currentUserReference)
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   15.0, 0.0, 15.0, 4.0),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.max,
@@ -843,10 +863,10 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                     MediaQuery.sizeOf(context)
                                                             .width *
                                                         0.75,
-                                                decoration: BoxDecoration(),
+                                                decoration: const BoxDecoration(),
                                                 child: Align(
                                                   alignment:
-                                                      AlignmentDirectional(
+                                                      const AlignmentDirectional(
                                                           -1.0, 0.0),
                                                   child: Column(
                                                     mainAxisSize:
@@ -880,7 +900,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                             context)
                                                                         .primaryBackground,
                                                                     borderRadius:
-                                                                        BorderRadius
+                                                                        const BorderRadius
                                                                             .only(
                                                                       bottomLeft:
                                                                           Radius.circular(
@@ -898,7 +918,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                   ),
                                                                   child:
                                                                       Padding(
-                                                                    padding: EdgeInsetsDirectional
+                                                                    padding: const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             16.0,
                                                                             10.0,
@@ -960,12 +980,12 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                           },
                                                           child: Stack(
                                                             alignment:
-                                                                AlignmentDirectional(
+                                                                const AlignmentDirectional(
                                                                     -1.0, 1.0),
                                                             children: [
                                                               Padding(
                                                                 padding:
-                                                                    EdgeInsetsDirectional
+                                                                    const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             0.0,
                                                                             0.0,
@@ -982,7 +1002,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                     // Customize what your widget looks like when it's loading.
                                                                     if (!snapshot
                                                                         .hasData) {
-                                                                      return Center(
+                                                                      return const Center(
                                                                         child:
                                                                             SizedBox(
                                                                           width:
@@ -1023,7 +1043,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                               ),
                                                               Padding(
                                                                 padding:
-                                                                    EdgeInsetsDirectional
+                                                                    const EdgeInsetsDirectional
                                                                         .fromSTEB(
                                                                             24.0,
                                                                             0.0,
@@ -1040,7 +1060,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                     // Customize what your widget looks like when it's loading.
                                                                     if (!snapshot
                                                                         .hasData) {
-                                                                      return Center(
+                                                                      return const Center(
                                                                         child:
                                                                             SizedBox(
                                                                           width:
@@ -1076,19 +1096,19 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                           child:
                                                                               Align(
                                                                             alignment:
-                                                                                AlignmentDirectional(0.0, 0.0),
+                                                                                const AlignmentDirectional(0.0, 0.0),
                                                                             child:
                                                                                 Column(
                                                                               mainAxisSize: MainAxisSize.max,
                                                                               children: [
                                                                                 Padding(
-                                                                                  padding: EdgeInsetsDirectional.fromSTEB(8.0, 8.0, 8.0, 8.0),
+                                                                                  padding: const EdgeInsets.all(8.0),
                                                                                   child: FutureBuilder<UsersRecord>(
                                                                                     future: UsersRecord.getDocumentOnce(postCommentCommentsRecord.postUser!),
                                                                                     builder: (context, snapshot) {
                                                                                       // Customize what your widget looks like when it's loading.
                                                                                       if (!snapshot.hasData) {
-                                                                                        return Center(
+                                                                                        return const Center(
                                                                                           child: SizedBox(
                                                                                             width: 12.0,
                                                                                             height: 12.0,
@@ -1106,9 +1126,9 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                                                         children: [
                                                                                           Align(
-                                                                                            alignment: AlignmentDirectional(0.0, 0.0),
+                                                                                            alignment: const AlignmentDirectional(0.0, 0.0),
                                                                                             child: Padding(
-                                                                                              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
+                                                                                              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
                                                                                               child: Container(
                                                                                                 width: 37.0,
                                                                                                 height: 37.0,
@@ -1138,7 +1158,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                                               mainAxisAlignment: MainAxisAlignment.center,
                                                                                               children: [
                                                                                                 Padding(
-                                                                                                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 9.0, 0.0, 0.0),
+                                                                                                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 9.0, 0.0, 0.0),
                                                                                                   child: custom_widgets.PhotoCaption(
                                                                                                     width: double.infinity,
                                                                                                     height: 17.0,
@@ -1186,7 +1206,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                             // Customize what your widget looks like when it's loading.
                                                             if (!snapshot
                                                                 .hasData) {
-                                                              return Center(
+                                                              return const Center(
                                                                 child: SizedBox(
                                                                   width: 12.0,
                                                                   height: 12.0,
@@ -1252,7 +1272,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                     // Customize what your widget looks like when it's loading.
                                                                     if (!snapshot
                                                                         .hasData) {
-                                                                      return Center(
+                                                                      return const Center(
                                                                         child:
                                                                             SizedBox(
                                                                           width:
@@ -1281,7 +1301,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                               .start,
                                                                       children: [
                                                                         Padding(
-                                                                          padding: EdgeInsetsDirectional.fromSTEB(
+                                                                          padding: const EdgeInsetsDirectional.fromSTEB(
                                                                               16.0,
                                                                               8.0,
                                                                               16.0,
@@ -1294,9 +1314,9 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                                 CrossAxisAlignment.center,
                                                                             children: [
                                                                               Align(
-                                                                                alignment: AlignmentDirectional(0.0, 0.0),
+                                                                                alignment: const AlignmentDirectional(0.0, 0.0),
                                                                                 child: Padding(
-                                                                                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
+                                                                                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
                                                                                   child: Container(
                                                                                     width: 37.0,
                                                                                     height: 37.0,
@@ -1343,7 +1363,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                                               .cover,
                                                                         ),
                                                                         Padding(
-                                                                          padding: EdgeInsetsDirectional.fromSTEB(
+                                                                          padding: const EdgeInsetsDirectional.fromSTEB(
                                                                               16.0,
                                                                               9.0,
                                                                               16.0,
@@ -1384,7 +1404,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
                             15.0, 0.0, 15.0, 24.0),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(40.0),
@@ -1400,21 +1420,20 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                 borderRadius: BorderRadius.circular(40.0),
                               ),
                               child: Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    6.0, 6.0, 6.0, 6.0),
+                                padding: const EdgeInsets.all(6.0),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           0.0, 0.0, 0.0, 1.0),
                                       child: AuthUserStreamWidget(
                                         builder: (context) => Container(
                                           width: 45.0,
                                           height: 45.0,
                                           clipBehavior: Clip.antiAlias,
-                                          decoration: BoxDecoration(
+                                          decoration: const BoxDecoration(
                                             shape: BoxShape.circle,
                                           ),
                                           child: Image.network(
@@ -1429,15 +1448,17 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                     ),
                                     Expanded(
                                       child: Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                             12.0, 0.0, 0.0, 0.0),
                                         child: Stack(
                                           alignment:
-                                              AlignmentDirectional(1.0, 1.0),
+                                              const AlignmentDirectional(1.0, 1.0),
                                           children: [
                                             TextFormField(
                                               controller:
                                                   _model.messageController,
+                                              focusNode:
+                                                  _model.messageFocusNode,
                                               obscureText: false,
                                               decoration: InputDecoration(
                                                 labelStyle:
@@ -1458,7 +1479,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                         ),
                                                 enabledBorder:
                                                     OutlineInputBorder(
-                                                  borderSide: BorderSide(
+                                                  borderSide: const BorderSide(
                                                     color: Color(0x00DADADA),
                                                     width: 1.0,
                                                   ),
@@ -1468,7 +1489,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                 ),
                                                 focusedBorder:
                                                     OutlineInputBorder(
-                                                  borderSide: BorderSide(
+                                                  borderSide: const BorderSide(
                                                     color: Color(0x00000000),
                                                     width: 1.0,
                                                   ),
@@ -1477,7 +1498,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                           0.0),
                                                 ),
                                                 errorBorder: OutlineInputBorder(
-                                                  borderSide: BorderSide(
+                                                  borderSide: const BorderSide(
                                                     color: Color(0x00000000),
                                                     width: 1.0,
                                                   ),
@@ -1487,7 +1508,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                 ),
                                                 focusedErrorBorder:
                                                     OutlineInputBorder(
-                                                  borderSide: BorderSide(
+                                                  borderSide: const BorderSide(
                                                     color: Color(0x00000000),
                                                     width: 1.0,
                                                   ),
@@ -1496,7 +1517,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                           0.0),
                                                 ),
                                                 contentPadding:
-                                                    EdgeInsetsDirectional
+                                                    const EdgeInsetsDirectional
                                                         .fromSTEB(0.0, 8.0,
                                                             55.0, 8.0),
                                               ),
@@ -1517,7 +1538,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                   .asValidator(context),
                                             ),
                                             Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       0.0, 0.0, 16.0, 15.0),
                                               child: StreamBuilder<ChatsRecord>(
@@ -1526,7 +1547,7 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                 builder: (context, snapshot) {
                                                   // Customize what your widget looks like when it's loading.
                                                   if (!snapshot.hasData) {
-                                                    return Center(
+                                                    return const Center(
                                                       child: SizedBox(
                                                         width: 12.0,
                                                         height: 12.0,
@@ -1595,17 +1616,21 @@ class _IndividualMessageWidgetState extends State<IndividualMessageWidget> {
                                                           lastMessageSentBy:
                                                               currentUserReference,
                                                         ),
-                                                        'last_message_seen_by':
-                                                            FieldValue
-                                                                .arrayRemove([
-                                                          sendChatsRecord
-                                                                      .userA ==
-                                                                  currentUserReference
-                                                              ? sendChatsRecord
-                                                                  .userB
-                                                              : sendChatsRecord
-                                                                  .userA
-                                                        ]),
+                                                        ...mapToFirestore(
+                                                          {
+                                                            'last_message_seen_by':
+                                                                FieldValue
+                                                                    .arrayRemove([
+                                                              sendChatsRecord
+                                                                          .userA ==
+                                                                      currentUserReference
+                                                                  ? sendChatsRecord
+                                                                      .userB
+                                                                  : sendChatsRecord
+                                                                      .userA
+                                                            ]),
+                                                          },
+                                                        ),
                                                       });
                                                       setState(() {
                                                         _model.messageController

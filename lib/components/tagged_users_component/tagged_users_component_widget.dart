@@ -4,18 +4,16 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'tagged_users_component_model.dart';
 export 'tagged_users_component_model.dart';
 
 class TaggedUsersComponentWidget extends StatefulWidget {
   const TaggedUsersComponentWidget({
-    Key? key,
+    super.key,
     this.user,
-  }) : super(key: key);
+  });
 
   final DocumentReference? user;
 
@@ -54,13 +52,13 @@ class _TaggedUsersComponentWidgetState
     context.watch<FFAppState>();
 
     return Padding(
-      padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 12.0),
+      padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 12.0),
       child: StreamBuilder<UsersRecord>(
         stream: UsersRecord.getDocument(widget.user!),
         builder: (context, snapshot) {
           // Customize what your widget looks like when it's loading.
           if (!snapshot.hasData) {
-            return Center(
+            return const Center(
               child: SizedBox(
                 width: 12.0,
                 height: 12.0,
@@ -100,7 +98,7 @@ class _TaggedUsersComponentWidgetState
                   width: 55.0,
                   height: 55.0,
                   clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                   ),
                   child: Image.network(
@@ -114,7 +112,7 @@ class _TaggedUsersComponentWidgetState
                 Expanded(
                   child: Padding(
                     padding:
-                        EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 0.0, 0.0),
+                        const EdgeInsetsDirectional.fromSTEB(12.0, 0.0, 0.0, 0.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +127,7 @@ class _TaggedUsersComponentWidgetState
                                   ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
+                          padding: const EdgeInsetsDirectional.fromSTEB(
                               0.0, 2.0, 0.0, 0.0),
                           child: Text(
                             rowUsersRecord.username,
@@ -146,7 +144,7 @@ class _TaggedUsersComponentWidgetState
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 6.0, 0.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 6.0, 0.0),
                   child: AuthUserStreamWidget(
                     builder: (context) => StreamBuilder<List<FollowersRecord>>(
                       stream: queryFollowersRecord(
@@ -156,7 +154,7 @@ class _TaggedUsersComponentWidgetState
                       builder: (context, snapshot) {
                         // Customize what your widget looks like when it's loading.
                         if (!snapshot.hasData) {
-                          return Center(
+                          return const Center(
                             child: SizedBox(
                               width: 12.0,
                               height: 12.0,
@@ -180,31 +178,45 @@ class _TaggedUsersComponentWidgetState
                           hoverColor: Colors.transparent,
                           highlightColor: Colors.transparent,
                           onTap: () async {
-                            if ((currentUserDocument?.following?.toList() ?? [])
+                            if ((currentUserDocument?.following.toList() ?? [])
                                 .contains(rowUsersRecord.reference)) {
                               await currentUserReference!.update({
-                                'following': FieldValue.arrayRemove(
-                                    [rowUsersRecord.reference]),
+                                ...mapToFirestore(
+                                  {
+                                    'following': FieldValue.arrayRemove(
+                                        [rowUsersRecord.reference]),
+                                  },
+                                ),
                               });
 
                               await containerFollowersRecord!.reference.update({
-                                'userRefs': FieldValue.arrayRemove(
-                                    [currentUserReference]),
+                                ...mapToFirestore(
+                                  {
+                                    'userRefs': FieldValue.arrayRemove(
+                                        [currentUserReference]),
+                                  },
+                                ),
                               });
-                              _model.timerController.onExecute
-                                  .add(StopWatchExecute.reset);
+                              _model.timerController.onResetTimer();
                             } else {
                               await currentUserReference!.update({
-                                'following': FieldValue.arrayUnion(
-                                    [rowUsersRecord.reference]),
+                                ...mapToFirestore(
+                                  {
+                                    'following': FieldValue.arrayUnion(
+                                        [rowUsersRecord.reference]),
+                                  },
+                                ),
                               });
 
                               await containerFollowersRecord!.reference.update({
-                                'userRefs': FieldValue.arrayUnion(
-                                    [currentUserReference]),
+                                ...mapToFirestore(
+                                  {
+                                    'userRefs': FieldValue.arrayUnion(
+                                        [currentUserReference]),
+                                  },
+                                ),
                               });
-                              _model.timerController.onExecute
-                                  .add(StopWatchExecute.start);
+                              _model.timerController.onStartTimer();
                             }
                           },
                           child: Container(
@@ -212,7 +224,7 @@ class _TaggedUsersComponentWidgetState
                             height: 35.0,
                             decoration: BoxDecoration(
                               color: valueOrDefault<Color>(
-                                (currentUserDocument?.following?.toList() ?? [])
+                                (currentUserDocument?.following.toList() ?? [])
                                         .contains(rowUsersRecord.reference)
                                     ? FlutterFlowTheme.of(context)
                                         .primaryBackground
@@ -222,9 +234,9 @@ class _TaggedUsersComponentWidgetState
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             child: Align(
-                              alignment: AlignmentDirectional(0.0, 0.0),
+                              alignment: const AlignmentDirectional(0.0, 0.0),
                               child: Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
                                     8.0, 6.0, 8.0, 6.0),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.max,
@@ -235,7 +247,7 @@ class _TaggedUsersComponentWidgetState
                                         if (rowUsersRecord.following.contains(
                                                 currentUserReference) &&
                                             !(currentUserDocument?.following
-                                                        ?.toList() ??
+                                                        .toList() ??
                                                     [])
                                                 .contains(
                                                     rowUsersRecord.reference)) {
@@ -244,7 +256,7 @@ class _TaggedUsersComponentWidgetState
                                                 .contains(
                                                     currentUserReference) &&
                                             !(currentUserDocument?.following
-                                                        ?.toList() ??
+                                                        .toList() ??
                                                     [])
                                                 .contains(
                                                     rowUsersRecord.reference)) {
@@ -259,7 +271,7 @@ class _TaggedUsersComponentWidgetState
                                             fontFamily: 'Inter',
                                             color: (currentUserDocument
                                                             ?.following
-                                                            ?.toList() ??
+                                                            .toList() ??
                                                         [])
                                                     .contains(rowUsersRecord
                                                         .reference)
@@ -288,7 +300,7 @@ class _TaggedUsersComponentWidgetState
                     minute: false,
                     milliSecond: false,
                   ),
-                  timer: _model.timerController,
+                  controller: _model.timerController,
                   onChanged: (value, displayTime, shouldUpdate) {
                     _model.timerMilliseconds = value;
                     _model.timerValue = displayTime;
@@ -313,8 +325,12 @@ class _TaggedUsersComponentWidgetState
                             notificationsRecordReference);
 
                     await rowUsersRecord.reference.update({
-                      'unreadNotifications': FieldValue.arrayUnion(
-                          [_model.notification?.reference]),
+                      ...mapToFirestore(
+                        {
+                          'unreadNotifications': FieldValue.arrayUnion(
+                              [_model.notification?.reference]),
+                        },
+                      ),
                     });
 
                     setState(() {});

@@ -1,14 +1,9 @@
-import '/auth/firebase_auth/auth_util.dart';
-import '/backend/backend.dart';
-import '/components/follower_componant/follower_componant_widget.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'followers_following_widget.dart' show FollowersFollowingWidget;
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
-class FollowersFollowingModel extends FlutterFlowModel {
+class FollowersFollowingModel
+    extends FlutterFlowModel<FollowersFollowingWidget> {
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
@@ -19,8 +14,10 @@ class FollowersFollowingModel extends FlutterFlowModel {
 
   /// Initialization and disposal methods.
 
+  @override
   void initState(BuildContext context) {}
 
+  @override
   void dispose() {
     unfocusNode.dispose();
     tabBarController?.dispose();

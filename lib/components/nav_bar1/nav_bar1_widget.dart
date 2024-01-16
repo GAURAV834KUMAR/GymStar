@@ -1,15 +1,13 @@
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'nav_bar1_model.dart';
 export 'nav_bar1_model.dart';
 
 class NavBar1Widget extends StatefulWidget {
-  const NavBar1Widget({Key? key}) : super(key: key);
+  const NavBar1Widget({super.key});
 
   @override
   _NavBar1WidgetState createState() => _NavBar1WidgetState();
@@ -58,7 +56,7 @@ class _NavBar1WidgetState extends State<NavBar1Widget> {
               Material(
                 color: Colors.transparent,
                 elevation: 0.0,
-                shape: RoundedRectangleBorder(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(0.0),
                     bottomRight: Radius.circular(0.0),
@@ -71,7 +69,7 @@ class _NavBar1WidgetState extends State<NavBar1Widget> {
                   height: 80.0,
                   decoration: BoxDecoration(
                     color: FlutterFlowTheme.of(context).secondaryBackground,
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         blurRadius: 10.0,
                         color: Color(0x1A57636C),
@@ -79,7 +77,7 @@ class _NavBar1WidgetState extends State<NavBar1Widget> {
                         spreadRadius: 0.1,
                       )
                     ],
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(0.0),
                       bottomRight: Radius.circular(0.0),
                       topLeft: Radius.circular(20.0),
@@ -119,7 +117,7 @@ class _NavBar1WidgetState extends State<NavBar1Widget> {
                 children: [
                   Padding(
                     padding:
-                        EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 10.0),
+                        const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 10.0),
                     child: FlutterFlowIconButton(
                       borderColor: Colors.transparent,
                       borderRadius: 25.0,
@@ -133,9 +131,9 @@ class _NavBar1WidgetState extends State<NavBar1Widget> {
                       ),
                       onPressed: () async {
                         context.goNamed(
-                          'Reels',
+                          'Home',
                           extra: <String, dynamic>{
-                            kTransitionInfoKey: TransitionInfo(
+                            kTransitionInfoKey: const TransitionInfo(
                               hasTransition: true,
                               transitionType: PageTransitionType.topToBottom,
                               duration: Duration(milliseconds: 300),

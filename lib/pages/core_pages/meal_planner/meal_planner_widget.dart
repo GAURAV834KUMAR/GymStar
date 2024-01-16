@@ -1,16 +1,18 @@
+import '/auth/firebase_auth/auth_util.dart';
+import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'meal_planner_model.dart';
 export 'meal_planner_model.dart';
 
 class MealPlannerWidget extends StatefulWidget {
-  const MealPlannerWidget({Key? key}) : super(key: key);
+  const MealPlannerWidget({super.key});
 
   @override
   _MealPlannerWidgetState createState() => _MealPlannerWidgetState();
@@ -38,15 +40,26 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
         appBar: AppBar(
-          backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
           automaticallyImplyLeading: false,
           leading: FlutterFlowIconButton(
             borderColor: Colors.transparent,
@@ -67,143 +80,556 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
             style: FlutterFlowTheme.of(context).headlineMedium.override(
                   fontFamily: 'Inter',
                   color: FlutterFlowTheme.of(context).primaryText,
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w600,
                 ),
           ),
-          actions: [],
+          actions: [
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 20.0, 0.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.asset(
+                  'assets/images/filter-btn.png',
+                  width: 15.0,
+                  height: 8.0,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ],
           centerTitle: true,
           elevation: 0.0,
         ),
-        body: SafeArea(
-          top: true,
-          child: Align(
-            alignment: AlignmentDirectional(0.0, 0.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Padding(
-                  padding:
-                      EdgeInsetsDirectional.fromSTEB(35.0, 15.0, 47.0, 0.0),
-                  child: Material(
-                    color: Colors.transparent,
-                    elevation: 3.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(9.0),
-                    ),
-                    child: Container(
-                      width: double.infinity,
-                      height: 83.0,
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).accent4,
-                        borderRadius: BorderRadius.circular(9.0),
-                        border: Border.all(
-                          color: FlutterFlowTheme.of(context).secondaryText,
-                          width: 0.5,
+        body: Align(
+          alignment: const AlignmentDirectional(0.0, 0.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              StreamBuilder<List<UsersRecord>>(
+                stream: queryUsersRecord(
+                  queryBuilder: (usersRecord) => usersRecord.where(
+                    'uid',
+                    isEqualTo: currentUserUid,
+                  ),
+                  singleRecord: true,
+                ),
+                builder: (context, snapshot) {
+                  // Customize what your widget looks like when it's loading.
+                  if (!snapshot.hasData) {
+                    return const Center(
+                      child: SizedBox(
+                        width: 12.0,
+                        height: 12.0,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                20.0, 0.0, 0.0, 0.0),
-                            child: Container(
-                              width: 37.6,
-                              height: 37.6,
-                              clipBehavior: Clip.antiAlias,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                              ),
-                              child: Image.asset(
-                                'assets/images/muscle.png',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                14.0, 0.0, 0.0, 0.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Your Goal',
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        fontFamily: 'Inter',
-                                        fontSize: 11.0,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 2.0, 0.0, 0.0),
-                                  child: Text(
-                                    'Build Muscle',
-                                    style: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .override(
-                                          fontFamily: 'Inter',
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Flexible(
-                            child: Align(
-                              alignment: AlignmentDirectional(0.0, 0.0),
-                              child: Icon(
-                                Icons.arrow_forward_ios_sharp,
-                                color: FlutterFlowTheme.of(context).primaryText,
-                                size: 24.0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    );
+                  }
+                  List<UsersRecord> containerUsersRecordList = snapshot.data!;
+                  final containerUsersRecord =
+                      containerUsersRecordList.isNotEmpty
+                          ? containerUsersRecordList.first
+                          : null;
+                  return Container(
+                    width: double.infinity,
+                    height: MediaQuery.sizeOf(context).height * 0.22,
+                    decoration: BoxDecoration(
+                      color: FlutterFlowTheme.of(context).primaryBackground,
                     ),
-                  ),
-                ),
-                Flexible(
-                  child: SingleChildScrollView(
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              35.0, 33.0, 54.0, 0.0),
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              18.0, 30.0, 0.0, 0.0),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Meal Plan\nRecommended For You',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Inter',
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                              Icon(
+                                Icons.arrow_back_ios_new,
+                                color: FlutterFlowTheme.of(context).primaryText,
+                                size: 16.0,
+                              ),
+                              Flexible(
+                                child: Padding(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      24.0, 0.0, 24.0, 0.0),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Text(
+                                        dateTimeFormat(
+                                          'MMMM',
+                                          getCurrentTimestamp,
+                                          locale: FFLocalizations.of(context)
+                                              .languageCode,
+                                        ),
+                                        style: FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .override(
+                                              fontFamily: 'Inter',
+                                              fontSize: 14.0,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                      Text(
+                                        dateTimeFormat(
+                                          'y',
+                                          getCurrentTimestamp,
+                                          locale: FFLocalizations.of(context)
+                                              .languageCode,
+                                        ),
+                                        style: FlutterFlowTheme.of(context)
+                                            .bodyMedium
+                                            .override(
+                                              fontFamily: 'Inter',
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios_sharp,
+                                color: FlutterFlowTheme.of(context).primaryText,
+                                size: 16.0,
                               ),
                             ],
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              35.0, 33.0, 0.0, 0.0),
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                              0.0, 27.0, 0.0, 0.0),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               children: [
                                 Container(
+                                  height:
+                                      MediaQuery.sizeOf(context).height * 0.11,
+                                  decoration: const BoxDecoration(),
+                                  child: Align(
+                                    alignment: const AlignmentDirectional(-1.0, 0.0),
+                                    child: Padding(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
+                                          20.0, 0.0, 0.0, 0.0),
+                                      child: Builder(
+                                        builder: (context) {
+                                          final date = functions
+                                                  .date(
+                                                      containerUsersRecord
+                                                          ?.createdTime,
+                                                      getCurrentTimestamp)
+                                                  ?.toList() ??
+                                              [];
+                                          return ListView.builder(
+                                            padding: EdgeInsets.zero,
+                                            shrinkWrap: true,
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount: date.length,
+                                            itemBuilder: (context, dateIndex) {
+                                              final dateItem = date[dateIndex];
+                                              return Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                children: [
+                                                  if (dateTimeFormat(
+                                                        'yMd',
+                                                        dateItem,
+                                                        locale:
+                                                            FFLocalizations.of(
+                                                                    context)
+                                                                .languageCode,
+                                                      ) !=
+                                                      dateTimeFormat(
+                                                        'yMd',
+                                                        getCurrentTimestamp,
+                                                        locale:
+                                                            FFLocalizations.of(
+                                                                    context)
+                                                                .languageCode,
+                                                      ))
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsetsDirectional
+                                                              .fromSTEB(
+                                                                  5.0,
+                                                                  0.0,
+                                                                  5.0,
+                                                                  0.0),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        children: [
+                                                          Container(
+                                                            width: 50.0,
+                                                            height: 80.0,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .secondaryBackground,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          12.0),
+                                                            ),
+                                                            child: Column(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .max,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Text(
+                                                                  dateTimeFormat(
+                                                                    'E',
+                                                                    dateItem,
+                                                                    locale: FFLocalizations.of(
+                                                                            context)
+                                                                        .languageCode,
+                                                                  ),
+                                                                  style: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodyMedium
+                                                                      .override(
+                                                                        fontFamily:
+                                                                            'Inter',
+                                                                        color: FlutterFlowTheme.of(context)
+                                                                            .secondaryText,
+                                                                        fontSize:
+                                                                            14.0,
+                                                                      ),
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsetsDirectional
+                                                                      .fromSTEB(
+                                                                          0.0,
+                                                                          11.0,
+                                                                          0.0,
+                                                                          0.0),
+                                                                  child:
+                                                                      Container(
+                                                                    width: 30.0,
+                                                                    height:
+                                                                        30.0,
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      color: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .primaryBackground,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20.0),
+                                                                    ),
+                                                                    child:
+                                                                        Column(
+                                                                      mainAxisSize:
+                                                                          MainAxisSize
+                                                                              .max,
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      children: [
+                                                                        Text(
+                                                                          dateTimeFormat(
+                                                                            'd',
+                                                                            dateItem,
+                                                                            locale:
+                                                                                FFLocalizations.of(context).languageCode,
+                                                                          ),
+                                                                          style: FlutterFlowTheme.of(context)
+                                                                              .bodyMedium
+                                                                              .override(
+                                                                                fontFamily: 'Inter',
+                                                                                color: FlutterFlowTheme.of(context).primaryText,
+                                                                                fontSize: 14.0,
+                                                                                fontWeight: FontWeight.bold,
+                                                                              ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  if (dateTimeFormat(
+                                                        'yMd',
+                                                        dateItem,
+                                                        locale:
+                                                            FFLocalizations.of(
+                                                                    context)
+                                                                .languageCode,
+                                                      ) ==
+                                                      dateTimeFormat(
+                                                        'yMd',
+                                                        getCurrentTimestamp,
+                                                        locale:
+                                                            FFLocalizations.of(
+                                                                    context)
+                                                                .languageCode,
+                                                      ))
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsetsDirectional
+                                                              .fromSTEB(
+                                                                  5.0,
+                                                                  0.0,
+                                                                  5.0,
+                                                                  0.0),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        children: [
+                                                          Container(
+                                                            width: 50.0,
+                                                            height: 80.0,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .primary,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          12.0),
+                                                            ),
+                                                            child: Column(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .max,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .center,
+                                                              children: [
+                                                                Text(
+                                                                  dateTimeFormat(
+                                                                    'E',
+                                                                    dateItem,
+                                                                    locale: FFLocalizations.of(
+                                                                            context)
+                                                                        .languageCode,
+                                                                  ),
+                                                                  style: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .bodyMedium
+                                                                      .override(
+                                                                        fontFamily:
+                                                                            'Inter',
+                                                                        color: FlutterFlowTheme.of(context)
+                                                                            .primaryBtnText,
+                                                                        fontSize:
+                                                                            14.0,
+                                                                      ),
+                                                                ),
+                                                                Padding(
+                                                                  padding: const EdgeInsetsDirectional
+                                                                      .fromSTEB(
+                                                                          0.0,
+                                                                          11.0,
+                                                                          0.0,
+                                                                          0.0),
+                                                                  child:
+                                                                      Container(
+                                                                    width: 30.0,
+                                                                    height:
+                                                                        30.0,
+                                                                    decoration:
+                                                                        BoxDecoration(
+                                                                      color: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .primaryBtnText,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              20.0),
+                                                                    ),
+                                                                    child:
+                                                                        Column(
+                                                                      mainAxisSize:
+                                                                          MainAxisSize
+                                                                              .max,
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      children: [
+                                                                        Text(
+                                                                          dateTimeFormat(
+                                                                            'd',
+                                                                            dateItem,
+                                                                            locale:
+                                                                                FFLocalizations.of(context).languageCode,
+                                                                          ),
+                                                                          style: FlutterFlowTheme.of(context)
+                                                                              .bodyMedium
+                                                                              .override(
+                                                                                fontFamily: 'Inter',
+                                                                                color: FlutterFlowTheme.of(context).primary,
+                                                                                fontSize: 14.0,
+                                                                                fontWeight: FontWeight.bold,
+                                                                              ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            20.0, 21.0, 20.0, 0.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: 100.0,
+                              height: 38.0,
+                              decoration: BoxDecoration(
+                                color: FlutterFlowTheme.of(context).primary,
+                                borderRadius: BorderRadius.circular(6.0),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Breakfast',
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          fontFamily: 'Inter',
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryBtnText,
+                                          fontSize: 11.0,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              width: 100.0,
+                              height: 38.0,
+                              decoration: BoxDecoration(
+                                color: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                                borderRadius: BorderRadius.circular(6.0),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Lunch',
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          fontFamily: 'Inter',
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryText,
+                                          fontSize: 11.0,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              width: 100.0,
+                              height: 38.0,
+                              decoration: BoxDecoration(
+                                color: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                                borderRadius: BorderRadius.circular(6.0),
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Dinner',
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          fontFamily: 'Inter',
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryText,
+                                          fontSize: 11.0,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            35.0, 33.0, 0.0, 0.0),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  context.pushNamed(
+                                    'meal_deatils',
+                                    extra: <String, dynamic>{
+                                      kTransitionInfoKey: const TransitionInfo(
+                                        hasTransition: true,
+                                        transitionType:
+                                            PageTransitionType.rightToLeft,
+                                        duration: Duration(milliseconds: 300),
+                                      ),
+                                    },
+                                  );
+                                },
+                                child: Container(
                                   width: 259.0,
                                   height: 322.0,
                                   decoration: BoxDecoration(
@@ -221,7 +647,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                             0.0, 18.0, 0.0, 0.0),
                                         child: ClipRRect(
                                           borderRadius:
@@ -235,7 +661,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                             18.0, 12.0, 0.0, 0.0),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.max,
@@ -256,7 +682,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                             18.0, 5.0, 14.0, 0.0),
                                         child: Column(
                                           mainAxisSize: MainAxisSize.max,
@@ -277,7 +703,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                             0.0, 12.0, 10.0, 0.0),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.max,
@@ -292,11 +718,9 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                               options: FFButtonOptions(
                                                 width: 141.0,
                                                 height: 30.0,
-                                                padding: EdgeInsetsDirectional
-                                                    .fromSTEB(
-                                                        0.0, 0.0, 0.0, 0.0),
+                                                padding: const EdgeInsets.all(0.0),
                                                 iconPadding:
-                                                    EdgeInsetsDirectional
+                                                    const EdgeInsetsDirectional
                                                         .fromSTEB(
                                                             0.0, 0.0, 0.0, 0.0),
                                                 color:
@@ -309,13 +733,13 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                                           fontFamily: 'Inter',
                                                           color: FlutterFlowTheme
                                                                   .of(context)
-                                                              .secondary,
+                                                              .primary,
                                                           fontSize: 12.0,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                         ),
                                                 elevation: 3.0,
-                                                borderSide: BorderSide(
+                                                borderSide: const BorderSide(
                                                   color: Colors.transparent,
                                                   width: 1.0,
                                                 ),
@@ -329,9 +753,28 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                     ],
                                   ),
                                 ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      25.0, 0.0, 0.0, 0.0),
+                              ),
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    25.0, 0.0, 0.0, 0.0),
+                                child: InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    context.pushNamed(
+                                      'meal_deatils',
+                                      extra: <String, dynamic>{
+                                        kTransitionInfoKey: const TransitionInfo(
+                                          hasTransition: true,
+                                          transitionType:
+                                              PageTransitionType.rightToLeft,
+                                          duration: Duration(milliseconds: 300),
+                                        ),
+                                      },
+                                    );
+                                  },
                                   child: Container(
                                     width: 259.0,
                                     height: 322.0,
@@ -350,9 +793,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                           CrossAxisAlignment.center,
                                       children: [
                                         Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  18.0, 18.0, 18.0, 18.0),
+                                          padding: const EdgeInsets.all(18.0),
                                           child: Container(
                                             width: double.infinity,
                                             height: 137.0,
@@ -377,7 +818,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Padding(
-                                                  padding: EdgeInsetsDirectional
+                                                  padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
                                                           14.0, 0.0, 0.0, 14.0),
                                                   child: FFButtonWidget(
@@ -390,20 +831,15 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                                       width: 70.0,
                                                       height: 35.0,
                                                       padding:
-                                                          EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  0.0,
-                                                                  0.0,
-                                                                  0.0,
-                                                                  0.0),
+                                                          const EdgeInsets.all(0.0),
                                                       iconPadding:
-                                                          EdgeInsetsDirectional
+                                                          const EdgeInsetsDirectional
                                                               .fromSTEB(
                                                                   0.0,
                                                                   0.0,
                                                                   0.0,
                                                                   0.0),
-                                                      color: Color(0xFFC00033),
+                                                      color: const Color(0xFFC00033),
                                                       textStyle:
                                                           FlutterFlowTheme.of(
                                                                   context)
@@ -415,7 +851,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                                                     .white,
                                                               ),
                                                       elevation: 3.0,
-                                                      borderSide: BorderSide(
+                                                      borderSide: const BorderSide(
                                                         color:
                                                             Colors.transparent,
                                                         width: 1.0,
@@ -432,7 +868,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   18.0, 12.0, 0.0, 0.0),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.max,
@@ -454,7 +890,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   18.0, 5.0, 14.0, 0.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
@@ -476,7 +912,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 12.0, 10.0, 0.0),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.max,
@@ -491,11 +927,9 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                                 options: FFButtonOptions(
                                                   width: 108.0,
                                                   height: 30.0,
-                                                  padding: EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          0.0, 0.0, 0.0, 0.0),
+                                                  padding: const EdgeInsets.all(0.0),
                                                   iconPadding:
-                                                      EdgeInsetsDirectional
+                                                      const EdgeInsetsDirectional
                                                           .fromSTEB(0.0, 0.0,
                                                               0.0, 0.0),
                                                   color: FlutterFlowTheme.of(
@@ -509,13 +943,13 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                                         color:
                                                             FlutterFlowTheme.of(
                                                                     context)
-                                                                .secondary,
+                                                                .primary,
                                                         fontSize: 12.0,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
                                                   elevation: 3.0,
-                                                  borderSide: BorderSide(
+                                                  borderSide: const BorderSide(
                                                     color: Colors.transparent,
                                                     width: 1.0,
                                                   ),
@@ -531,9 +965,28 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      25.0, 0.0, 0.0, 0.0),
+                              ),
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    25.0, 0.0, 0.0, 0.0),
+                                child: InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    context.pushNamed(
+                                      'meal_deatils',
+                                      extra: <String, dynamic>{
+                                        kTransitionInfoKey: const TransitionInfo(
+                                          hasTransition: true,
+                                          transitionType:
+                                              PageTransitionType.rightToLeft,
+                                          duration: Duration(milliseconds: 300),
+                                        ),
+                                      },
+                                    );
+                                  },
                                   child: Container(
                                     width: 259.0,
                                     height: 322.0,
@@ -553,7 +1006,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                       children: [
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 18.0, 0.0, 0.0),
                                           child: ClipRRect(
                                             borderRadius:
@@ -568,7 +1021,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   18.0, 12.0, 0.0, 0.0),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.max,
@@ -590,7 +1043,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   18.0, 5.0, 14.0, 0.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
@@ -613,7 +1066,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 12.0, 10.0, 0.0),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.max,
@@ -628,11 +1081,9 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                                 options: FFButtonOptions(
                                                   width: 141.0,
                                                   height: 30.0,
-                                                  padding: EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          0.0, 0.0, 0.0, 0.0),
+                                                  padding: const EdgeInsets.all(0.0),
                                                   iconPadding:
-                                                      EdgeInsetsDirectional
+                                                      const EdgeInsetsDirectional
                                                           .fromSTEB(0.0, 0.0,
                                                               0.0, 0.0),
                                                   color: FlutterFlowTheme.of(
@@ -646,13 +1097,13 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                                         color:
                                                             FlutterFlowTheme.of(
                                                                     context)
-                                                                .secondary,
+                                                                .primary,
                                                         fontSize: 12.0,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
                                                   elevation: 3.0,
-                                                  borderSide: BorderSide(
+                                                  borderSide: const BorderSide(
                                                     color: Colors.transparent,
                                                     width: 1.0,
                                                   ),
@@ -668,9 +1119,28 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      25.0, 0.0, 35.0, 0.0),
+                              ),
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    25.0, 0.0, 35.0, 0.0),
+                                child: InkWell(
+                                  splashColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onTap: () async {
+                                    context.pushNamed(
+                                      'meal_deatils',
+                                      extra: <String, dynamic>{
+                                        kTransitionInfoKey: const TransitionInfo(
+                                          hasTransition: true,
+                                          transitionType:
+                                              PageTransitionType.rightToLeft,
+                                          duration: Duration(milliseconds: 300),
+                                        ),
+                                      },
+                                    );
+                                  },
                                   child: Container(
                                     width: 259.0,
                                     height: 322.0,
@@ -690,7 +1160,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                       children: [
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 18.0, 0.0, 0.0),
                                           child: ClipRRect(
                                             borderRadius:
@@ -705,7 +1175,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   18.0, 12.0, 0.0, 0.0),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.max,
@@ -727,7 +1197,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   18.0, 5.0, 14.0, 0.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
@@ -750,7 +1220,7 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   0.0, 12.0, 10.0, 0.0),
                                           child: Row(
                                             mainAxisSize: MainAxisSize.max,
@@ -765,11 +1235,9 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                                 options: FFButtonOptions(
                                                   width: 141.0,
                                                   height: 30.0,
-                                                  padding: EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          0.0, 0.0, 0.0, 0.0),
+                                                  padding: const EdgeInsets.all(0.0),
                                                   iconPadding:
-                                                      EdgeInsetsDirectional
+                                                      const EdgeInsetsDirectional
                                                           .fromSTEB(0.0, 0.0,
                                                               0.0, 0.0),
                                                   color: FlutterFlowTheme.of(
@@ -783,13 +1251,13 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                                         color:
                                                             FlutterFlowTheme.of(
                                                                     context)
-                                                                .secondary,
+                                                                .primary,
                                                         fontSize: 12.0,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
                                                   elevation: 3.0,
-                                                  borderSide: BorderSide(
+                                                  borderSide: const BorderSide(
                                                     color: Colors.transparent,
                                                     width: 1.0,
                                                   ),
@@ -805,317 +1273,104 @@ class _MealPlannerWidgetState extends State<MealPlannerWidget> {
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              36.0, 47.0, 145.0, 0.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Text(
-                                'Create your own',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Inter',
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.w500,
-                                    ),
                               ),
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(
-                              35.0, 16.0, 40.0, 30.0),
-                          child: Container(
-                            width: double.infinity,
-                            height: 168.0,
-                            decoration: BoxDecoration(
-                              color: FlutterFlowTheme.of(context)
-                                  .secondaryBackground,
-                              image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: Image.asset(
-                                  'assets/images/6f098c195c674bfc2693bab78446dc7d_(1)-min.jpeg',
-                                ).image,
-                              ),
-                              borderRadius: BorderRadius.circular(7.0),
-                            ),
-                            child: Container(
-                              width: 100.0,
-                              height: 100.0,
-                              decoration: BoxDecoration(
-                                color: Color(0x001C1C1E),
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: Image.asset(
-                                    'assets/images/Rectangle_8_(1).png',
-                                  ).image,
-                                ),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  FlutterFlowIconButton(
-                                    borderColor: Colors.transparent,
-                                    borderRadius: 20.0,
-                                    borderWidth: 0.0,
-                                    buttonSize: 40.0,
-                                    fillColor:
-                                        FlutterFlowTheme.of(context).secondary,
-                                    icon: Icon(
-                                      Icons.add,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryBackground,
-                                      size: 25.0,
-                                    ),
-                                    onPressed: () {
-                                      print('IconButton pressed ...');
-                                    },
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        0.0, 25.0, 0.0, 0.0),
-                                    child: Text(
-                                      'Create new meal plan',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyMedium
-                                          .override(
-                                            fontFamily: 'Inter',
-                                            fontSize: 21.0,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Material(
-                  color: Colors.transparent,
-                  elevation: 0.0,
-                  child: Container(
-                    width: double.infinity,
-                    height: 90.0,
-                    decoration: BoxDecoration(
-                      color: FlutterFlowTheme.of(context).secondaryBackground,
-                    ),
-                    child: Stack(
-                      children: [
-                        Column(
+                      ),
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            36.0, 47.0, 145.0, 0.0),
+                        child: Row(
                           mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Material(
-                              color: Colors.transparent,
-                              elevation: 0.0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                  bottomLeft: Radius.circular(0.0),
-                                  bottomRight: Radius.circular(0.0),
-                                  topLeft: Radius.circular(20.0),
-                                  topRight: Radius.circular(20.0),
-                                ),
-                              ),
-                              child: Container(
-                                width: double.infinity,
-                                height: 80.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      blurRadius: 10.0,
-                                      color: Color(0x1A57636C),
-                                      offset: Offset(0.0, -10.0),
-                                      spreadRadius: 0.1,
-                                    )
-                                  ],
-                                  borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(0.0),
-                                    bottomRight: Radius.circular(0.0),
-                                    topLeft: Radius.circular(20.0),
-                                    topRight: Radius.circular(20.0),
+                            Text(
+                              'Create your own',
+                              style: FlutterFlowTheme.of(context)
+                                  .bodyMedium
+                                  .override(
+                                    fontFamily: 'Inter',
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.w500,
                                   ),
-                                ),
-                              ),
                             ),
                           ],
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            InkWell(
-                              splashColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () async {
-                                context.pushNamed('Feed');
-                              },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.asset(
-                                  'assets/images/Home.png',
-                                  width: 24.0,
-                                  height: 24.0,
-                                  fit: BoxFit.cover,
-                                ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                            35.0, 16.0, 40.0, 30.0),
+                        child: Container(
+                          width: double.infinity,
+                          height: 168.0,
+                          decoration: BoxDecoration(
+                            color: FlutterFlowTheme.of(context)
+                                .secondaryBackground,
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: Image.asset(
+                                'assets/images/6f098c195c674bfc2693bab78446dc7d_(1)-min.jpeg',
+                              ).image,
+                            ),
+                            borderRadius: BorderRadius.circular(7.0),
+                          ),
+                          child: Container(
+                            width: 100.0,
+                            height: 100.0,
+                            decoration: BoxDecoration(
+                              color: const Color(0x001C1C1E),
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: Image.asset(
+                                  'assets/images/Rectangle_8_(1).png',
+                                ).image,
                               ),
                             ),
-                            InkWell(
-                              splashColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () async {
-                                context.pushNamed('Statics');
-                              },
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8.0),
-                                child: Image.asset(
-                                  Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? 'assets/images/Insight_(1).png'
-                                      : 'assets/images/Insight.png',
-                                  width: 24.0,
-                                  height: 24.0,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                FlutterFlowIconButton(
+                                  borderColor: Colors.transparent,
+                                  borderRadius: 20.0,
+                                  borderWidth: 0.0,
+                                  buttonSize: 40.0,
+                                  fillColor:
+                                      FlutterFlowTheme.of(context).primary,
+                                  icon: Icon(
+                                    Icons.add,
+                                    color: FlutterFlowTheme.of(context)
+                                        .secondaryBackground,
+                                    size: 25.0,
+                                  ),
+                                  onPressed: () {
+                                    print('IconButton pressed ...');
+                                  },
+                                ),
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      0.0, 0.0, 0.0, 10.0),
-                                  child: FlutterFlowIconButton(
-                                    borderColor: Colors.transparent,
-                                    borderRadius: 25.0,
-                                    borderWidth: 1.0,
-                                    buttonSize: 60.0,
-                                    fillColor:
-                                        FlutterFlowTheme.of(context).secondary,
-                                    icon: Icon(
-                                      Icons.movie_filter,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryBtnText,
-                                      size: 35.0,
-                                    ),
-                                    onPressed: () async {
-                                      context.goNamed(
-                                        'Reels',
-                                        extra: <String, dynamic>{
-                                          kTransitionInfoKey: TransitionInfo(
-                                            hasTransition: true,
-                                            transitionType:
-                                                PageTransitionType.topToBottom,
-                                            duration:
-                                                Duration(milliseconds: 300),
-                                          ),
-                                        },
-                                      );
-                                    },
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      0.0, 25.0, 0.0, 0.0),
+                                  child: Text(
+                                    'Create new meal plan',
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          fontFamily: 'Inter',
+                                          fontSize: 21.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
                                 ),
                               ],
                             ),
-                            InkWell(
-                              splashColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () async {
-                                context.pushNamed('Notifications');
-                              },
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: Image.asset(
-                                      'assets/images/Notification.png',
-                                      width: 24.0,
-                                      height: 24.0,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: Image.asset(
-                                      'assets/images/Ellipse_28.png',
-                                      width: 10.0,
-                                      height: 10.0,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: 44.0,
-                              height: 44.0,
-                              decoration: BoxDecoration(
-                                color: FlutterFlowTheme.of(context)
-                                    .secondaryBackground,
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: Image.asset(
-                                    'assets/images/Ellipse_29.png',
-                                  ).image,
-                                ),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  InkWell(
-                                    splashColor: Colors.transparent,
-                                    focusColor: Colors.transparent,
-                                    hoverColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    onTap: () async {
-                                      context.pushNamed('Profile');
-                                    },
-                                    child: Container(
-                                      width: 36.0,
-                                      height: 36.0,
-                                      decoration: BoxDecoration(
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryBackground,
-                                        image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: Image.asset(
-                                            'assets/images/59.png',
-                                          ).image,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

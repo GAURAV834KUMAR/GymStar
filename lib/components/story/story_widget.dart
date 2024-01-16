@@ -4,18 +4,16 @@ import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'story_model.dart';
 export 'story_model.dart';
 
 class StoryWidget extends StatefulWidget {
   const StoryWidget({
-    Key? key,
+    super.key,
     this.story,
-  }) : super(key: key);
+  });
 
   final StoriesRecord? story;
 
@@ -48,8 +46,8 @@ class _StoryWidgetState extends State<StoryWidget>
           curve: Curves.linear,
           delay: 0.ms,
           duration: 5000.ms,
-          begin: Offset(-350.0, 0.0),
-          end: Offset(0.0, 0.0),
+          begin: const Offset(-350.0, 0.0),
+          end: const Offset(0.0, 0.0),
         ),
       ],
     ),
@@ -83,11 +81,11 @@ class _StoryWidgetState extends State<StoryWidget>
     return Container(
       width: double.infinity,
       height: MediaQuery.sizeOf(context).height * 1.0,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.black,
       ),
       child: Padding(
-        padding: EdgeInsetsDirectional.fromSTEB(15.0, 60.0, 15.0, 30.0),
+        padding: const EdgeInsetsDirectional.fromSTEB(15.0, 60.0, 15.0, 30.0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -120,7 +118,7 @@ class _StoryWidgetState extends State<StoryWidget>
                     mainAxisSize: MainAxisSize.max,
                     children: [
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
                             10.0, 6.0, 10.0, 6.0),
                         child: Column(
                           mainAxisSize: MainAxisSize.max,
@@ -129,14 +127,14 @@ class _StoryWidgetState extends State<StoryWidget>
                               child: Container(
                                 width: double.infinity,
                                 height: 2.0,
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: Color(0x40FFFFFF),
                                 ),
                                 child: ClipRRect(
                                   child: Container(
                                     width: double.infinity,
                                     height: 2.0,
-                                    decoration: BoxDecoration(
+                                    decoration: const BoxDecoration(
                                       color: Color(0x80FFFFFF),
                                     ),
                                   ),
@@ -148,7 +146,7 @@ class _StoryWidgetState extends State<StoryWidget>
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
                             12.0, 0.0, 12.0, 0.0),
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
@@ -160,7 +158,7 @@ class _StoryWidgetState extends State<StoryWidget>
                               builder: (context, snapshot) {
                                 // Customize what your widget looks like when it's loading.
                                 if (!snapshot.hasData) {
-                                  return Center(
+                                  return const Center(
                                     child: SizedBox(
                                       width: 12.0,
                                       height: 12.0,
@@ -215,13 +213,13 @@ class _StoryWidgetState extends State<StoryWidget>
                                           ),
                                           shape: BoxShape.circle,
                                           border: Border.all(
-                                            color: Color(0xFFDADADA),
+                                            color: const Color(0xFFDADADA),
                                             width: 0.5,
                                           ),
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                             12.0, 0.0, 0.0, 0.0),
                                         child: Text(
                                           valueOrDefault<String>(
@@ -237,7 +235,7 @@ class _StoryWidgetState extends State<StoryWidget>
                                         ),
                                       ),
                                       Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                             12.0, 0.0, 0.0, 0.0),
                                         child: Text(
                                           valueOrDefault<String>(
@@ -254,7 +252,7 @@ class _StoryWidgetState extends State<StoryWidget>
                                               .bodyMedium
                                               .override(
                                                 fontFamily: 'Inter',
-                                                color: Color(0x80FFFFFF),
+                                                color: const Color(0x80FFFFFF),
                                                 fontWeight: FontWeight.normal,
                                               ),
                                         ),
@@ -274,7 +272,7 @@ class _StoryWidgetState extends State<StoryWidget>
                                   await widget.story!.reference.delete();
                                   Navigator.pop(context);
                                 },
-                                child: Icon(
+                                child: const Icon(
                                   Icons.delete_outline_rounded,
                                   color: Color(0x80FFFFFF),
                                   size: 20.0,

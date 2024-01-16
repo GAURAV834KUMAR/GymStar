@@ -5,18 +5,16 @@ import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/custom_code/widgets/index.dart' as custom_widgets;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'new_follower_notification_model.dart';
 export 'new_follower_notification_model.dart';
 
 class NewFollowerNotificationWidget extends StatefulWidget {
   const NewFollowerNotificationWidget({
-    Key? key,
+    super.key,
     this.notification,
-  }) : super(key: key);
+  });
 
   final NotificationsRecord? notification;
 
@@ -59,7 +57,7 @@ class _NewFollowerNotificationWidgetState
       builder: (context, snapshot) {
         // Customize what your widget looks like when it's loading.
         if (!snapshot.hasData) {
-          return Center(
+          return const Center(
             child: SizedBox(
               width: 12.0,
               height: 12.0,
@@ -92,12 +90,12 @@ class _NewFollowerNotificationWidgetState
             mainAxisSize: MainAxisSize.max,
             children: [
               Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
+                padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
                 child: Container(
                   width: 45.0,
                   height: 45.0,
                   clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                   ),
                   child: Image.network(
@@ -111,7 +109,7 @@ class _NewFollowerNotificationWidgetState
               ),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 6.0, 0.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 6.0, 0.0),
                   child: custom_widgets.Notifications(
                     width: 400.0,
                     height: 38.0,
@@ -137,7 +135,7 @@ class _NewFollowerNotificationWidgetState
                   builder: (context, snapshot) {
                     // Customize what your widget looks like when it's loading.
                     if (!snapshot.hasData) {
-                      return Center(
+                      return const Center(
                         child: SizedBox(
                           width: 12.0,
                           height: 12.0,
@@ -161,31 +159,45 @@ class _NewFollowerNotificationWidgetState
                       hoverColor: Colors.transparent,
                       highlightColor: Colors.transparent,
                       onTap: () async {
-                        if ((currentUserDocument?.following?.toList() ?? [])
+                        if ((currentUserDocument?.following.toList() ?? [])
                             .contains(rowUsersRecord.reference)) {
                           await currentUserReference!.update({
-                            'following': FieldValue.arrayRemove(
-                                [rowUsersRecord.reference]),
+                            ...mapToFirestore(
+                              {
+                                'following': FieldValue.arrayRemove(
+                                    [rowUsersRecord.reference]),
+                              },
+                            ),
                           });
 
                           await containerFollowersRecord!.reference.update({
-                            'userRefs':
-                                FieldValue.arrayRemove([currentUserReference]),
+                            ...mapToFirestore(
+                              {
+                                'userRefs': FieldValue.arrayRemove(
+                                    [currentUserReference]),
+                              },
+                            ),
                           });
-                          _model.timerController.onExecute
-                              .add(StopWatchExecute.reset);
+                          _model.timerController.onResetTimer();
                         } else {
                           await currentUserReference!.update({
-                            'following': FieldValue.arrayUnion(
-                                [rowUsersRecord.reference]),
+                            ...mapToFirestore(
+                              {
+                                'following': FieldValue.arrayUnion(
+                                    [rowUsersRecord.reference]),
+                              },
+                            ),
                           });
 
                           await containerFollowersRecord!.reference.update({
-                            'userRefs':
-                                FieldValue.arrayUnion([currentUserReference]),
+                            ...mapToFirestore(
+                              {
+                                'userRefs': FieldValue.arrayUnion(
+                                    [currentUserReference]),
+                              },
+                            ),
                           });
-                          _model.timerController.onExecute
-                              .add(StopWatchExecute.start);
+                          _model.timerController.onStartTimer();
                         }
                       },
                       child: Container(
@@ -193,7 +205,7 @@ class _NewFollowerNotificationWidgetState
                         height: 35.0,
                         decoration: BoxDecoration(
                           color: valueOrDefault<Color>(
-                            (currentUserDocument?.following?.toList() ?? [])
+                            (currentUserDocument?.following.toList() ?? [])
                                     .contains(rowUsersRecord.reference)
                                 ? FlutterFlowTheme.of(context).primaryBackground
                                 : FlutterFlowTheme.of(context).secondary,
@@ -202,16 +214,16 @@ class _NewFollowerNotificationWidgetState
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: Align(
-                          alignment: AlignmentDirectional(0.0, 0.0),
+                          alignment: const AlignmentDirectional(0.0, 0.0),
                           child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 8.0, 6.0, 8.0, 6.0),
                             child: Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  (currentUserDocument?.following?.toList() ??
+                                  (currentUserDocument?.following.toList() ??
                                               [])
                                           .contains(rowUsersRecord.reference)
                                       ? 'Following'
@@ -221,7 +233,7 @@ class _NewFollowerNotificationWidgetState
                                       .override(
                                         fontFamily: 'Inter',
                                         color: (currentUserDocument?.following
-                                                        ?.toList() ??
+                                                        .toList() ??
                                                     [])
                                                 .contains(
                                                     rowUsersRecord.reference)
@@ -245,7 +257,7 @@ class _NewFollowerNotificationWidgetState
                 initialTime: _model.timerMilliseconds,
                 getDisplayTime: (value) =>
                     StopWatchTimer.getDisplayTime(value, milliSecond: false),
-                timer: _model.timerController,
+                controller: _model.timerController,
                 onChanged: (value, displayTime, shouldUpdate) {
                   _model.timerMilliseconds = value;
                   _model.timerValue = displayTime;
@@ -269,8 +281,12 @@ class _NewFollowerNotificationWidgetState
                       notificationsRecordReference);
 
                   await rowUsersRecord.reference.update({
-                    'unreadNotifications':
-                        FieldValue.arrayUnion([_model.notification?.reference]),
+                    ...mapToFirestore(
+                      {
+                        'unreadNotifications': FieldValue.arrayUnion(
+                            [_model.notification?.reference]),
+                      },
+                    ),
                   });
 
                   setState(() {});

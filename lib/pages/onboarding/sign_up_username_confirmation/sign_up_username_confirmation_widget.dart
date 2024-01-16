@@ -3,18 +3,18 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'sign_up_username_confirmation_model.dart';
 export 'sign_up_username_confirmation_model.dart';
 
 class SignUpUsernameConfirmationWidget extends StatefulWidget {
   const SignUpUsernameConfirmationWidget({
-    Key? key,
+    super.key,
     required this.gender,
     required this.age,
     required this.weight,
-  }) : super(key: key);
+  });
 
   final String? gender;
   final double? age;
@@ -38,8 +38,12 @@ class _SignUpUsernameConfirmationWidgetState
 
     _model.emailHIDDENController ??=
         TextEditingController(text: FFAppState().signupEmail);
+    _model.emailHIDDENFocusNode ??= FocusNode();
+
     _model.passwordHIDDENController ??=
         TextEditingController(text: FFAppState().signupPassword);
+    _model.passwordHIDDENFocusNode ??= FocusNode();
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -52,17 +56,28 @@ class _SignUpUsernameConfirmationWidgetState
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+        backgroundColor: FlutterFlowTheme.of(context).intro,
         body: SafeArea(
           top: true,
           child: Align(
-            alignment: AlignmentDirectional(0.0, 0.0),
+            alignment: const AlignmentDirectional(0.0, 0.0),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
@@ -76,7 +91,7 @@ class _SignUpUsernameConfirmationWidgetState
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
                                   0.0, 58.0, 0.0, 0.0),
                               child: Text(
                                 'Sign up as',
@@ -100,7 +115,7 @@ class _SignUpUsernameConfirmationWidgetState
                                   ),
                             ),
                             Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
                                   40.0, 18.0, 40.0, 0.0),
                               child: Text(
                                 'You can always change your username later.',
@@ -116,9 +131,10 @@ class _SignUpUsernameConfirmationWidgetState
                             ),
                             TextFormField(
                               controller: _model.emailHIDDENController,
+                              focusNode: _model.emailHIDDENFocusNode,
                               readOnly: true,
                               obscureText: false,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 enabledBorder: InputBorder.none,
                                 focusedBorder: InputBorder.none,
                                 errorBorder: InputBorder.none,
@@ -136,6 +152,7 @@ class _SignUpUsernameConfirmationWidgetState
                             ),
                             TextFormField(
                               controller: _model.passwordHIDDENController,
+                              focusNode: _model.passwordHIDDENFocusNode,
                               readOnly: true,
                               obscureText: !_model.passwordHIDDENVisibility,
                               decoration: InputDecoration(
@@ -173,7 +190,7 @@ class _SignUpUsernameConfirmationWidgetState
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
                             40.0, 12.0, 40.0, 24.0),
                         child: Text(
                           'By tapping Sign up, you agree to our Terms, Privacy Policy and Cookies Policy.',
@@ -192,7 +209,7 @@ class _SignUpUsernameConfirmationWidgetState
                 Container(
                   width: double.infinity,
                   height: 0.5,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFFDADADA),
                   ),
                 ),
@@ -201,7 +218,7 @@ class _SignUpUsernameConfirmationWidgetState
                   children: [
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(40.0, 12.0, 40.0, 0.0),
+                          const EdgeInsetsDirectional.fromSTEB(40.0, 12.0, 40.0, 0.0),
                       child: FutureBuilder<List<AdministrativeRecord>>(
                         future: queryAdministrativeRecordOnce(
                           singleRecord: true,
@@ -209,7 +226,7 @@ class _SignUpUsernameConfirmationWidgetState
                         builder: (context, snapshot) {
                           // Customize what your widget looks like when it's loading.
                           if (!snapshot.hasData) {
-                            return Center(
+                            return const Center(
                               child: SizedBox(
                                 width: 12.0,
                                 height: 12.0,
@@ -252,9 +269,9 @@ class _SignUpUsernameConfirmationWidgetState
                             options: FFButtonOptions(
                               width: double.infinity,
                               height: 50.0,
-                              padding: EdgeInsetsDirectional.fromSTEB(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
                                   0.0, 0.0, 0.0, 0.0),
-                              iconPadding: EdgeInsetsDirectional.fromSTEB(
+                              iconPadding: const EdgeInsetsDirectional.fromSTEB(
                                   0.0, 0.0, 0.0, 0.0),
                               color: FlutterFlowTheme.of(context).secondary,
                               textStyle: FlutterFlowTheme.of(context)
@@ -265,7 +282,7 @@ class _SignUpUsernameConfirmationWidgetState
                                     fontSize: 14.0,
                                   ),
                               elevation: 0.0,
-                              borderSide: BorderSide(
+                              borderSide: const BorderSide(
                                 color: Colors.transparent,
                                 width: 1.0,
                               ),
@@ -276,8 +293,7 @@ class _SignUpUsernameConfirmationWidgetState
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(
-                          24.0, 24.0, 24.0, 24.0),
+                      padding: const EdgeInsets.all(24.0),
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -294,7 +310,7 @@ class _SignUpUsernameConfirmationWidgetState
                                 ),
                           ),
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 3.0, 0.0, 0.0, 0.0),
                             child: InkWell(
                               splashColor: Colors.transparent,
@@ -319,7 +335,7 @@ class _SignUpUsernameConfirmationWidgetState
                                     ),
                                   }.withoutNulls,
                                   extra: <String, dynamic>{
-                                    kTransitionInfoKey: TransitionInfo(
+                                    kTransitionInfoKey: const TransitionInfo(
                                       hasTransition: true,
                                       transitionType:
                                           PageTransitionType.leftToRight,

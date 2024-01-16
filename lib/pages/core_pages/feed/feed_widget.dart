@@ -1,23 +1,23 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/backend/firebase_storage/storage.dart';
 import '/components/post/post_widget.dart';
 import '/components/story/story_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/upload_data.dart';
 import 'dart:async';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'feed_model.dart';
 export 'feed_model.dart';
 
 class FeedWidget extends StatefulWidget {
-  const FeedWidget({Key? key}) : super(key: key);
+  const FeedWidget({super.key});
 
   @override
   _FeedWidgetState createState() => _FeedWidgetState();
@@ -59,10 +59,21 @@ class _FeedWidgetState extends State<FeedWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -82,13 +93,13 @@ class _FeedWidgetState extends State<FeedWidget> {
           ),
           actions: [
             Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Padding(
                     padding:
-                        EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 23.0, 0.0),
+                        const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 23.0, 0.0),
                     child: Icon(
                       FFIcons.kadd,
                       color: FlutterFlowTheme.of(context).primaryText,
@@ -97,7 +108,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                   ),
                   Padding(
                     padding:
-                        EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 23.0, 0.0),
+                        const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 23.0, 0.0),
                     child: InkWell(
                       splashColor: Colors.transparent,
                       focusColor: Colors.transparent,
@@ -107,7 +118,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                         context.pushNamed(
                           'Search',
                           extra: <String, dynamic>{
-                            kTransitionInfoKey: TransitionInfo(
+                            kTransitionInfoKey: const TransitionInfo(
                               hasTransition: true,
                               transitionType: PageTransitionType.bottomToTop,
                               duration: Duration(milliseconds: 300),
@@ -123,11 +134,11 @@ class _FeedWidgetState extends State<FeedWidget> {
                     ),
                   ),
                   Stack(
-                    alignment: AlignmentDirectional(0.0, -1.0),
+                    alignment: const AlignmentDirectional(0.0, -1.0),
                     children: [
                       Padding(
                         padding:
-                            EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 23.0, 0.0),
+                            const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 23.0, 0.0),
                         child: InkWell(
                           splashColor: Colors.transparent,
                           focusColor: Colors.transparent,
@@ -143,15 +154,13 @@ class _FeedWidgetState extends State<FeedWidget> {
                           ),
                         ),
                       ),
-                      if ((currentUserDocument?.unreadNotifications?.toList() ??
-                                  [])
-                              .length >
-                          0)
+                      if ((currentUserDocument?.unreadNotifications.toList() ??
+                                  []).isNotEmpty)
                         AuthUserStreamWidget(
                           builder: (context) => Container(
                             width: 10.0,
                             height: 10.0,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Color(0xFFF83639),
                               shape: BoxShape.circle,
                             ),
@@ -196,7 +205,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                       context.goNamed(
                         'Feed',
                         extra: <String, dynamic>{
-                          kTransitionInfoKey: TransitionInfo(
+                          kTransitionInfoKey: const TransitionInfo(
                             hasTransition: true,
                             transitionType: PageTransitionType.fade,
                             duration: Duration(milliseconds: 0),
@@ -216,7 +225,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                               mainAxisSize: MainAxisSize.max,
                               children: [
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       15.0, 0.0, 0.0, 0.0),
                                   child: Column(
                                     mainAxisSize: MainAxisSize.max,
@@ -226,13 +235,15 @@ class _FeedWidgetState extends State<FeedWidget> {
                                           queryBuilder: (storiesRecord) =>
                                               storiesRecord
                                                   .where(
-                                                      'expire_time',
-                                                      isGreaterThanOrEqualTo:
-                                                          getCurrentTimestamp)
+                                                    'expire_time',
+                                                    isGreaterThanOrEqualTo:
+                                                        getCurrentTimestamp,
+                                                  )
                                                   .where(
-                                                      'user',
-                                                      isEqualTo:
-                                                          currentUserReference)
+                                                    'user',
+                                                    isEqualTo:
+                                                        currentUserReference,
+                                                  )
                                                   .orderBy('expire_time',
                                                       descending: true),
                                           singleRecord: true,
@@ -240,7 +251,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                                         builder: (context, snapshot) {
                                           // Customize what your widget looks like when it's loading.
                                           if (!snapshot.hasData) {
-                                            return Center(
+                                            return const Center(
                                               child: SizedBox(
                                                 width: 12.0,
                                                 height: 12.0,
@@ -262,140 +273,96 @@ class _FeedWidgetState extends State<FeedWidget> {
                                               stackStoriesRecordList.isNotEmpty
                                                   ? stackStoriesRecordList.first
                                                   : null;
-                                          return Stack(
-                                            children: [
-                                              if (!(stackStoriesRecord != null))
-                                                Stack(
-                                                  alignment:
-                                                      AlignmentDirectional(
-                                                          1.2, 1.2),
-                                                  children: [
-                                                    AuthUserStreamWidget(
-                                                      builder: (context) =>
-                                                          Container(
-                                                        width: 60.0,
-                                                        height: 60.0,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .secondaryBackground,
-                                                          image:
-                                                              DecorationImage(
-                                                            fit: BoxFit.cover,
-                                                            image:
-                                                                Image.network(
-                                                              valueOrDefault<
-                                                                  String>(
-                                                                currentUserPhoto,
-                                                                'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg',
-                                                              ),
-                                                            ).image,
-                                                          ),
-                                                          shape:
-                                                              BoxShape.circle,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Container(
-                                                      width: 30.0,
-                                                      height: 30.0,
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .secondary,
-                                                        shape: BoxShape.circle,
-                                                        border: Border.all(
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .secondary,
-                                                          width: 3.0,
-                                                        ),
-                                                      ),
-                                                      child: Icon(
-                                                        Icons.add_rounded,
-                                                        color: Colors.white,
-                                                        size: 16.0,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              if (stackStoriesRecord != null)
-                                                Container(
-                                                  width: 65.0,
-                                                  height: 65.0,
-                                                  decoration: BoxDecoration(
-                                                    gradient: LinearGradient(
-                                                      colors: [
-                                                        Color(0xFF7C1E51),
-                                                        Color(0xFFDE0046),
-                                                        Color(0xFFF7A34B)
-                                                      ],
-                                                      stops: [0.0, 0.5, 1.0],
-                                                      begin:
-                                                          AlignmentDirectional(
-                                                              1.0, -1.0),
-                                                      end: AlignmentDirectional(
-                                                          -1.0, 1.0),
-                                                    ),
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  child: Align(
-                                                    alignment:
-                                                        AlignmentDirectional(
-                                                            0.0, 0.0),
-                                                    child: AuthUserStreamWidget(
-                                                      builder: (context) =>
-                                                          InkWell(
-                                                        splashColor:
-                                                            Colors.transparent,
-                                                        focusColor:
-                                                            Colors.transparent,
-                                                        hoverColor:
-                                                            Colors.transparent,
-                                                        highlightColor:
-                                                            Colors.transparent,
-                                                        onTap: () async {
-                                                          showModalBottomSheet(
-                                                            isScrollControlled:
-                                                                true,
-                                                            backgroundColor:
-                                                                Colors
-                                                                    .transparent,
-                                                            barrierColor: Color(
-                                                                0x00000000),
-                                                            context: context,
-                                                            builder: (context) {
-                                                              return GestureDetector(
-                                                                onTap: () => FocusScope.of(
-                                                                        context)
-                                                                    .requestFocus(
-                                                                        _model
-                                                                            .unfocusNode),
-                                                                child: Padding(
-                                                                  padding: MediaQuery
-                                                                      .viewInsetsOf(
-                                                                          context),
-                                                                  child:
-                                                                      StoryWidget(
-                                                                    story:
-                                                                        stackStoriesRecord,
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            },
-                                                          ).then((value) =>
-                                                              setState(() {}));
+                                          return InkWell(
+                                            splashColor: Colors.transparent,
+                                            focusColor: Colors.transparent,
+                                            hoverColor: Colors.transparent,
+                                            highlightColor: Colors.transparent,
+                                            onTap: () async {
+                                              final selectedMedia =
+                                                  await selectMediaWithSourceBottomSheet(
+                                                context: context,
+                                                allowPhoto: true,
+                                              );
+                                              if (selectedMedia != null &&
+                                                  selectedMedia.every((m) =>
+                                                      validateFileFormat(
+                                                          m.storagePath,
+                                                          context))) {
+                                                setState(() => _model
+                                                    .isDataUploading = true);
+                                                var selectedUploadedFiles =
+                                                    <FFUploadedFile>[];
 
-                                                          await Future.delayed(
-                                                              const Duration(
-                                                                  milliseconds:
-                                                                      5000));
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: Container(
+                                                var downloadUrls = <String>[];
+                                                try {
+                                                  selectedUploadedFiles =
+                                                      selectedMedia
+                                                          .map((m) =>
+                                                              FFUploadedFile(
+                                                                name: m
+                                                                    .storagePath
+                                                                    .split('/')
+                                                                    .last,
+                                                                bytes: m.bytes,
+                                                                height: m
+                                                                    .dimensions
+                                                                    ?.height,
+                                                                width: m
+                                                                    .dimensions
+                                                                    ?.width,
+                                                                blurHash:
+                                                                    m.blurHash,
+                                                              ))
+                                                          .toList();
+
+                                                  downloadUrls =
+                                                      (await Future.wait(
+                                                    selectedMedia.map(
+                                                      (m) async =>
+                                                          await uploadData(
+                                                              m.storagePath,
+                                                              m.bytes),
+                                                    ),
+                                                  ))
+                                                          .where(
+                                                              (u) => u != null)
+                                                          .map((u) => u!)
+                                                          .toList();
+                                                } finally {
+                                                  _model.isDataUploading =
+                                                      false;
+                                                }
+                                                if (selectedUploadedFiles
+                                                            .length ==
+                                                        selectedMedia.length &&
+                                                    downloadUrls.length ==
+                                                        selectedMedia.length) {
+                                                  setState(() {
+                                                    _model.uploadedLocalFile =
+                                                        selectedUploadedFiles
+                                                            .first;
+                                                    _model.uploadedFileUrl =
+                                                        downloadUrls.first;
+                                                  });
+                                                } else {
+                                                  setState(() {});
+                                                  return;
+                                                }
+                                              }
+                                            },
+                                            child: Stack(
+                                              children: [
+                                                if (!(stackStoriesRecord !=
+                                                    null))
+                                                  Stack(
+                                                    alignment:
+                                                        const AlignmentDirectional(
+                                                            1.2, 1.2),
+                                                    children: [
+                                                      AuthUserStreamWidget(
+                                                        builder: (context) =>
+                                                            Container(
                                                           width: 60.0,
                                                           height: 60.0,
                                                           decoration:
@@ -417,23 +384,160 @@ class _FeedWidgetState extends State<FeedWidget> {
                                                             ),
                                                             shape:
                                                                 BoxShape.circle,
-                                                            border: Border.all(
-                                                              color:
-                                                                  Colors.white,
-                                                              width: 2.0,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        width: 30.0,
+                                                        height: 30.0,
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .secondary,
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          border: Border.all(
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .secondary,
+                                                            width: 3.0,
+                                                          ),
+                                                        ),
+                                                        child: const Icon(
+                                                          Icons.add_rounded,
+                                                          color: Colors.white,
+                                                          size: 16.0,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                if (stackStoriesRecord != null)
+                                                  Container(
+                                                    width: 65.0,
+                                                    height: 65.0,
+                                                    decoration: const BoxDecoration(
+                                                      gradient: LinearGradient(
+                                                        colors: [
+                                                          Color(0xFF7C1E51),
+                                                          Color(0xFFDE0046),
+                                                          Color(0xFFF7A34B)
+                                                        ],
+                                                        stops: [0.0, 0.5, 1.0],
+                                                        begin:
+                                                            AlignmentDirectional(
+                                                                1.0, -1.0),
+                                                        end:
+                                                            AlignmentDirectional(
+                                                                -1.0, 1.0),
+                                                      ),
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Align(
+                                                      alignment:
+                                                          const AlignmentDirectional(
+                                                              0.0, 0.0),
+                                                      child:
+                                                          AuthUserStreamWidget(
+                                                        builder: (context) =>
+                                                            InkWell(
+                                                          splashColor: Colors
+                                                              .transparent,
+                                                          focusColor: Colors
+                                                              .transparent,
+                                                          hoverColor: Colors
+                                                              .transparent,
+                                                          highlightColor: Colors
+                                                              .transparent,
+                                                          onTap: () async {
+                                                            showModalBottomSheet(
+                                                              isScrollControlled:
+                                                                  true,
+                                                              backgroundColor:
+                                                                  Colors
+                                                                      .transparent,
+                                                              barrierColor: const Color(
+                                                                  0x00000000),
+                                                              context: context,
+                                                              builder:
+                                                                  (context) {
+                                                                return GestureDetector(
+                                                                  onTap: () => _model
+                                                                          .unfocusNode
+                                                                          .canRequestFocus
+                                                                      ? FocusScope.of(
+                                                                              context)
+                                                                          .requestFocus(_model
+                                                                              .unfocusNode)
+                                                                      : FocusScope.of(
+                                                                              context)
+                                                                          .unfocus(),
+                                                                  child:
+                                                                      Padding(
+                                                                    padding: MediaQuery
+                                                                        .viewInsetsOf(
+                                                                            context),
+                                                                    child:
+                                                                        StoryWidget(
+                                                                      story:
+                                                                          stackStoriesRecord,
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ).then((value) =>
+                                                                safeSetState(
+                                                                    () {}));
+
+                                                            await Future.delayed(
+                                                                const Duration(
+                                                                    milliseconds:
+                                                                        5000));
+                                                            Navigator.pop(
+                                                                context);
+                                                          },
+                                                          child: Container(
+                                                            width: 60.0,
+                                                            height: 60.0,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .secondaryBackground,
+                                                              image:
+                                                                  DecorationImage(
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                                image: Image
+                                                                    .network(
+                                                                  valueOrDefault<
+                                                                      String>(
+                                                                    currentUserPhoto,
+                                                                    'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg',
+                                                                  ),
+                                                                ).image,
+                                                              ),
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                              border:
+                                                                  Border.all(
+                                                                color: Colors
+                                                                    .white,
+                                                                width: 2.0,
+                                                              ),
                                                             ),
                                                           ),
                                                         ),
                                                       ),
                                                     ),
                                                   ),
-                                                ),
-                                            ],
+                                              ],
+                                            ),
                                           );
                                         },
                                       ),
                                       Padding(
-                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
                                             0.0, 13.0, 0.0, 0.0),
                                         child: Text(
                                           'Your story',
@@ -453,22 +557,23 @@ class _FeedWidgetState extends State<FeedWidget> {
                                   ),
                                 ),
                                 Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
                                       15.0, 0.0, 0.0, 0.0),
                                   child: StreamBuilder<List<StoriesRecord>>(
                                     stream: queryStoriesRecord(
                                       queryBuilder: (storiesRecord) =>
                                           storiesRecord
                                               .where(
-                                                  'expire_time',
-                                                  isGreaterThanOrEqualTo:
-                                                      getCurrentTimestamp)
+                                                'expire_time',
+                                                isGreaterThanOrEqualTo:
+                                                    getCurrentTimestamp,
+                                              )
                                               .orderBy('expire_time'),
                                     ),
                                     builder: (context, snapshot) {
                                       // Customize what your widget looks like when it's loading.
                                       if (!snapshot.hasData) {
-                                        return Center(
+                                        return const Center(
                                           child: SizedBox(
                                             width: 12.0,
                                             height: 12.0,
@@ -497,7 +602,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                                                 userStoriesStoriesRecord.user !=
                                                     currentUserReference,
                                             child: Padding(
-                                              padding: EdgeInsetsDirectional
+                                              padding: const EdgeInsetsDirectional
                                                   .fromSTEB(
                                                       0.0, 0.0, 15.0, 0.0),
                                               child: FutureBuilder<UsersRecord>(
@@ -508,7 +613,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                                                 builder: (context, snapshot) {
                                                   // Customize what your widget looks like when it's loading.
                                                   if (!snapshot.hasData) {
-                                                    return Center(
+                                                    return const Center(
                                                       child: SizedBox(
                                                         width: 12.0,
                                                         height: 12.0,
@@ -541,14 +646,21 @@ class _FeedWidgetState extends State<FeedWidget> {
                                                         backgroundColor:
                                                             Colors.transparent,
                                                         barrierColor:
-                                                            Color(0x00000000),
+                                                            const Color(0x00000000),
                                                         context: context,
                                                         builder: (context) {
                                                           return GestureDetector(
-                                                            onTap: () => FocusScope
-                                                                    .of(context)
-                                                                .requestFocus(_model
-                                                                    .unfocusNode),
+                                                            onTap: () => _model
+                                                                    .unfocusNode
+                                                                    .canRequestFocus
+                                                                ? FocusScope.of(
+                                                                        context)
+                                                                    .requestFocus(
+                                                                        _model
+                                                                            .unfocusNode)
+                                                                : FocusScope.of(
+                                                                        context)
+                                                                    .unfocus(),
                                                             child: Padding(
                                                               padding: MediaQuery
                                                                   .viewInsetsOf(
@@ -562,7 +674,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                                                           );
                                                         },
                                                       ).then((value) =>
-                                                          setState(() {}));
+                                                          safeSetState(() {}));
 
                                                       if (!userStoriesStoriesRecord
                                                           .views
@@ -571,10 +683,14 @@ class _FeedWidgetState extends State<FeedWidget> {
                                                         await userStoriesStoriesRecord
                                                             .reference
                                                             .update({
-                                                          'views': FieldValue
-                                                              .arrayUnion([
-                                                            currentUserReference
-                                                          ]),
+                                                          ...mapToFirestore(
+                                                            {
+                                                              'views': FieldValue
+                                                                  .arrayUnion([
+                                                                currentUserReference
+                                                              ]),
+                                                            },
+                                                          ),
                                                         });
                                                       }
                                                       await Future.delayed(
@@ -591,7 +707,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                                                           width: 65.0,
                                                           height: 65.0,
                                                           decoration:
-                                                              BoxDecoration(
+                                                              const BoxDecoration(
                                                             gradient:
                                                                 LinearGradient(
                                                               colors: [
@@ -628,16 +744,16 @@ class _FeedWidgetState extends State<FeedWidget> {
                                                                       .views
                                                                       .contains(
                                                                           currentUserReference)
-                                                                  ? Color(
+                                                                  ? const Color(
                                                                       0xFFDADADA)
-                                                                  : Color(
+                                                                  : const Color(
                                                                       0x00999999),
                                                               shape: BoxShape
                                                                   .circle,
                                                             ),
                                                             child: Align(
                                                               alignment:
-                                                                  AlignmentDirectional(
+                                                                  const AlignmentDirectional(
                                                                       0.0, 0.0),
                                                               child: Container(
                                                                 width: 60.0,
@@ -676,7 +792,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                                                         ),
                                                         Padding(
                                                           padding:
-                                                              EdgeInsetsDirectional
+                                                              const EdgeInsetsDirectional
                                                                   .fromSTEB(
                                                                       0.0,
                                                                       8.0,
@@ -722,12 +838,12 @@ class _FeedWidgetState extends State<FeedWidget> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
                                 0.0, 10.0, 0.0, 10.0),
                             child: Container(
                               width: double.infinity,
                               height: 0.5,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Color(0xFFDADADA),
                               ),
                             ),
@@ -736,7 +852,10 @@ class _FeedWidgetState extends State<FeedWidget> {
                               PostsRecord>(
                             pagingController: _model.setPostFeedController(
                               PostsRecord.collection
-                                  .where('deleted', isEqualTo: false)
+                                  .where(
+                                    'deleted',
+                                    isEqualTo: false,
+                                  )
                                   .orderBy('time_posted', descending: true),
                             ),
                             padding: EdgeInsets.zero,
@@ -747,7 +866,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                             builderDelegate:
                                 PagedChildBuilderDelegate<PostsRecord>(
                               // Customize what your widget looks like when it's loading the first page.
-                              firstPageProgressIndicatorBuilder: (_) => Center(
+                              firstPageProgressIndicatorBuilder: (_) => const Center(
                                 child: SizedBox(
                                   width: 12.0,
                                   height: 12.0,
@@ -759,7 +878,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                                 ),
                               ),
                               // Customize what your widget looks like when it's loading another page.
-                              newPageProgressIndicatorBuilder: (_) => Center(
+                              newPageProgressIndicatorBuilder: (_) => const Center(
                                 child: SizedBox(
                                   width: 12.0,
                                   height: 12.0,
@@ -814,7 +933,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                                 Material(
                                   color: Colors.transparent,
                                   elevation: 0.0,
-                                  shape: RoundedRectangleBorder(
+                                  shape: const RoundedRectangleBorder(
                                     borderRadius: BorderRadius.only(
                                       bottomLeft: Radius.circular(0.0),
                                       bottomRight: Radius.circular(0.0),
@@ -828,7 +947,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                                     decoration: BoxDecoration(
                                       color: FlutterFlowTheme.of(context)
                                           .secondaryBackground,
-                                      boxShadow: [
+                                      boxShadow: const [
                                         BoxShadow(
                                           blurRadius: 10.0,
                                           color: Color(0x1A57636C),
@@ -836,7 +955,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                                           spreadRadius: 0.1,
                                         )
                                       ],
-                                      borderRadius: BorderRadius.only(
+                                      borderRadius: const BorderRadius.only(
                                         bottomLeft: Radius.circular(0.0),
                                         bottomRight: Radius.circular(0.0),
                                         topLeft: Radius.circular(20.0),
@@ -896,7 +1015,7 @@ class _FeedWidgetState extends State<FeedWidget> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
                                           0.0, 0.0, 0.0, 10.0),
                                       child: FlutterFlowIconButton(
                                         borderColor: Colors.transparent,
@@ -913,10 +1032,10 @@ class _FeedWidgetState extends State<FeedWidget> {
                                         ),
                                         onPressed: () async {
                                           context.goNamed(
-                                            'Reels',
+                                            'Home',
                                             extra: <String, dynamic>{
                                               kTransitionInfoKey:
-                                                  TransitionInfo(
+                                                  const TransitionInfo(
                                                 hasTransition: true,
                                                 transitionType:
                                                     PageTransitionType

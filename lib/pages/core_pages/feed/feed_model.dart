@@ -1,23 +1,18 @@
-import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
-import '/components/post/post_widget.dart';
-import '/components/story/story_widget.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
-import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'dart:async';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'feed_widget.dart' show FeedWidget;
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:provider/provider.dart';
 
-class FeedModel extends FlutterFlowModel {
+class FeedModel extends FlutterFlowModel<FeedWidget> {
   ///  State fields for stateful widgets in this page.
 
   final unfocusNode = FocusNode();
+  bool isDataUploading = false;
+  FFUploadedFile uploadedLocalFile =
+      FFUploadedFile(bytes: Uint8List.fromList([]));
+  String uploadedFileUrl = '';
+
   // State field(s) for PostFeed widget.
 
   PagingController<DocumentSnapshot?, PostsRecord>? postFeedPagingController;
@@ -26,11 +21,15 @@ class FeedModel extends FlutterFlowModel {
 
   /// Initialization and disposal methods.
 
+  @override
   void initState(BuildContext context) {}
 
+  @override
   void dispose() {
     unfocusNode.dispose();
-    postFeedStreamSubscriptions.forEach((s) => s?.cancel());
+    for (var s in postFeedStreamSubscriptions) {
+      s?.cancel();
+    }
     postFeedPagingController?.dispose();
   }
 

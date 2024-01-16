@@ -34,7 +34,7 @@ export '/pages/messages/new_message/new_message_widget.dart'
     show NewMessageWidget;
 export '/pages/messages/individual_message/individual_message_widget.dart'
     show IndividualMessageWidget;
-export '/pages/reel/reels/reels_widget.dart' show ReelsWidget;
+export '/pages/reels/reels_widget.dart' show ReelsWidget;
 export '/pages/onboarding/intro/intro_widget.dart' show IntroWidget;
 export '/pages/onboarding/gender/gender_widget.dart' show GenderWidget;
 export '/pages/onboarding/agee/agee_widget.dart' show AgeeWidget;
@@ -46,4 +46,16 @@ export '/pages/core_pages/meal_planner/meal_planner_widget.dart'
     show MealPlannerWidget;
 export '/pages/core_pages/work_out_planner/work_out_planner_widget.dart'
     show WorkOutPlannerWidget;
-export '/pages/core_pages/home/home_widget.dart' show HomeWidget;
+export '/pages/home/home_widget.dart' show HomeWidget;
+export '/pages/core_pages/friends/friends_widget.dart' show FriendsWidget;
+export '/pages/core_pages/community/community_widget.dart' show CommunityWidget;
+export '/pages/core_pages/community_message/community_message_widget.dart'
+    show CommunityMessageWidget;
+export '/pages/core_pages/home_page/home_page_widget.dart' show HomePageWidget;
+export '/pages/core_pages/meal_deatils/meal_deatils_widget.dart'
+    show MealDeatilsWidget;
+export '/pages/core_pages/exercise/exercise_widget.dart' show ExerciseWidget;
+export '/pages/core_pages/exercise_detals/exercise_detals_widget.dart'
+    show ExerciseDetalsWidget;
+export '/pages/posts/reel_comment/reel_comment_widget.dart'
+    show ReelCommentWidget;

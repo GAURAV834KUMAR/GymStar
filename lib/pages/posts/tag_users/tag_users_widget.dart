@@ -2,13 +2,13 @@ import '/backend/backend.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'tag_users_model.dart';
 export 'tag_users_model.dart';
 
 class TagUsersWidget extends StatefulWidget {
-  const TagUsersWidget({Key? key}) : super(key: key);
+  const TagUsersWidget({super.key});
 
   @override
   _TagUsersWidgetState createState() => _TagUsersWidgetState();
@@ -36,10 +36,21 @@ class _TagUsersWidgetState extends State<TagUsersWidget> {
 
   @override
   Widget build(BuildContext context) {
+    if (isiOS) {
+      SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(
+          statusBarBrightness: Theme.of(context).brightness,
+          systemStatusBarContrastEnforced: true,
+        ),
+      );
+    }
+
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(_model.unfocusNode),
+      onTap: () => _model.unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
+          : FocusScope.of(context).unfocus(),
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -55,7 +66,7 @@ class _TagUsersWidgetState extends State<TagUsersWidget> {
           ),
           actions: [
             Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
+              padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -113,7 +124,7 @@ class _TagUsersWidgetState extends State<TagUsersWidget> {
                     ),
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(15.0, 15.0, 0.0, 6.0),
+                          const EdgeInsetsDirectional.fromSTEB(15.0, 15.0, 0.0, 6.0),
                       child: Text(
                         'Tag users',
                         style: FlutterFlowTheme.of(context).titleMedium,
@@ -121,7 +132,7 @@ class _TagUsersWidgetState extends State<TagUsersWidget> {
                     ),
                     Padding(
                       padding:
-                          EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 15.0),
+                          const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 15.0),
                       child: Text(
                         'Tag users so others know who is shown in the photo.',
                         style: FlutterFlowTheme.of(context).bodySmall.override(
@@ -133,14 +144,14 @@ class _TagUsersWidgetState extends State<TagUsersWidget> {
                     Container(
                       width: double.infinity,
                       height: 0.5,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Color(0xFFDADADA),
                       ),
                     ),
                     Container(
                       width: double.infinity,
                       height: 0.5,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         color: Color(0xFFDADADA),
                       ),
                     ),
@@ -149,7 +160,7 @@ class _TagUsersWidgetState extends State<TagUsersWidget> {
                 Expanded(
                   child: Padding(
                     padding:
-                        EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
+                        const EdgeInsetsDirectional.fromSTEB(15.0, 0.0, 15.0, 0.0),
                     child: Builder(
                       builder: (context) {
                         final taggedUsers = FFAppState().taggedUsers.toList();
@@ -160,7 +171,7 @@ class _TagUsersWidgetState extends State<TagUsersWidget> {
                             final taggedUsersItem =
                                 taggedUsers[taggedUsersIndex];
                             return Padding(
-                              padding: EdgeInsetsDirectional.fromSTEB(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
                                   0.0, 12.0, 0.0, 0.0),
                               child: StreamBuilder<UsersRecord>(
                                 stream:
@@ -168,7 +179,7 @@ class _TagUsersWidgetState extends State<TagUsersWidget> {
                                 builder: (context, snapshot) {
                                   // Customize what your widget looks like when it's loading.
                                   if (!snapshot.hasData) {
-                                    return Center(
+                                    return const Center(
                                       child: SizedBox(
                                         width: 12.0,
                                         height: 12.0,
@@ -189,7 +200,7 @@ class _TagUsersWidgetState extends State<TagUsersWidget> {
                                         width: 55.0,
                                         height: 55.0,
                                         clipBehavior: Clip.antiAlias,
-                                        decoration: BoxDecoration(
+                                        decoration: const BoxDecoration(
                                           shape: BoxShape.circle,
                                         ),
                                         child: Image.network(
@@ -203,7 +214,7 @@ class _TagUsersWidgetState extends State<TagUsersWidget> {
                                       Expanded(
                                         child: Padding(
                                           padding:
-                                              EdgeInsetsDirectional.fromSTEB(
+                                              const EdgeInsetsDirectional.fromSTEB(
                                                   12.0, 0.0, 0.0, 0.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
@@ -222,7 +233,7 @@ class _TagUsersWidgetState extends State<TagUsersWidget> {
                                                         ),
                                               ),
                                               Padding(
-                                                padding: EdgeInsetsDirectional
+                                                padding: const EdgeInsetsDirectional
                                                     .fromSTEB(
                                                         0.0, 2.0, 0.0, 0.0),
                                                 child: Text(

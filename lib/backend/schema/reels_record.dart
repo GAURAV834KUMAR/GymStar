@@ -6,13 +6,12 @@ import '/backend/schema/util/firestore_util.dart';
 import '/backend/schema/util/schema_util.dart';
 
 import 'index.dart';
-import '/flutter_flow/flutter_flow_util.dart';
 
 class ReelsRecord extends FirestoreRecord {
   ReelsRecord._(
-    DocumentReference reference,
-    Map<String, dynamic> data,
-  ) : super(reference, data) {
+    super.reference,
+    super.data,
+  ) {
     _initializeFields();
   }
 
@@ -36,11 +35,17 @@ class ReelsRecord extends FirestoreRecord {
   List<DocumentReference> get likes => _likes ?? const [];
   bool hasLikes() => _likes != null;
 
+  // "Video_url" field.
+  LatLng? _videoUrl;
+  LatLng? get videoUrl => _videoUrl;
+  bool hasVideoUrl() => _videoUrl != null;
+
   void _initializeFields() {
     _userId = snapshotData['User_id'] as DocumentReference?;
     _postDate = snapshotData['Post_date'] as DateTime?;
     _video = snapshotData['video'] as String?;
     _likes = getDataList(snapshotData['likes']);
+    _videoUrl = snapshotData['Video_url'] as LatLng?;
   }
 
   static CollectionReference get collection =>
@@ -80,12 +85,14 @@ Map<String, dynamic> createReelsRecordData({
   DocumentReference? userId,
   DateTime? postDate,
   String? video,
+  LatLng? videoUrl,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
       'User_id': userId,
       'Post_date': postDate,
       'video': video,
+      'Video_url': videoUrl,
     }.withoutNulls,
   );
 
@@ -101,12 +108,13 @@ class ReelsRecordDocumentEquality implements Equality<ReelsRecord> {
     return e1?.userId == e2?.userId &&
         e1?.postDate == e2?.postDate &&
         e1?.video == e2?.video &&
-        listEquality.equals(e1?.likes, e2?.likes);
+        listEquality.equals(e1?.likes, e2?.likes) &&
+        e1?.videoUrl == e2?.videoUrl;
   }
 
   @override
-  int hash(ReelsRecord? e) =>
-      const ListEquality().hash([e?.userId, e?.postDate, e?.video, e?.likes]);
+  int hash(ReelsRecord? e) => const ListEquality()
+      .hash([e?.userId, e?.postDate, e?.video, e?.likes, e?.videoUrl]);
 
   @override
   bool isValidKey(Object? o) => o is ReelsRecord;
