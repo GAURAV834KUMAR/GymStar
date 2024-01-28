@@ -32,19 +32,20 @@ class _EditPostWidgetState extends State<EditPostWidget> {
     _model = createModel(context, () => EditPostModel());
 
     // On page load action.
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      FFAppState().update(() {
-        FFAppState().location = widget.post!.location;
-        FFAppState().taggedUsers =
-            widget.post!.taggedUsers.toList().cast<DocumentReference>();
-      });
-      FFAppState().update(() {
-        FFAppState().uploadPhoto = widget.post!.postPhoto;
-      });
-    });
+SchedulerBinding.instance.addPostFrameCallback((_) async {
+  FFAppState().update(() {
+    FFAppState().location = widget.post?.location;
+    FFAppState().taggedUsers = widget.post?.taggedUsers
+        ?.toList()
+        ?.cast<DocumentReference>() ?? [];
+  });
+  FFAppState().update(() {
+    FFAppState().uploadPhoto = widget.post?.postPhoto;
+  });
+});
 
-    _model.textController ??=
-        TextEditingController(text: widget.post?.postCaption);
+_model.textController ??=
+    TextEditingController(text: widget.post?.postCaption ?? '');
     _model.textFieldFocusNode ??= FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
