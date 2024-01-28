@@ -11,7 +11,7 @@ class TagUsersWidget extends StatefulWidget {
   const TagUsersWidget({super.key});
 
   @override
-  _TagUsersWidgetState createState() => _TagUsersWidgetState();
+  State<TagUsersWidget> createState() => _TagUsersWidgetState();
 }
 
 class _TagUsersWidgetState extends State<TagUsersWidget> {

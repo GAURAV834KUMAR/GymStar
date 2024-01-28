@@ -24,7 +24,7 @@ class LoginWidget extends StatefulWidget {
   final double? weight;
 
   @override
-  _LoginWidgetState createState() => _LoginWidgetState();
+  State<LoginWidget> createState() => _LoginWidgetState();
 }
 
 class _LoginWidgetState extends State<LoginWidget> {

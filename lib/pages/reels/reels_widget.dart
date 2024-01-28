@@ -20,7 +20,7 @@ class ReelsWidget extends StatefulWidget {
   const ReelsWidget({super.key});
 
   @override
-  _ReelsWidgetState createState() => _ReelsWidgetState();
+  State<ReelsWidget> createState() => _ReelsWidgetState();
 }
 
 class _ReelsWidgetState extends State<ReelsWidget>

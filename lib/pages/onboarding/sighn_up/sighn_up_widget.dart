@@ -24,7 +24,7 @@ class SighnUpWidget extends StatefulWidget {
   final double? weight;
 
   @override
-  _SighnUpWidgetState createState() => _SighnUpWidgetState();
+  State<SighnUpWidget> createState() => _SighnUpWidgetState();
 }
 
 class _SighnUpWidgetState extends State<SighnUpWidget> {

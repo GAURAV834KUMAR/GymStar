@@ -17,7 +17,7 @@ class WeightWidget extends StatefulWidget {
   final double? age;
 
   @override
-  _WeightWidgetState createState() => _WeightWidgetState();
+  State<WeightWidget> createState() => _WeightWidgetState();
 }
 
 class _WeightWidgetState extends State<WeightWidget> {

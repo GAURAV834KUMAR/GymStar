@@ -10,7 +10,7 @@ class GenderWidget extends StatefulWidget {
   const GenderWidget({super.key});
 
   @override
-  _GenderWidgetState createState() => _GenderWidgetState();
+  State<GenderWidget> createState() => _GenderWidgetState();
 }
 
 class _GenderWidgetState extends State<GenderWidget> {

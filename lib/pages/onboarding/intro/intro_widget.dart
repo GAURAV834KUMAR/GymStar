@@ -13,7 +13,7 @@ class IntroWidget extends StatefulWidget {
   const IntroWidget({super.key});
 
   @override
-  _IntroWidgetState createState() => _IntroWidgetState();
+  State<IntroWidget> createState() => _IntroWidgetState();
 }
 
 class _IntroWidgetState extends State<IntroWidget> {

@@ -18,7 +18,7 @@ class PostOptionsWidget extends StatefulWidget {
   final PostsRecord? post;
 
   @override
-  _PostOptionsWidgetState createState() => _PostOptionsWidgetState();
+  State<PostOptionsWidget> createState() => _PostOptionsWidgetState();
 }
 
 class _PostOptionsWidgetState extends State<PostOptionsWidget> {

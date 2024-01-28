@@ -19,7 +19,7 @@ class NewFollowerNotificationWidget extends StatefulWidget {
   final NotificationsRecord? notification;
 
   @override
-  _NewFollowerNotificationWidgetState createState() =>
+  State<NewFollowerNotificationWidget> createState() =>
       _NewFollowerNotificationWidgetState();
 }
 

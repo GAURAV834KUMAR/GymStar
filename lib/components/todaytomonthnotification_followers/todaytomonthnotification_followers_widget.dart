@@ -19,7 +19,7 @@ class TodaytomonthnotificationFollowersWidget extends StatefulWidget {
   final NotificationsRecord? notification;
 
   @override
-  _TodaytomonthnotificationFollowersWidgetState createState() =>
+  State<TodaytomonthnotificationFollowersWidget> createState() =>
       _TodaytomonthnotificationFollowersWidgetState();
 }
 

@@ -25,7 +25,7 @@ class ProfileOtherWidget extends StatefulWidget {
   final String? username;
 
   @override
-  _ProfileOtherWidgetState createState() => _ProfileOtherWidgetState();
+  State<ProfileOtherWidget> createState() => _ProfileOtherWidgetState();
 }
 
 class _ProfileOtherWidgetState extends State<ProfileOtherWidget>

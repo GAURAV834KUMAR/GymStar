@@ -22,7 +22,7 @@ class SignUpUsernameWidget extends StatefulWidget {
   final double? weight;
 
   @override
-  _SignUpUsernameWidgetState createState() => _SignUpUsernameWidgetState();
+  State<SignUpUsernameWidget> createState() => _SignUpUsernameWidgetState();
 }
 
 class _SignUpUsernameWidgetState extends State<SignUpUsernameWidget> {

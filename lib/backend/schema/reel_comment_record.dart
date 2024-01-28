@@ -43,8 +43,8 @@ class ReelCommentRecord extends FirestoreRecord {
           ? parent.collection('Reel_comment')
           : FirebaseFirestore.instance.collectionGroup('Reel_comment');
 
-  static DocumentReference createDoc(DocumentReference parent) =>
-      parent.collection('Reel_comment').doc();
+  static DocumentReference createDoc(DocumentReference parent, {String? id}) =>
+      parent.collection('Reel_comment').doc(id);
 
   static Stream<ReelCommentRecord> getDocument(DocumentReference ref) =>
       ref.snapshots().map((s) => ReelCommentRecord.fromSnapshot(s));

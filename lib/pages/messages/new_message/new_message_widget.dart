@@ -17,7 +17,7 @@ class NewMessageWidget extends StatefulWidget {
   const NewMessageWidget({super.key});
 
   @override
-  _NewMessageWidgetState createState() => _NewMessageWidgetState();
+  State<NewMessageWidget> createState() => _NewMessageWidgetState();
 }
 
 class _NewMessageWidgetState extends State<NewMessageWidget> {

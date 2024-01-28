@@ -20,7 +20,7 @@ class PostDetailsWidget extends StatefulWidget {
   final DocumentReference? post;
 
   @override
-  _PostDetailsWidgetState createState() => _PostDetailsWidgetState();
+  State<PostDetailsWidget> createState() => _PostDetailsWidgetState();
 }
 
 class _PostDetailsWidgetState extends State<PostDetailsWidget> {

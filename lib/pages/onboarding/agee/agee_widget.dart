@@ -15,7 +15,7 @@ class AgeeWidget extends StatefulWidget {
   final String? gender;
 
   @override
-  _AgeeWidgetState createState() => _AgeeWidgetState();
+  State<AgeeWidget> createState() => _AgeeWidgetState();
 }
 
 class _AgeeWidgetState extends State<AgeeWidget> {

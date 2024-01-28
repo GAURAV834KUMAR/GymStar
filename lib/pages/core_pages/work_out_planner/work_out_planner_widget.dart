@@ -12,7 +12,7 @@ class WorkOutPlannerWidget extends StatefulWidget {
   const WorkOutPlannerWidget({super.key});
 
   @override
-  _WorkOutPlannerWidgetState createState() => _WorkOutPlannerWidgetState();
+  State<WorkOutPlannerWidget> createState() => _WorkOutPlannerWidgetState();
 }
 
 class _WorkOutPlannerWidgetState extends State<WorkOutPlannerWidget>

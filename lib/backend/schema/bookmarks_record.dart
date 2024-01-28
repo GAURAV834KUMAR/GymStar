@@ -31,8 +31,8 @@ class BookmarksRecord extends FirestoreRecord {
           ? parent.collection('bookmarks')
           : FirebaseFirestore.instance.collectionGroup('bookmarks');
 
-  static DocumentReference createDoc(DocumentReference parent) =>
-      parent.collection('bookmarks').doc();
+  static DocumentReference createDoc(DocumentReference parent, {String? id}) =>
+      parent.collection('bookmarks').doc(id);
 
   static Stream<BookmarksRecord> getDocument(DocumentReference ref) =>
       ref.snapshots().map((s) => BookmarksRecord.fromSnapshot(s));

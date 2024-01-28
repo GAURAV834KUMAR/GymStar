@@ -19,7 +19,7 @@ class ReelCommentWidget extends StatefulWidget {
   final DocumentReference? reels;
 
   @override
-  _ReelCommentWidgetState createState() => _ReelCommentWidgetState();
+  State<ReelCommentWidget> createState() => _ReelCommentWidgetState();
 }
 
 class _ReelCommentWidgetState extends State<ReelCommentWidget> {

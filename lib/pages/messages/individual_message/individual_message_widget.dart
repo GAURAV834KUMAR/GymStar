@@ -20,7 +20,7 @@ class IndividualMessageWidget extends StatefulWidget {
   final DocumentReference? chat;
 
   @override
-  _IndividualMessageWidgetState createState() =>
+  State<IndividualMessageWidget> createState() =>
       _IndividualMessageWidgetState();
 }
 

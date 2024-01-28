@@ -10,7 +10,7 @@ class NavBar1Widget extends StatefulWidget {
   const NavBar1Widget({super.key});
 
   @override
-  _NavBar1WidgetState createState() => _NavBar1WidgetState();
+  State<NavBar1Widget> createState() => _NavBar1WidgetState();
 }
 
 class _NavBar1WidgetState extends State<NavBar1Widget> {

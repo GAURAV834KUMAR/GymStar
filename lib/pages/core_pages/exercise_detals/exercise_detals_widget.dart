@@ -12,7 +12,7 @@ class ExerciseDetalsWidget extends StatefulWidget {
   const ExerciseDetalsWidget({super.key});
 
   @override
-  _ExerciseDetalsWidgetState createState() => _ExerciseDetalsWidgetState();
+  State<ExerciseDetalsWidget> createState() => _ExerciseDetalsWidgetState();
 }
 
 class _ExerciseDetalsWidgetState extends State<ExerciseDetalsWidget> {

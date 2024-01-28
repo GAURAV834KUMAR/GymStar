@@ -21,7 +21,7 @@ class SignUpUsernameConfirmationWidget extends StatefulWidget {
   final double? weight;
 
   @override
-  _SignUpUsernameConfirmationWidgetState createState() =>
+  State<SignUpUsernameConfirmationWidget> createState() =>
       _SignUpUsernameConfirmationWidgetState();
 }
 

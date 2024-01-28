@@ -11,7 +11,7 @@ class CallToActionWidget extends StatefulWidget {
   const CallToActionWidget({super.key});
 
   @override
-  _CallToActionWidgetState createState() => _CallToActionWidgetState();
+  State<CallToActionWidget> createState() => _CallToActionWidgetState();
 }
 
 class _CallToActionWidgetState extends State<CallToActionWidget> {

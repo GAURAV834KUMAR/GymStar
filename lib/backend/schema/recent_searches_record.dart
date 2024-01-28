@@ -37,8 +37,8 @@ class RecentSearchesRecord extends FirestoreRecord {
           ? parent.collection('recent_searches')
           : FirebaseFirestore.instance.collectionGroup('recent_searches');
 
-  static DocumentReference createDoc(DocumentReference parent) =>
-      parent.collection('recent_searches').doc();
+  static DocumentReference createDoc(DocumentReference parent, {String? id}) =>
+      parent.collection('recent_searches').doc(id);
 
   static Stream<RecentSearchesRecord> getDocument(DocumentReference ref) =>
       ref.snapshots().map((s) => RecentSearchesRecord.fromSnapshot(s));

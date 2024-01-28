@@ -19,7 +19,7 @@ class PersonalPostOptionsWidget extends StatefulWidget {
   final PostsRecord? post;
 
   @override
-  _PersonalPostOptionsWidgetState createState() =>
+  State<PersonalPostOptionsWidget> createState() =>
       _PersonalPostOptionsWidgetState();
 }
 

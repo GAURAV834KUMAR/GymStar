@@ -21,7 +21,7 @@ class FriendsWidget extends StatefulWidget {
   const FriendsWidget({super.key});
 
   @override
-  _FriendsWidgetState createState() => _FriendsWidgetState();
+  State<FriendsWidget> createState() => _FriendsWidgetState();
 }
 
 class _FriendsWidgetState extends State<FriendsWidget>

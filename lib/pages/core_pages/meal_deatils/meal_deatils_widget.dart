@@ -10,7 +10,7 @@ class MealDeatilsWidget extends StatefulWidget {
   const MealDeatilsWidget({super.key});
 
   @override
-  _MealDeatilsWidgetState createState() => _MealDeatilsWidgetState();
+  State<MealDeatilsWidget> createState() => _MealDeatilsWidgetState();
 }
 
 class _MealDeatilsWidgetState extends State<MealDeatilsWidget> {

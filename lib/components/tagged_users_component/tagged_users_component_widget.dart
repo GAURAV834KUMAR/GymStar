@@ -18,7 +18,7 @@ class TaggedUsersComponentWidget extends StatefulWidget {
   final DocumentReference? user;
 
   @override
-  _TaggedUsersComponentWidgetState createState() =>
+  State<TaggedUsersComponentWidget> createState() =>
       _TaggedUsersComponentWidgetState();
 }
 

@@ -13,7 +13,7 @@ class FollowersFollowingWidget extends StatefulWidget {
   const FollowersFollowingWidget({super.key});
 
   @override
-  _FollowersFollowingWidgetState createState() =>
+  State<FollowersFollowingWidget> createState() =>
       _FollowersFollowingWidgetState();
 }
 

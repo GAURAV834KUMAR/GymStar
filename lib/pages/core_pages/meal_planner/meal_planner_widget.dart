@@ -15,7 +15,7 @@ class MealPlannerWidget extends StatefulWidget {
   const MealPlannerWidget({super.key});
 
   @override
-  _MealPlannerWidgetState createState() => _MealPlannerWidgetState();
+  State<MealPlannerWidget> createState() => _MealPlannerWidgetState();
 }
 
 class _MealPlannerWidgetState extends State<MealPlannerWidget> {

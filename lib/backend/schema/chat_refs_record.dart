@@ -37,8 +37,8 @@ class ChatRefsRecord extends FirestoreRecord {
           ? parent.collection('chatRefs')
           : FirebaseFirestore.instance.collectionGroup('chatRefs');
 
-  static DocumentReference createDoc(DocumentReference parent) =>
-      parent.collection('chatRefs').doc();
+  static DocumentReference createDoc(DocumentReference parent, {String? id}) =>
+      parent.collection('chatRefs').doc(id);
 
   static Stream<ChatRefsRecord> getDocument(DocumentReference ref) =>
       ref.snapshots().map((s) => ChatRefsRecord.fromSnapshot(s));

@@ -25,7 +25,7 @@ class PostWidget extends StatefulWidget {
   final PostsRecord? post;
 
   @override
-  _PostWidgetState createState() => _PostWidgetState();
+  State<PostWidget> createState() => _PostWidgetState();
 }
 
 class _PostWidgetState extends State<PostWidget> with TickerProviderStateMixin {

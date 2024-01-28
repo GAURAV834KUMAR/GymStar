@@ -16,7 +16,7 @@ class TaggedUsersWidget extends StatefulWidget {
   final PostsRecord? post;
 
   @override
-  _TaggedUsersWidgetState createState() => _TaggedUsersWidgetState();
+  State<TaggedUsersWidget> createState() => _TaggedUsersWidgetState();
 }
 
 class _TaggedUsersWidgetState extends State<TaggedUsersWidget> {

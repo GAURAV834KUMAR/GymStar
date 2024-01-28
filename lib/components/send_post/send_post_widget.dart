@@ -18,7 +18,7 @@ class SendPostWidget extends StatefulWidget {
   final DocumentReference? comment;
 
   @override
-  _SendPostWidgetState createState() => _SendPostWidgetState();
+  State<SendPostWidget> createState() => _SendPostWidgetState();
 }
 
 class _SendPostWidgetState extends State<SendPostWidget> {

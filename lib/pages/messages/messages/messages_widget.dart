@@ -13,7 +13,7 @@ class MessagesWidget extends StatefulWidget {
   const MessagesWidget({super.key});
 
   @override
-  _MessagesWidgetState createState() => _MessagesWidgetState();
+  State<MessagesWidget> createState() => _MessagesWidgetState();
 }
 
 class _MessagesWidgetState extends State<MessagesWidget> {

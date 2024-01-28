@@ -18,7 +18,7 @@ class FollowerComponantWidget extends StatefulWidget {
   final DocumentReference? users;
 
   @override
-  _FollowerComponantWidgetState createState() =>
+  State<FollowerComponantWidget> createState() =>
       _FollowerComponantWidgetState();
 }
 

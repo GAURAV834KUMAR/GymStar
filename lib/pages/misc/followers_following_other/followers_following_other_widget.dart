@@ -17,7 +17,7 @@ class FollowersFollowingOtherWidget extends StatefulWidget {
   final DocumentReference? userRef;
 
   @override
-  _FollowersFollowingOtherWidgetState createState() =>
+  State<FollowersFollowingOtherWidget> createState() =>
       _FollowersFollowingOtherWidgetState();
 }
 

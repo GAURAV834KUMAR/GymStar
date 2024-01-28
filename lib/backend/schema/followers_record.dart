@@ -31,8 +31,8 @@ class FollowersRecord extends FirestoreRecord {
           ? parent.collection('followers')
           : FirebaseFirestore.instance.collectionGroup('followers');
 
-  static DocumentReference createDoc(DocumentReference parent) =>
-      parent.collection('followers').doc();
+  static DocumentReference createDoc(DocumentReference parent, {String? id}) =>
+      parent.collection('followers').doc(id);
 
   static Stream<FollowersRecord> getDocument(DocumentReference ref) =>
       ref.snapshots().map((s) => FollowersRecord.fromSnapshot(s));

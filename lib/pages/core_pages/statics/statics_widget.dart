@@ -15,7 +15,7 @@ class StaticsWidget extends StatefulWidget {
   const StaticsWidget({super.key});
 
   @override
-  _StaticsWidgetState createState() => _StaticsWidgetState();
+  State<StaticsWidget> createState() => _StaticsWidgetState();
 }
 
 class _StaticsWidgetState extends State<StaticsWidget> {

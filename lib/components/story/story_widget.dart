@@ -18,7 +18,7 @@ class StoryWidget extends StatefulWidget {
   final StoriesRecord? story;
 
   @override
-  _StoryWidgetState createState() => _StoryWidgetState();
+  State<StoryWidget> createState() => _StoryWidgetState();
 }
 
 class _StoryWidgetState extends State<StoryWidget>

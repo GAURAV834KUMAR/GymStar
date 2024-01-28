@@ -23,7 +23,7 @@ class CommentsWidget extends StatefulWidget {
   final DocumentReference? post;
 
   @override
-  _CommentsWidgetState createState() => _CommentsWidgetState();
+  State<CommentsWidget> createState() => _CommentsWidgetState();
 }
 
 class _CommentsWidgetState extends State<CommentsWidget>

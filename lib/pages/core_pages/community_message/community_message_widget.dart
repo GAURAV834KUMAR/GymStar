@@ -12,7 +12,7 @@ class CommunityMessageWidget extends StatefulWidget {
   const CommunityMessageWidget({super.key});
 
   @override
-  _CommunityMessageWidgetState createState() => _CommunityMessageWidgetState();
+  State<CommunityMessageWidget> createState() => _CommunityMessageWidgetState();
 }
 
 class _CommunityMessageWidgetState extends State<CommunityMessageWidget> {

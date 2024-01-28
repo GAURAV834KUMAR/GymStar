@@ -14,7 +14,7 @@ class SelectTaggedUsersWidget extends StatefulWidget {
   const SelectTaggedUsersWidget({super.key});
 
   @override
-  _SelectTaggedUsersWidgetState createState() =>
+  State<SelectTaggedUsersWidget> createState() =>
       _SelectTaggedUsersWidgetState();
 }
 

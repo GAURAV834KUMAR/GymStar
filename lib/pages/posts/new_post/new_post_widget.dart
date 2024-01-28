@@ -19,7 +19,7 @@ class NewPostWidget extends StatefulWidget {
   const NewPostWidget({super.key});
 
   @override
-  _NewPostWidgetState createState() => _NewPostWidgetState();
+  State<NewPostWidget> createState() => _NewPostWidgetState();
 }
 
 class _NewPostWidgetState extends State<NewPostWidget>

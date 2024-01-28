@@ -20,7 +20,7 @@ class FeedWidget extends StatefulWidget {
   const FeedWidget({super.key});
 
   @override
-  _FeedWidgetState createState() => _FeedWidgetState();
+  State<FeedWidget> createState() => _FeedWidgetState();
 }
 
 class _FeedWidgetState extends State<FeedWidget> {
