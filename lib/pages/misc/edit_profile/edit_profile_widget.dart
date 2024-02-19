@@ -292,7 +292,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                           child: Image.network(
                             valueOrDefault<String>(
                               FFAppState().tempProfilePic,
-                              'https://s3-alpha-sig.figma.com/img/1f66/0f6b/0ae28255678cd801cb5f66b59349556b?Expires=1704067200&Signature=nledfebyYVoVBllXTy5YWmv0s6YkXhWoXoIT3hK-gBdEruA4ZSnPQSClcvOeCpHCdyVtjv2lfYqmKSnEQaMVX6QyEKHWEb-RMO28eRA9iY1fa-3blb1zAlPwEj-KAPph167hdKZPcs7zA4GPx84biwxQWEQW1HxgEv7u6YM3Nfcwh5HKWIe0h2nrAaNEgT3vGw~jKhGeZe5XVeOv89mVsp7LAKy~XgeKmckuBuwYPZ06bOspt7gSIm72IaOvS29Mc5vZx4S62adSnZLJdwyMFGrYcsf6U9XJAAax2ev1j7OT80LDZq7Vta9AIx7aEKC7CK9DLjHw55eBl7U-2kcoIQ__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4',
+                              'https://nft-marketplace-website.netlify.app/static/media/ava-03.d5247c0b.png',
                             ),
                             fit: BoxFit.cover,
                           ),

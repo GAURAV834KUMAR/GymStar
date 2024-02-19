@@ -190,42 +190,65 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                     child: Padding(
                                       padding: const EdgeInsetsDirectional.fromSTEB(
                                           8.0, 0.0, 8.0, 0.0),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.max,
-                                        children: [
-                                          const Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    4.0, 0.0, 4.0, 0.0),
-                                            child: Icon(
-                                              Icons.search_rounded,
-                                              color: Color(0xFF95A1AC),
-                                              size: 24.0,
-                                            ),
-                                          ),
-                                          Text(
-                                            'Search...',
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyMedium
-                                                .override(
-                                                  fontFamily: 'Inter',
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .secondaryText,
-                                                ),
-                                          ),
-                                          const Expanded(
-                                            child: Align(
-                                              alignment: AlignmentDirectional(
-                                                  0.95, 0.0),
+                                      child: InkWell(
+                                        splashColor: Colors.transparent,
+                                        focusColor: Colors.transparent,
+                                        hoverColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        onTap: () async {
+                                          context.pushNamed(
+                                            'Search',
+                                            extra: <String, dynamic>{
+                                              kTransitionInfoKey:
+                                                  const TransitionInfo(
+                                                hasTransition: true,
+                                                transitionType:
+                                                    PageTransitionType
+                                                        .bottomToTop,
+                                                duration:
+                                                    Duration(milliseconds: 300),
+                                              ),
+                                            },
+                                          );
+                                        },
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            const Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .fromSTEB(4.0, 0.0, 4.0, 0.0),
                                               child: Icon(
-                                                Icons.tune_rounded,
+                                                Icons.search_rounded,
                                                 color: Color(0xFF95A1AC),
                                                 size: 24.0,
                                               ),
                                             ),
-                                          ),
-                                        ],
+                                            Text(
+                                              'Search...',
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        color:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .secondaryText,
+                                                      ),
+                                            ),
+                                            const Expanded(
+                                              child: Align(
+                                                alignment: AlignmentDirectional(
+                                                    0.95, 0.0),
+                                                child: Icon(
+                                                  Icons.tune_rounded,
+                                                  color: Color(0xFF95A1AC),
+                                                  size: 24.0,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -667,6 +690,31 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'This page is under Development.',
+                                      style: TextStyle(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryText,
+                                      ),
+                                    ),
+                                    duration: const Duration(milliseconds: 10000),
+                                    backgroundColor:
+                                        FlutterFlowTheme.of(context)
+                                            .secondaryBackground,
+                                    action: SnackBarAction(
+                                      label: 'Ok',
+                                      textColor:
+                                          FlutterFlowTheme.of(context).primary,
+                                      onPressed: () async {
+                                        ScaffoldMessenger.of(context)
+                                            .hideCurrentSnackBar();
+                                      },
+                                    ),
+                                  ),
+                                );
+
                                 context.pushNamed(
                                   'Exercise',
                                   extra: <String, dynamic>{
@@ -990,6 +1038,31 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'This page is under Development.',
+                                      style: TextStyle(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryText,
+                                      ),
+                                    ),
+                                    duration: const Duration(milliseconds: 10000),
+                                    backgroundColor:
+                                        FlutterFlowTheme.of(context)
+                                            .secondaryBackground,
+                                    action: SnackBarAction(
+                                      label: 'Ok',
+                                      textColor:
+                                          FlutterFlowTheme.of(context).primary,
+                                      onPressed: () async {
+                                        ScaffoldMessenger.of(context)
+                                            .hideCurrentSnackBar();
+                                      },
+                                    ),
+                                  ),
+                                );
+
                                 context.pushNamed(
                                   'MealPlanner',
                                   extra: <String, dynamic>{
@@ -1197,6 +1270,31 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'This page is under Development.',
+                                      style: TextStyle(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryText,
+                                      ),
+                                    ),
+                                    duration: const Duration(milliseconds: 10000),
+                                    backgroundColor:
+                                        FlutterFlowTheme.of(context)
+                                            .secondaryBackground,
+                                    action: SnackBarAction(
+                                      label: 'Ok',
+                                      textColor:
+                                          FlutterFlowTheme.of(context).primary,
+                                      onPressed: () async {
+                                        ScaffoldMessenger.of(context)
+                                            .hideCurrentSnackBar();
+                                      },
+                                    ),
+                                  ),
+                                );
+
                                 context.pushNamed(
                                   'Exercise',
                                   extra: <String, dynamic>{

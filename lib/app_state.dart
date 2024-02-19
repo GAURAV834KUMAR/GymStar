@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '/backend/backend.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'flutter_flow/flutter_flow_util.dart';
 
@@ -29,6 +28,13 @@ class FFAppState extends ChangeNotifier {
     });
     _safeInit(() {
       _friends = prefs.getBool('ff_friends') ?? _friends;
+    });
+    _safeInit(() {
+      _Storyuid = prefs
+              .getStringList('ff_Storyuid')
+              ?.map((path) => path.ref)
+              .toList() ??
+          _Storyuid;
     });
   }
 
@@ -255,16 +261,46 @@ class FFAppState extends ChangeNotifier {
     _friends = value;
     prefs.setBool('ff_friends', value);
   }
-}
 
-LatLng? _latLngFromString(String? val) {
-  if (val == null) {
-    return null;
+  List<DocumentReference> _Storyuid = [
+    FirebaseFirestore.instance.doc('/users/T2FJdNDugYWfWe61MxEjOoUcK1o1'),
+    FirebaseFirestore.instance.doc('/users/YxopFJajqKVwvqX0QguIsCnVy1g2'),
+    FirebaseFirestore.instance.doc('/users/KuBy0hBG3pNNp5md4ZvcDuYxSLC2'),
+    FirebaseFirestore.instance.doc('/users/h4xVyAtmRmS0BQswbCWnlxJRpzZ2')
+  ];
+  List<DocumentReference> get Storyuid => _Storyuid;
+  set Storyuid(List<DocumentReference> value) {
+    _Storyuid = value;
+    prefs.setStringList('ff_Storyuid', value.map((x) => x.path).toList());
   }
-  final split = val.split(',');
-  final lat = double.parse(split.first);
-  final lng = double.parse(split.last);
-  return LatLng(lat, lng);
+
+  void addToStoryuid(DocumentReference value) {
+    _Storyuid.add(value);
+    prefs.setStringList('ff_Storyuid', _Storyuid.map((x) => x.path).toList());
+  }
+
+  void removeFromStoryuid(DocumentReference value) {
+    _Storyuid.remove(value);
+    prefs.setStringList('ff_Storyuid', _Storyuid.map((x) => x.path).toList());
+  }
+
+  void removeAtIndexFromStoryuid(int index) {
+    _Storyuid.removeAt(index);
+    prefs.setStringList('ff_Storyuid', _Storyuid.map((x) => x.path).toList());
+  }
+
+  void updateStoryuidAtIndex(
+    int index,
+    DocumentReference Function(DocumentReference) updateFn,
+  ) {
+    _Storyuid[index] = updateFn(_Storyuid[index]);
+    prefs.setStringList('ff_Storyuid', _Storyuid.map((x) => x.path).toList());
+  }
+
+  void insertAtIndexInStoryuid(int index, DocumentReference value) {
+    _Storyuid.insert(index, value);
+    prefs.setStringList('ff_Storyuid', _Storyuid.map((x) => x.path).toList());
+  }
 }
 
 void _safeInit(Function() initializeField) {

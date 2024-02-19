@@ -172,7 +172,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                               padding: const EdgeInsetsDirectional.fromSTEB(
                                   99.0, 58.0, 0.0, 0.0),
                               child: Text(
-                                'Sighn up',
+                                'Sign up',
                                 style: FlutterFlowTheme.of(context)
                                     .bodyMedium
                                     .override(
@@ -205,7 +205,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                           padding: const EdgeInsetsDirectional.fromSTEB(
                               32.0, 269.0, 134.0, 0.0),
                           child: Text(
-                            'ENTER YOUR INFORMATION BRLOW OR\nLOGIN WITH A OTHER ACCOUNT',
+                            'ENTER YOUR INFORMATION BELOW OR\nLOGIN WITH A OTHER ACCOUNT',
                             style: FlutterFlowTheme.of(context)
                                 .bodyMedium
                                 .override(
@@ -403,14 +403,15 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(8.0, 30.0, 8.0, 8.0),
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                            32.0, 48.0, 0.0, 44.0),
+                        padding:
+                            const EdgeInsetsDirectional.fromSTEB(32.0, 0.0, 0.0, 0.0),
                         child: InkWell(
                           splashColor: Colors.transparent,
                           focusColor: Colors.transparent,
@@ -468,8 +469,8 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                            21.0, 48.0, 0.0, 44.0),
+                        padding:
+                            const EdgeInsetsDirectional.fromSTEB(21.0, 0.0, 0.0, 0.0),
                         child: InkWell(
                           splashColor: Colors.transparent,
                           focusColor: Colors.transparent,
@@ -528,7 +529,7 @@ class _SighnUpWidgetState extends State<SighnUpWidget> {
                       ),
                       Padding(
                         padding: const EdgeInsetsDirectional.fromSTEB(
-                            56.0, 50.0, 32.0, 44.0),
+                            56.0, 0.0, 32.0, 0.0),
                         child: FutureBuilder<List<AdministrativeRecord>>(
                           future: queryAdministrativeRecordOnce(
                             singleRecord: true,

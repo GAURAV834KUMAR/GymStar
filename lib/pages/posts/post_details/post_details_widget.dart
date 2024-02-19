@@ -1,5 +1,4 @@
 import '/backend/backend.dart';
-import '/components/nav_bar1/nav_bar1_widget.dart';
 import '/components/post/post_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -318,10 +317,159 @@ class _PostDetailsWidgetState extends State<PostDetailsWidget> {
                         color: Color(0xFFDADADA),
                       ),
                     ),
-                    wrapWithModel(
-                      model: _model.navBar1Model,
-                      updateCallback: () => setState(() {}),
-                      child: const NavBar1Widget(),
+                    Align(
+                      alignment: const AlignmentDirectional(0.0, 1.0),
+                      child: Material(
+                        color: Colors.transparent,
+                        elevation: 0.0,
+                        child: Container(
+                          width: double.infinity,
+                          height: 80.0,
+                          decoration: BoxDecoration(
+                            color:
+                                FlutterFlowTheme.of(context).primaryBackground,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  context.pushNamed(
+                                    'HomePage',
+                                    extra: <String, dynamic>{
+                                      kTransitionInfoKey: const TransitionInfo(
+                                        hasTransition: true,
+                                        transitionType:
+                                            PageTransitionType.topToBottom,
+                                        duration: Duration(milliseconds: 300),
+                                      ),
+                                    },
+                                  );
+                                },
+                                child: Icon(
+                                  FFIcons.khome1,
+                                  color: FlutterFlowTheme.of(context).primary,
+                                  size: 26.0,
+                                ),
+                              ),
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  context.pushNamed(
+                                    'friends',
+                                    extra: <String, dynamic>{
+                                      kTransitionInfoKey: const TransitionInfo(
+                                        hasTransition: true,
+                                        transitionType:
+                                            PageTransitionType.rightToLeft,
+                                        duration: Duration(milliseconds: 300),
+                                      ),
+                                    },
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.people_outlined,
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryText,
+                                  size: 26.0,
+                                ),
+                              ),
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  context.pushNamed(
+                                    'Home',
+                                    extra: <String, dynamic>{
+                                      kTransitionInfoKey: const TransitionInfo(
+                                        hasTransition: true,
+                                        transitionType:
+                                            PageTransitionType.topToBottom,
+                                        duration: Duration(milliseconds: 300),
+                                      ),
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  width: 28.0,
+                                  height: 24.0,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: Image.asset(
+                                        Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? 'assets/images/video-play.png'
+                                            : 'assets/images/video-play_(1).png',
+                                      ).image,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  context.pushNamed('community');
+                                },
+                                child: Container(
+                                  width: 28.0,
+                                  height: 24.0,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: Image.asset(
+                                        Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? 'assets/images/users-group-alt_(1).png'
+                                            : 'assets/images/users-group-alt_(2).png',
+                                      ).image,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  context.pushNamed(
+                                    'Profile',
+                                    extra: <String, dynamic>{
+                                      kTransitionInfoKey: const TransitionInfo(
+                                        hasTransition: true,
+                                        transitionType:
+                                            PageTransitionType.rightToLeft,
+                                        duration: Duration(milliseconds: 300),
+                                      ),
+                                    },
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.person_outline,
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryText,
+                                  size: 26.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),

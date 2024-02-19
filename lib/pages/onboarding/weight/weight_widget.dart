@@ -143,7 +143,7 @@ class _WeightWidgetState extends State<WeightWidget> {
                         formatNumber(
                           _model.sliderValue,
                           formatType: FormatType.custom,
-                          format: '##',
+                          format: '####',
                           locale: '',
                         ),
                         style: FlutterFlowTheme.of(context).bodyMedium.override(
@@ -177,7 +177,7 @@ class _WeightWidgetState extends State<WeightWidget> {
                   activeColor: FlutterFlowTheme.of(context).secondary,
                   inactiveColor: FlutterFlowTheme.of(context).alternate,
                   min: 1.0,
-                  max: 650.0,
+                  max: 250.0,
                   value: _model.sliderValue ??= 6.0,
                   label: _model.sliderValue.toString(),
                   onChanged: (newValue) {

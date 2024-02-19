@@ -195,7 +195,7 @@ class _NewPostWidgetState extends State<NewPostWidget>
                         ),
                       }, postsRecordReference);
 
-                      context.goNamed('Feed');
+                      context.goNamed('Profile');
 
                       setState(() {});
                     },

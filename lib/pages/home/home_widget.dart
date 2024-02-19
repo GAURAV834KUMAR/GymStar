@@ -230,24 +230,62 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                                   5.0,
                                                                   0.0,
                                                                   0.0),
-                                                      child: Container(
-                                                        width: 45.0,
-                                                        height: 45.0,
-                                                        clipBehavior:
-                                                            Clip.antiAlias,
-                                                        decoration:
-                                                            const BoxDecoration(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                        ),
-                                                        child: Image.network(
-                                                          valueOrDefault<
-                                                              String>(
-                                                            containerUsersRecord
-                                                                .photoUrl,
-                                                            'https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/instagram-clone-6a0sgj/assets/62obke2jhqpi/b75634f17093e9fea11ed496765c8d29.jpeg',
+                                                      child: InkWell(
+                                                        splashColor:
+                                                            Colors.transparent,
+                                                        focusColor:
+                                                            Colors.transparent,
+                                                        hoverColor:
+                                                            Colors.transparent,
+                                                        highlightColor:
+                                                            Colors.transparent,
+                                                        onTap: () async {
+                                                          context.pushNamed(
+                                                            'ProfileOther',
+                                                            queryParameters: {
+                                                              'username':
+                                                                  serializeParam(
+                                                                containerUsersRecord
+                                                                    .username,
+                                                                ParamType
+                                                                    .String,
+                                                              ),
+                                                            }.withoutNulls,
+                                                            extra: <String,
+                                                                dynamic>{
+                                                              kTransitionInfoKey:
+                                                                  const TransitionInfo(
+                                                                hasTransition:
+                                                                    true,
+                                                                transitionType:
+                                                                    PageTransitionType
+                                                                        .rightToLeft,
+                                                                duration: Duration(
+                                                                    milliseconds:
+                                                                        300),
+                                                              ),
+                                                            },
+                                                          );
+                                                        },
+                                                        child: Container(
+                                                          width: 45.0,
+                                                          height: 45.0,
+                                                          clipBehavior:
+                                                              Clip.antiAlias,
+                                                          decoration:
+                                                              const BoxDecoration(
+                                                            shape:
+                                                                BoxShape.circle,
                                                           ),
-                                                          fit: BoxFit.cover,
+                                                          child: Image.network(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              containerUsersRecord
+                                                                  .photoUrl,
+                                                              'https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/instagram-clone-6a0sgj/assets/62obke2jhqpi/b75634f17093e9fea11ed496765c8d29.jpeg',
+                                                            ),
+                                                            fit: BoxFit.cover,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),

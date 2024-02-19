@@ -152,6 +152,7 @@ flutter:
       fonts:
         - asset: assets/fonts/InstagramIcons.ttf
 
+  
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
@@ -177,3 +178,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+

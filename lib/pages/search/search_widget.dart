@@ -1,7 +1,7 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/components/follower_componant/follower_componant_widget.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_timer.dart';
 import '/flutter_flow/flutter_flow_util.dart';
@@ -497,81 +497,13 @@ class _SearchWidgetState extends State<SearchWidget>
                                             child: Row(
                                               mainAxisSize: MainAxisSize.max,
                                               children: [
-                                                Container(
-                                                  width: 55.0,
-                                                  height: 55.0,
-                                                  clipBehavior: Clip.antiAlias,
-                                                  decoration: const BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                  ),
-                                                  child: Image.network(
-                                                    valueOrDefault<String>(
-                                                      searchUsersItem.photoUrl,
-                                                      'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg',
-                                                    ),
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
                                                 Expanded(
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsetsDirectional
-                                                            .fromSTEB(12.0, 0.0,
-                                                                0.0, 0.0),
-                                                    child: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.max,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          valueOrDefault<
-                                                              String>(
-                                                            searchUsersItem
-                                                                .displayName,
-                                                            'user',
-                                                          ),
-                                                          maxLines: 1,
-                                                          style: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .bodyMedium
-                                                              .override(
-                                                                fontFamily:
-                                                                    'Inter',
-                                                                fontSize: 14.0,
-                                                              ),
-                                                        ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsetsDirectional
-                                                                  .fromSTEB(
-                                                                      0.0,
-                                                                      2.0,
-                                                                      0.0,
-                                                                      0.0),
-                                                          child: Text(
-                                                            valueOrDefault<
-                                                                String>(
-                                                              searchUsersItem
-                                                                  .username,
-                                                              'username',
-                                                            ),
-                                                            maxLines: 1,
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodySmall
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Inter',
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .normal,
-                                                                ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                                  child:
+                                                      FollowerComponantWidget(
+                                                    key: Key(
+                                                        'Keygnv_${searchUsersIndex}_of_${searchUsers.length}'),
+                                                    users: searchUsersItem
+                                                        .reference,
                                                   ),
                                                 ),
                                               ],
@@ -920,221 +852,157 @@ class _SearchWidgetState extends State<SearchWidget>
                 Column(
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    Material(
-                      color: Colors.transparent,
-                      elevation: 0.0,
-                      child: Container(
-                        width: double.infinity,
-                        height: 90.0,
-                        decoration: BoxDecoration(
-                          color:
-                              FlutterFlowTheme.of(context).secondaryBackground,
-                        ),
-                        child: Stack(
-                          children: [
-                            Column(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Material(
-                                  color: Colors.transparent,
-                                  elevation: 0.0,
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(0.0),
-                                      bottomRight: Radius.circular(0.0),
-                                      topLeft: Radius.circular(20.0),
-                                      topRight: Radius.circular(20.0),
-                                    ),
-                                  ),
-                                  child: Container(
-                                    width: double.infinity,
-                                    height: 80.0,
-                                    decoration: BoxDecoration(
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryBackground,
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          blurRadius: 10.0,
-                                          color: Color(0x1A57636C),
-                                          offset: Offset(0.0, -10.0),
-                                          spreadRadius: 0.1,
-                                        )
-                                      ],
-                                      borderRadius: const BorderRadius.only(
-                                        bottomLeft: Radius.circular(0.0),
-                                        bottomRight: Radius.circular(0.0),
-                                        topLeft: Radius.circular(20.0),
-                                        topRight: Radius.circular(20.0),
+                    Align(
+                      alignment: const AlignmentDirectional(0.0, 1.0),
+                      child: Material(
+                        color: Colors.transparent,
+                        elevation: 0.0,
+                        child: Container(
+                          width: double.infinity,
+                          height: 80.0,
+                          decoration: BoxDecoration(
+                            color:
+                                FlutterFlowTheme.of(context).primaryBackground,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  context.pushNamed(
+                                    'HomePage',
+                                    extra: <String, dynamic>{
+                                      kTransitionInfoKey: const TransitionInfo(
+                                        hasTransition: true,
+                                        transitionType:
+                                            PageTransitionType.topToBottom,
+                                        duration: Duration(milliseconds: 300),
                                       ),
-                                    ),
-                                  ),
+                                    },
+                                  );
+                                },
+                                child: Icon(
+                                  FFIcons.khome1,
+                                  color: FlutterFlowTheme.of(context).primary,
+                                  size: 26.0,
                                 ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                InkWell(
-                                  splashColor: Colors.transparent,
-                                  focusColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () async {
-                                    context.pushNamed('Feed');
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: Image.asset(
-                                      Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? 'assets/images/Home_(1).png'
-                                          : 'assets/images/Home.png',
-                                      width: 24.0,
-                                      height: 24.0,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                InkWell(
-                                  splashColor: Colors.transparent,
-                                  focusColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () async {
-                                    context.pushNamed('Statics');
-                                  },
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: Image.asset(
-                                      'assets/images/Insight.png',
-                                      width: 24.0,
-                                      height: 24.0,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsetsDirectional.fromSTEB(
-                                          0.0, 0.0, 0.0, 10.0),
-                                      child: FlutterFlowIconButton(
-                                        borderColor: Colors.transparent,
-                                        borderRadius: 25.0,
-                                        borderWidth: 1.0,
-                                        buttonSize: 60.0,
-                                        fillColor: FlutterFlowTheme.of(context)
-                                            .secondary,
-                                        icon: Icon(
-                                          Icons.movie_filter,
-                                          color: FlutterFlowTheme.of(context)
-                                              .primaryBtnText,
-                                          size: 35.0,
-                                        ),
-                                        onPressed: () async {
-                                          context.goNamed(
-                                            'Home',
-                                            extra: <String, dynamic>{
-                                              kTransitionInfoKey:
-                                                  const TransitionInfo(
-                                                hasTransition: true,
-                                                transitionType:
-                                                    PageTransitionType
-                                                        .topToBottom,
-                                                duration:
-                                                    Duration(milliseconds: 300),
-                                              ),
-                                            },
-                                          );
-                                        },
+                              ),
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  context.pushNamed(
+                                    'friends',
+                                    extra: <String, dynamic>{
+                                      kTransitionInfoKey: const TransitionInfo(
+                                        hasTransition: true,
+                                        transitionType:
+                                            PageTransitionType.rightToLeft,
+                                        duration: Duration(milliseconds: 300),
                                       ),
-                                    ),
-                                  ],
+                                    },
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.people_outlined,
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryText,
+                                  size: 26.0,
                                 ),
-                                InkWell(
-                                  splashColor: Colors.transparent,
-                                  focusColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () async {
-                                    context.pushNamed('Notifications');
-                                  },
-                                  child: Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        child: Image.asset(
-                                          'assets/images/Notification.png',
-                                          width: 24.0,
-                                          height: 24.0,
-                                          fit: BoxFit.cover,
-                                        ),
+                              ),
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  context.pushNamed(
+                                    'Home',
+                                    extra: <String, dynamic>{
+                                      kTransitionInfoKey: const TransitionInfo(
+                                        hasTransition: true,
+                                        transitionType:
+                                            PageTransitionType.topToBottom,
+                                        duration: Duration(milliseconds: 300),
                                       ),
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        child: Image.asset(
-                                          'assets/images/Ellipse_28.png',
-                                          width: 10.0,
-                                          height: 10.0,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  width: 44.0,
-                                  height: 44.0,
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  width: 28.0,
+                                  height: 24.0,
                                   decoration: BoxDecoration(
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryBackground,
                                     image: DecorationImage(
                                       fit: BoxFit.cover,
                                       image: Image.asset(
-                                        'assets/images/Ellipse_29.png',
+                                        Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? 'assets/images/video-play.png'
+                                            : 'assets/images/video-play_(1).png',
                                       ).image,
                                     ),
                                   ),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      InkWell(
-                                        splashColor: Colors.transparent,
-                                        focusColor: Colors.transparent,
-                                        hoverColor: Colors.transparent,
-                                        highlightColor: Colors.transparent,
-                                        onTap: () async {
-                                          context.pushNamed('Profile');
-                                        },
-                                        child: Container(
-                                          width: 36.0,
-                                          height: 36.0,
-                                          decoration: BoxDecoration(
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryBackground,
-                                            image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: Image.asset(
-                                                'assets/images/59.png',
-                                              ).image,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                ),
+                              ),
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  context.pushNamed('community');
+                                },
+                                child: Container(
+                                  width: 28.0,
+                                  height: 24.0,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: Image.asset(
+                                        Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? 'assets/images/users-group-alt_(1).png'
+                                            : 'assets/images/users-group-alt_(2).png',
+                                      ).image,
+                                    ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
+                              ),
+                              InkWell(
+                                splashColor: Colors.transparent,
+                                focusColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+                                onTap: () async {
+                                  context.pushNamed(
+                                    'Profile',
+                                    extra: <String, dynamic>{
+                                      kTransitionInfoKey: const TransitionInfo(
+                                        hasTransition: true,
+                                        transitionType:
+                                            PageTransitionType.rightToLeft,
+                                        duration: Duration(milliseconds: 300),
+                                      ),
+                                    },
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.person_outline,
+                                  color: FlutterFlowTheme.of(context)
+                                      .secondaryText,
+                                  size: 26.0,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

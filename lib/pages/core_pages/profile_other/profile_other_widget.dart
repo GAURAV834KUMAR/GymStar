@@ -1,18 +1,18 @@
 import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
-import '/components/nav_bar1/nav_bar1_widget.dart';
 import '/components/story/story_widget.dart';
+import '/flutter_flow/flutter_flow_animations.dart';
+import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
-import '/flutter_flow/flutter_flow_timer.dart';
+import '/flutter_flow/flutter_flow_toggle_icon.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_video_player.dart';
-import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'profile_other_model.dart';
 export 'profile_other_model.dart';
 
@@ -36,6 +36,42 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
   late StreamSubscription<bool> _keyboardVisibilitySubscription;
   bool _isKeyboardVisible = false;
 
+  final animationsMap = {
+    'iconOnPageLoadAnimation': AnimationInfo(
+      trigger: AnimationTrigger.onPageLoad,
+      effects: [
+        ScaleEffect(
+          curve: Curves.elasticOut,
+          delay: 0.ms,
+          duration: 600.ms,
+          begin: const Offset(0.2, 0.2),
+          end: const Offset(1.0, 1.0),
+        ),
+      ],
+    ),
+    'iconOnActionTriggerAnimation': AnimationInfo(
+      trigger: AnimationTrigger.onActionTrigger,
+      applyInitialState: true,
+      effects: [
+        VisibilityEffect(duration: 1.ms),
+        ScaleEffect(
+          curve: Curves.elasticOut,
+          delay: 0.ms,
+          duration: 600.ms,
+          begin: const Offset(0.2, 0.2),
+          end: const Offset(1.0, 1.0),
+        ),
+        ScaleEffect(
+          curve: Curves.easeOut,
+          delay: 1000.ms,
+          duration: 150.ms,
+          begin: const Offset(1.0, 1.0),
+          end: const Offset(0.0, 0.0),
+        ),
+      ],
+    ),
+  };
+
   @override
   void initState() {
     super.initState();
@@ -50,11 +86,13 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
       });
     }
 
-    _model.tabBarController = TabController(
-      vsync: this,
-      length: 2,
-      initialIndex: 0,
-    )..addListener(() => setState(() {}));
+    setupAnimations(
+      animationsMap.values.where((anim) =>
+          anim.trigger == AnimationTrigger.onActionTrigger ||
+          !anim.applyInitialState),
+      this,
+    );
+
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -115,33 +153,135 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                 ),
           ),
           actions: [
-            Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Builder(
-                  builder: (context) => Padding(
-                    padding:
-                        const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 15.0, 0.0),
-                    child: InkWell(
-                      splashColor: Colors.transparent,
-                      focusColor: Colors.transparent,
-                      hoverColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () async {
-                        await Share.share(
-                          'gymstar://gymstar.com${GoRouter.of(context).location}',
-                          sharePositionOrigin: getWidgetBoundingBox(context),
-                        );
-                      },
-                      child: const Icon(
-                        FFIcons.kmore,
-                        color: Colors.black,
-                        size: 28.0,
+            StreamBuilder<List<UsersRecord>>(
+              stream: queryUsersRecord(
+                queryBuilder: (usersRecord) => usersRecord.where(
+                  'username',
+                  isEqualTo: widget.username,
+                ),
+                singleRecord: true,
+              ),
+              builder: (context, snapshot) {
+                // Customize what your widget looks like when it's loading.
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: SizedBox(
+                      width: 12.0,
+                      height: 12.0,
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ],
+                  );
+                }
+                List<UsersRecord> optionsUsersRecordList = snapshot.data!;
+                final optionsUsersRecord = optionsUsersRecordList.isNotEmpty
+                    ? optionsUsersRecordList.first
+                    : null;
+                return Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    StreamBuilder<List<FollowersRecord>>(
+                      stream: queryFollowersRecord(
+                        parent: optionsUsersRecord?.reference,
+                        singleRecord: true,
+                      ),
+                      builder: (context, snapshot) {
+                        // Customize what your widget looks like when it's loading.
+                        if (!snapshot.hasData) {
+                          return const Center(
+                            child: SizedBox(
+                              width: 12.0,
+                              height: 12.0,
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        List<FollowersRecord> toggleIconFollowersRecordList =
+                            snapshot.data!;
+                        final toggleIconFollowersRecord =
+                            toggleIconFollowersRecordList.isNotEmpty
+                                ? toggleIconFollowersRecordList.first
+                                : null;
+                        return ToggleIcon(
+                          onPressed: () async {
+                            final userRefsElement = currentUserReference;
+                            final userRefsUpdate = toggleIconFollowersRecord.userRefs
+                                    .contains(userRefsElement)
+                                ? FieldValue.arrayRemove([userRefsElement])
+                                : FieldValue.arrayUnion([userRefsElement]);
+                            await toggleIconFollowersRecord.reference.update({
+                              ...mapToFirestore(
+                                {
+                                  'userRefs': userRefsUpdate,
+                                },
+                              ),
+                            });
+                            if ((currentUserDocument?.following.toList() ?? [])
+                                .contains(optionsUsersRecord?.reference)) {
+                              await currentUserReference!.update({
+                                ...mapToFirestore(
+                                  {
+                                    'following': FieldValue.arrayRemove(
+                                        [optionsUsersRecord?.reference]),
+                                  },
+                                ),
+                              });
+
+                              await toggleIconFollowersRecord.reference
+                                  .update({
+                                ...mapToFirestore(
+                                  {
+                                    'userRefs': FieldValue.arrayRemove(
+                                        [currentUserReference]),
+                                  },
+                                ),
+                              });
+                            } else {
+                              await currentUserReference!.update({
+                                ...mapToFirestore(
+                                  {
+                                    'following': FieldValue.arrayUnion(
+                                        [optionsUsersRecord?.reference]),
+                                  },
+                                ),
+                              });
+
+                              await toggleIconFollowersRecord.reference
+                                  .update({
+                                ...mapToFirestore(
+                                  {
+                                    'userRefs': FieldValue.arrayUnion(
+                                        [currentUserReference]),
+                                  },
+                                ),
+                              });
+                            }
+                          },
+                          value: toggleIconFollowersRecord!.userRefs
+                              .contains(currentUserReference),
+                          onIcon: Icon(
+                            Icons.group_add_sharp,
+                            color: FlutterFlowTheme.of(context).primary,
+                            size: 25.0,
+                          ),
+                          offIcon: Icon(
+                            Icons.group_add_outlined,
+                            color: FlutterFlowTheme.of(context).secondaryText,
+                            size: 25.0,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              },
             ),
           ],
           centerTitle: true,
@@ -183,172 +323,461 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                         );
                       }
                       List<UsersRecord> columnUsersRecordList = snapshot.data!;
-                      // Return an empty Container when the item does not exist.
-                      if (snapshot.data!.isEmpty) {
-                        return Container();
-                      }
                       final columnUsersRecord = columnUsersRecordList.isNotEmpty
                           ? columnUsersRecordList.first
                           : null;
                       return SingleChildScrollView(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Padding(
                               padding: const EdgeInsetsDirectional.fromSTEB(
                                   15.0, 0.0, 15.0, 0.0),
                               child: Row(
                                 mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Padding(
                                     padding: const EdgeInsetsDirectional.fromSTEB(
                                         0.0, 0.0, 20.0, 0.0),
-                                    child: Stack(
-                                      alignment: const AlignmentDirectional(0.0, 0.0),
-                                      children: [
-                                        StreamBuilder<List<StoriesRecord>>(
-                                          stream: queryStoriesRecord(
-                                            queryBuilder: (storiesRecord) =>
-                                                storiesRecord
-                                                    .where(
-                                                      'user',
-                                                      isEqualTo:
-                                                          columnUsersRecord
-                                                              ?.reference,
-                                                    )
-                                                    .where(
-                                                      'expire_time',
-                                                      isGreaterThan:
-                                                          getCurrentTimestamp,
-                                                    ),
-                                            singleRecord: true,
-                                          ),
-                                          builder: (context, snapshot) {
-                                            // Customize what your widget looks like when it's loading.
-                                            if (!snapshot.hasData) {
-                                              return const Center(
-                                                child: SizedBox(
-                                                  width: 12.0,
-                                                  height: 12.0,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                            Color>(
-                                                      Colors.white,
+                                    child: StreamBuilder<List<StoriesRecord>>(
+                                      stream: queryStoriesRecord(
+                                        queryBuilder: (storiesRecord) =>
+                                            storiesRecord
+                                                .where(
+                                                  'user',
+                                                  isEqualTo: columnUsersRecord
+                                                      ?.reference,
+                                                )
+                                                .where(
+                                                  'expire_time',
+                                                  isGreaterThan:
+                                                      getCurrentTimestamp,
+                                                ),
+                                        singleRecord: true,
+                                      ),
+                                      builder: (context, snapshot) {
+                                        // Customize what your widget looks like when it's loading.
+                                        if (!snapshot.hasData) {
+                                          return const Center(
+                                            child: SizedBox(
+                                              width: 12.0,
+                                              height: 12.0,
+                                              child: CircularProgressIndicator(
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                        Color>(
+                                                  Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        List<StoriesRecord>
+                                            stackStoriesRecordList =
+                                            snapshot.data!;
+                                        final stackStoriesRecord =
+                                            stackStoriesRecordList.isNotEmpty
+                                                ? stackStoriesRecordList.first
+                                                : null;
+                                        return SizedBox(
+                                          width: 100.0,
+                                          height: 100.0,
+                                          child: Stack(
+                                            alignment:
+                                                const AlignmentDirectional(1.0, 1.0),
+                                            children: [
+                                              if (stackStoriesRecord != null)
+                                                Align(
+                                                  alignment:
+                                                      const AlignmentDirectional(
+                                                          0.0, 0.0),
+                                                  child: InkWell(
+                                                    splashColor:
+                                                        Colors.transparent,
+                                                    focusColor:
+                                                        Colors.transparent,
+                                                    hoverColor:
+                                                        Colors.transparent,
+                                                    highlightColor:
+                                                        Colors.transparent,
+                                                    onTap: () async {
+                                                      await showModalBottomSheet(
+                                                        isScrollControlled:
+                                                            true,
+                                                        backgroundColor:
+                                                            Colors.transparent,
+                                                        barrierColor:
+                                                            const Color(0x00000000),
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return GestureDetector(
+                                                            onTap: () => _model
+                                                                    .unfocusNode
+                                                                    .canRequestFocus
+                                                                ? FocusScope.of(
+                                                                        context)
+                                                                    .requestFocus(
+                                                                        _model
+                                                                            .unfocusNode)
+                                                                : FocusScope.of(
+                                                                        context)
+                                                                    .unfocus(),
+                                                            child: Padding(
+                                                              padding: MediaQuery
+                                                                  .viewInsetsOf(
+                                                                      context),
+                                                              child:
+                                                                  StoryWidget(
+                                                                story:
+                                                                    stackStoriesRecord,
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      ).then((value) =>
+                                                          safeSetState(() {}));
+                                                    },
+                                                    child: Container(
+                                                      width: 100.0,
+                                                      height: 100.0,
+                                                      decoration: const BoxDecoration(
+                                                        gradient:
+                                                            LinearGradient(
+                                                          colors: [
+                                                            Color(0xFF7C1E51),
+                                                            Color(0xFFDE0046),
+                                                            Color(0xFFF7A34B)
+                                                          ],
+                                                          stops: [
+                                                            0.0,
+                                                            0.5,
+                                                            1.0
+                                                          ],
+                                                          begin:
+                                                              AlignmentDirectional(
+                                                                  1.0, -1.0),
+                                                          end:
+                                                              AlignmentDirectional(
+                                                                  -1.0, 1.0),
+                                                        ),
+                                                        shape: BoxShape.circle,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
-                                              );
-                                            }
-                                            List<StoriesRecord>
-                                                activeStoryIndicatorStoriesRecordList =
-                                                snapshot.data!;
-                                            // Return an empty Container when the item does not exist.
-                                            if (snapshot.data!.isEmpty) {
-                                              return Container();
-                                            }
-                                            final activeStoryIndicatorStoriesRecord =
-                                                activeStoryIndicatorStoriesRecordList
-                                                        .isNotEmpty
-                                                    ? activeStoryIndicatorStoriesRecordList
-                                                        .first
-                                                    : null;
-                                            return InkWell(
-                                              splashColor: Colors.transparent,
-                                              focusColor: Colors.transparent,
-                                              hoverColor: Colors.transparent,
-                                              highlightColor:
-                                                  Colors.transparent,
-                                              onTap: () async {
-                                                await showModalBottomSheet(
-                                                  isScrollControlled: true,
-                                                  backgroundColor:
-                                                      Colors.transparent,
-                                                  barrierColor:
-                                                      const Color(0x00000000),
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return GestureDetector(
-                                                      onTap: () => _model
-                                                              .unfocusNode
-                                                              .canRequestFocus
-                                                          ? FocusScope.of(
-                                                                  context)
-                                                              .requestFocus(_model
-                                                                  .unfocusNode)
-                                                          : FocusScope.of(
-                                                                  context)
-                                                              .unfocus(),
-                                                      child: Padding(
-                                                        padding: MediaQuery
-                                                            .viewInsetsOf(
-                                                                context),
-                                                        child: StoryWidget(
-                                                          story:
-                                                              activeStoryIndicatorStoriesRecord,
+                                              Align(
+                                                alignment: const AlignmentDirectional(
+                                                    0.0, 0.0),
+                                                child: AuthUserStreamWidget(
+                                                  builder: (context) => InkWell(
+                                                    splashColor:
+                                                        Colors.transparent,
+                                                    focusColor:
+                                                        Colors.transparent,
+                                                    hoverColor:
+                                                        Colors.transparent,
+                                                    highlightColor:
+                                                        Colors.transparent,
+                                                    onTap: () async {
+                                                      if (stackStoriesRecord !=
+                                                          null) {
+                                                        showModalBottomSheet(
+                                                          isScrollControlled:
+                                                              true,
+                                                          backgroundColor:
+                                                              Colors
+                                                                  .transparent,
+                                                          barrierColor:
+                                                              const Color(0x00000000),
+                                                          context: context,
+                                                          builder: (context) {
+                                                            return GestureDetector(
+                                                              onTap: () => _model
+                                                                      .unfocusNode
+                                                                      .canRequestFocus
+                                                                  ? FocusScope.of(
+                                                                          context)
+                                                                      .requestFocus(
+                                                                          _model
+                                                                              .unfocusNode)
+                                                                  : FocusScope.of(
+                                                                          context)
+                                                                      .unfocus(),
+                                                              child: Padding(
+                                                                padding: MediaQuery
+                                                                    .viewInsetsOf(
+                                                                        context),
+                                                                child:
+                                                                    StoryWidget(
+                                                                  story:
+                                                                      stackStoriesRecord,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                        ).then((value) =>
+                                                            safeSetState(
+                                                                () {}));
+
+                                                        await Future.delayed(
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    5000));
+                                                        Navigator.pop(context);
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      width: 93.0,
+                                                      height: 93.0,
+                                                      decoration: BoxDecoration(
+                                                        color: FlutterFlowTheme
+                                                                .of(context)
+                                                            .secondaryBackground,
+                                                        image: DecorationImage(
+                                                          fit: BoxFit.cover,
+                                                          image: Image.network(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              currentUserPhoto,
+                                                              'https://nft-marketplace-website.netlify.app/static/media/ava-03.d5247c0b.png',
+                                                            ),
+                                                          ).image,
+                                                        ),
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(
+                                                          color:
+                                                              const Color(0x05000000),
+                                                          width: 0.0,
                                                         ),
                                                       ),
-                                                    );
-                                                  },
-                                                ).then((value) =>
-                                                    safeSetState(() {}));
-                                              },
-                                              child: Container(
-                                                width: 100.0,
-                                                height: 100.0,
-                                                decoration: const BoxDecoration(
-                                                  gradient: LinearGradient(
-                                                    colors: [
-                                                      Color(0xFF7C1E51),
-                                                      Color(0xFFDE0046),
-                                                      Color(0xFFF7A34B)
-                                                    ],
-                                                    stops: [0.0, 0.5, 1.0],
-                                                    begin: AlignmentDirectional(
-                                                        1.0, -1.0),
-                                                    end: AlignmentDirectional(
-                                                        -1.0, 1.0),
+                                                    ),
                                                   ),
-                                                  shape: BoxShape.circle,
                                                 ),
                                               ),
-                                            );
-                                          },
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (currentUserDisplayName != '')
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    0.0, 6.0, 0.0, 0.0),
+                                child: AuthUserStreamWidget(
+                                  builder: (context) => Text(
+                                    valueOrDefault<String>(
+                                      columnUsersRecord?.displayName,
+                                      'usernamehere',
+                                    ),
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          fontFamily: 'Inter',
+                                          fontSize: 20.0,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        Align(
-                                          alignment:
-                                              const AlignmentDirectional(0.0, 0.0),
-                                          child: Container(
-                                            width: 93.0,
-                                            height: 93.0,
-                                            decoration: BoxDecoration(
-                                              color:
+                                  ),
+                                ),
+                              ),
+                            Padding(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  0.0, 5.0, 0.0, 0.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.asset(
+                                      'assets/images/Mask_group.png',
+                                      width: 16.0,
+                                      height: 16.0,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Text(
+                                    '5.1',
+                                    style: FlutterFlowTheme.of(context)
+                                        .bodyMedium
+                                        .override(
+                                          fontFamily: 'Inter',
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
+                                        12.0, 0.0, 12.0, 0.0),
+                                    child: Text(
+                                      'Beach 80kg DL: 90kg',
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: 'Inter',
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                  ),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.asset(
+                                      'assets/images/weight-scale.png',
+                                      width: 16.0,
+                                      height: 16.0,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  AuthUserStreamWidget(
+                                    builder: (context) => Text(
+                                      formatNumber(
+                                        valueOrDefault(
+                                            currentUserDocument?.weight, 0.0),
+                                        formatType: FormatType.custom,
+                                        format: '##,### kg',
+                                        locale: '',
+                                      ),
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyMedium
+                                          .override(
+                                            fontFamily: 'Inter',
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  0.0, 5.0, 0.0, 0.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
+                                            15.0, 0.0, 0.0, 0.0),
+                                        child: AuthUserStreamWidget(
+                                          builder: (context) => Text(
+                                            formatNumber(
+                                              valueOrDefault(
+                                                  currentUserDocument?.age,
+                                                  0.0),
+                                              formatType: FormatType.custom,
+                                              format: '##,### years',
+                                              locale: '',
+                                            ),
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  fontFamily: 'Inter',
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryText,
+                                                  fontSize: 10.0,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsetsDirectional.fromSTEB(
+                                            5.0, 0.0, 0.0, 0.0),
+                                        child: AuthUserStreamWidget(
+                                          builder: (context) => Text(
+                                            valueOrDefault<String>(
+                                              valueOrDefault(
+                                                  currentUserDocument?.gender,
+                                                  ''),
+                                              'Others',
+                                            ),
+                                            style: FlutterFlowTheme.of(context)
+                                                .bodyMedium
+                                                .override(
+                                                  fontFamily: 'Inter',
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .primaryText,
+                                                  fontSize: 10.0,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
+                                        24.0, 0.0, 24.0, 0.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsetsDirectional.fromSTEB(
+                                                  0.0, 5.0, 0.0, 0.0),
+                                          child: AuthUserStreamWidget(
+                                            builder: (context) => Text(
+                                              valueOrDefault<String>(
+                                                valueOrDefault(
+                                                    currentUserDocument?.bio,
+                                                    ''),
+                                                'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy tex.',
+                                              ),
+                                              textAlign: TextAlign.center,
+                                              style:
                                                   FlutterFlowTheme.of(context)
-                                                      .secondaryBackground,
-                                              image: DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: Image.network(
-                                                  valueOrDefault<String>(
-                                                    columnUsersRecord?.photoUrl,
-                                                    'https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg',
-                                                  ),
-                                                ).image,
-                                              ),
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .primaryBtnText,
-                                                width: 3.0,
-                                              ),
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        fontSize: 10.0,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
                                             ),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  0.0, 14.0, 0.0, 0.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
                                   Expanded(
                                     child: Row(
                                       mainAxisSize: MainAxisSize.max,
@@ -424,9 +853,12 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                         .bodyMedium
                                                         .override(
                                                           fontFamily: 'Inter',
-                                                          fontSize: 14.0,
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primary,
+                                                          fontSize: 12.0,
                                                           fontWeight:
-                                                              FontWeight.normal,
+                                                              FontWeight.bold,
                                                         ),
                                                   ),
                                                 ),
@@ -521,9 +953,12 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                         .bodyMedium
                                                         .override(
                                                           fontFamily: 'Inter',
-                                                          fontSize: 14.0,
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primary,
+                                                          fontSize: 12.0,
                                                           fontWeight:
-                                                              FontWeight.normal,
+                                                              FontWeight.bold,
                                                         ),
                                                   ),
                                                 ),
@@ -543,7 +978,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                 queryParameters: {
                                                   'userRef': serializeParam(
                                                     columnUsersRecord
-                                                        ?.reference,
+                                                        .reference,
                                                     ParamType.DocumentReference,
                                                   ),
                                                 }.withoutNulls,
@@ -553,14 +988,11 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                               mainAxisSize: MainAxisSize.max,
                                               children: [
                                                 Text(
-                                                  valueOrDefault<String>(
-                                                    formatNumber(
-                                                      columnUsersRecord
-                                                          ?.following.length,
-                                                      formatType:
-                                                          FormatType.compact,
-                                                    ),
-                                                    '0',
+                                                  formatNumber(
+                                                    columnUsersRecord!
+                                                        .following.length,
+                                                    formatType:
+                                                        FormatType.compact,
                                                   ),
                                                   style: FlutterFlowTheme.of(
                                                           context)
@@ -581,9 +1013,12 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                         .bodyMedium
                                                         .override(
                                                           fontFamily: 'Inter',
-                                                          fontSize: 14.0,
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .primary,
+                                                          fontSize: 12.0,
                                                           fontWeight:
-                                                              FontWeight.normal,
+                                                              FontWeight.bold,
                                                         ),
                                                   ),
                                                 ),
@@ -597,936 +1032,52 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                 ],
                               ),
                             ),
-                            if (columnUsersRecord?.displayName != null &&
-                                columnUsersRecord?.displayName != '')
-                              Padding(
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    15.0, 6.0, 0.0, 0.0),
-                                child: Text(
-                                  columnUsersRecord!.displayName,
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        fontFamily: 'Inter',
-                                        fontSize: 15.0,
-                                      ),
-                                ),
-                              ),
-                            if (columnUsersRecord?.bio != null &&
-                                columnUsersRecord?.bio != '')
-                              Padding(
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    15.0, 4.0, 0.0, 0.0),
-                                child: Text(
-                                  columnUsersRecord!.bio,
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        fontFamily: 'Inter',
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                ),
-                              ),
-                            if (columnUsersRecord?.website != null &&
-                                columnUsersRecord?.website != '')
-                              Padding(
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    15.0, 4.0, 0.0, 0.0),
-                                child: InkWell(
-                                  splashColor: Colors.transparent,
-                                  focusColor: Colors.transparent,
-                                  hoverColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  onTap: () async {
-                                    await launchURL(columnUsersRecord.website);
-                                  },
-                                  child: Text(
-                                    columnUsersRecord!.website,
-                                    style: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .override(
-                                          fontFamily: 'Inter',
-                                          color: FlutterFlowTheme.of(context)
-                                              .tertiary,
-                                          fontSize: 14.0,
-                                          fontWeight: FontWeight.normal,
-                                        ),
-                                  ),
-                                ),
-                              ),
-                            Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  15.0, 15.0, 15.0, 0.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsetsDirectional.fromSTEB(
-                                          0.0, 0.0, 6.0, 0.0),
-                                      child: AuthUserStreamWidget(
-                                        builder: (context) => StreamBuilder<
-                                            List<FollowersRecord>>(
-                                          stream: queryFollowersRecord(
-                                            parent:
-                                                columnUsersRecord?.reference,
-                                            singleRecord: true,
-                                          ),
-                                          builder: (context, snapshot) {
-                                            // Customize what your widget looks like when it's loading.
-                                            if (!snapshot.hasData) {
-                                              return const Center(
-                                                child: SizedBox(
-                                                  width: 12.0,
-                                                  height: 12.0,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    valueColor:
-                                                        AlwaysStoppedAnimation<
-                                                            Color>(
-                                                      Colors.white,
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                            List<FollowersRecord>
-                                                followUnfollowButtonFollowersRecordList =
-                                                snapshot.data!;
-                                            final followUnfollowButtonFollowersRecord =
-                                                followUnfollowButtonFollowersRecordList
-                                                        .isNotEmpty
-                                                    ? followUnfollowButtonFollowersRecordList
-                                                        .first
-                                                    : null;
-                                            return InkWell(
-                                              splashColor: Colors.transparent,
-                                              focusColor: Colors.transparent,
-                                              hoverColor: Colors.transparent,
-                                              highlightColor:
-                                                  Colors.transparent,
-                                              onTap: () async {
-                                                if ((currentUserDocument
-                                                            ?.following
-                                                            .toList() ??
-                                                        [])
-                                                    .contains(columnUsersRecord
-                                                        ?.reference)) {
-                                                  await currentUserReference!
-                                                      .update({
-                                                    ...mapToFirestore(
-                                                      {
-                                                        'following': FieldValue
-                                                            .arrayRemove([
-                                                          columnUsersRecord
-                                                              ?.reference
-                                                        ]),
-                                                      },
-                                                    ),
-                                                  });
-
-                                                  await followUnfollowButtonFollowersRecord!
-                                                      .reference
-                                                      .update({
-                                                    ...mapToFirestore(
-                                                      {
-                                                        'userRefs': FieldValue
-                                                            .arrayRemove([
-                                                          currentUserReference
-                                                        ]),
-                                                      },
-                                                    ),
-                                                  });
-                                                  _model
-                                                      .timerFollowButtonActionsController
-                                                      .onResetTimer();
-                                                } else {
-                                                  await currentUserReference!
-                                                      .update({
-                                                    ...mapToFirestore(
-                                                      {
-                                                        'following': FieldValue
-                                                            .arrayUnion([
-                                                          columnUsersRecord
-                                                              ?.reference
-                                                        ]),
-                                                      },
-                                                    ),
-                                                  });
-
-                                                  await followUnfollowButtonFollowersRecord!
-                                                      .reference
-                                                      .update({
-                                                    ...mapToFirestore(
-                                                      {
-                                                        'userRefs': FieldValue
-                                                            .arrayUnion([
-                                                          currentUserReference
-                                                        ]),
-                                                      },
-                                                    ),
-                                                  });
-                                                  _model
-                                                      .timerFollowButtonActionsController
-                                                      .onStartTimer();
-                                                }
-                                              },
-                                              child: Container(
-                                                height: 35.0,
-                                                decoration: BoxDecoration(
-                                                  color: valueOrDefault<Color>(
-                                                    (currentUserDocument
-                                                                    ?.following
-                                                                    .toList() ??
-                                                                [])
-                                                            .contains(
-                                                                columnUsersRecord
-                                                                    ?.reference)
-                                                        ? FlutterFlowTheme.of(
-                                                                context)
-                                                            .primaryBackground
-                                                        : FlutterFlowTheme.of(
-                                                                context)
-                                                            .secondary,
-                                                    FlutterFlowTheme.of(context)
-                                                        .primaryBackground,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                ),
-                                                child: Align(
-                                                  alignment:
-                                                      const AlignmentDirectional(
-                                                          0.0, 0.0),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsetsDirectional
-                                                            .fromSTEB(8.0, 6.0,
-                                                                8.0, 6.0),
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.max,
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          () {
-                                                            if (columnUsersRecord!
-                                                                    .following
-                                                                    .contains(
-                                                                        currentUserReference) &&
-                                                                !(currentUserDocument
-                                                                            ?.following
-                                                                            .toList() ??
-                                                                        [])
-                                                                    .contains(
-                                                                        columnUsersRecord
-                                                                            .reference)) {
-                                                              return 'Follow back';
-                                                            } else if (!columnUsersRecord.following
-                                                                    .contains(
-                                                                        currentUserReference) &&
-                                                                !(currentUserDocument
-                                                                            ?.following
-                                                                            .toList() ??
-                                                                        [])
-                                                                    .contains(
-                                                                        columnUsersRecord
-                                                                            .reference)) {
-                                                              return 'Follow';
-                                                            } else {
-                                                              return 'Unfollow';
-                                                            }
-                                                          }(),
-                                                          style: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .bodyMedium
-                                                              .override(
-                                                                fontFamily:
-                                                                    'Inter',
-                                                                color: (currentUserDocument?.following.toList() ??
-                                                                            [])
-                                                                        .contains(columnUsersRecord
-                                                                            ?.reference)
-                                                                    ? FlutterFlowTheme.of(
-                                                                            context)
-                                                                        .primaryText
-                                                                    : Colors
-                                                                        .white,
-                                                                fontSize: 13.0,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                              ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsetsDirectional.fromSTEB(
-                                          6.0, 0.0, 0.0, 0.0),
-                                      child: Stack(
+                            Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      10.0, 10.0, 10.0, 0.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Column(
+                                        mainAxisSize: MainAxisSize.max,
                                         children: [
-                                          InkWell(
-                                            splashColor: Colors.transparent,
-                                            focusColor: Colors.transparent,
-                                            hoverColor: Colors.transparent,
-                                            highlightColor: Colors.transparent,
-                                            onTap: () async {
-                                              FFAppState().update(() {
-                                                FFAppState().tempUserList = [];
-                                                FFAppState().addToTempUserList(
-                                                    currentUserReference!);
-                                              });
-                                              FFAppState().update(() {
-                                                FFAppState().addToTempUserList(
-                                                    columnUsersRecord!
-                                                        .reference);
-                                              });
-
-                                              var chatsRecordReference =
-                                                  ChatsRecord.collection.doc();
-                                              await chatsRecordReference.set({
-                                                ...createChatsRecordData(
-                                                  userA: currentUserReference,
-                                                  userB: columnUsersRecord
-                                                      ?.reference,
-                                                  lastMessage:
-                                                      'Hey! Let\'s chat!',
-                                                  lastMessageTime:
-                                                      getCurrentTimestamp,
-                                                  lastMessageSentBy:
-                                                      currentUserReference,
-                                                ),
-                                                ...mapToFirestore(
-                                                  {
-                                                    'last_message_seen_by': [
-                                                      currentUserReference
-                                                    ],
-                                                    'users': FFAppState()
-                                                        .tempUserList,
-                                                  },
-                                                ),
-                                              });
-                                              _model.chat = ChatsRecord
-                                                  .getDocumentFromData({
-                                                ...createChatsRecordData(
-                                                  userA: currentUserReference,
-                                                  userB: columnUsersRecord
-                                                      ?.reference,
-                                                  lastMessage:
-                                                      'Hey! Let\'s chat!',
-                                                  lastMessageTime:
-                                                      getCurrentTimestamp,
-                                                  lastMessageSentBy:
-                                                      currentUserReference,
-                                                ),
-                                                ...mapToFirestore(
-                                                  {
-                                                    'last_message_seen_by': [
-                                                      currentUserReference
-                                                    ],
-                                                    'users': FFAppState()
-                                                        .tempUserList,
-                                                  },
-                                                ),
-                                              }, chatsRecordReference);
-
-                                              context.pushNamed(
-                                                'IndividualMessage',
-                                                queryParameters: {
-                                                  'chat': serializeParam(
-                                                    _model.chat?.reference,
-                                                    ParamType.DocumentReference,
-                                                  ),
-                                                }.withoutNulls,
-                                              );
-
-                                              setState(() {});
-                                            },
+                                          Card(
+                                            clipBehavior:
+                                                Clip.antiAliasWithSaveLayer,
+                                            color: FlutterFlowTheme.of(context)
+                                                .secondaryBackground,
+                                            elevation: 4.0,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12.0),
+                                            ),
                                             child: Container(
-                                              height: 35.0,
+                                              width: MediaQuery.sizeOf(context)
+                                                      .width *
+                                                  0.52,
+                                              height: MediaQuery.sizeOf(context)
+                                                      .height *
+                                                  0.5,
                                               decoration: BoxDecoration(
                                                 color:
                                                     FlutterFlowTheme.of(context)
-                                                        .primaryBackground,
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
+                                                        .secondaryBackground,
                                               ),
-                                              child: Align(
-                                                alignment: const AlignmentDirectional(
-                                                    0.0, 0.0),
-                                                child: Padding(
-                                                  padding: const EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          8.0, 6.0, 8.0, 6.0),
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Text(
-                                                        'Message',
-                                                        style: FlutterFlowTheme
-                                                                .of(context)
-                                                            .bodyMedium
-                                                            .override(
-                                                              fontFamily:
-                                                                  'Inter',
-                                                              fontSize: 13.0,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                            ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          StreamBuilder<List<ChatsRecord>>(
-                                            stream: queryChatsRecord(
-                                              queryBuilder: (chatsRecord) =>
-                                                  chatsRecord
-                                                      .where(
-                                                        'user_a',
-                                                        isEqualTo:
-                                                            columnUsersRecord
-                                                                ?.reference,
-                                                      )
-                                                      .where(
-                                                        'user_b',
-                                                        isEqualTo:
-                                                            currentUserReference,
-                                                      ),
-                                              singleRecord: true,
-                                            ),
-                                            builder: (context, snapshot) {
-                                              // Customize what your widget looks like when it's loading.
-                                              if (!snapshot.hasData) {
-                                                return const Center(
-                                                  child: SizedBox(
-                                                    width: 12.0,
-                                                    height: 12.0,
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      valueColor:
-                                                          AlwaysStoppedAnimation<
-                                                              Color>(
-                                                        Colors.white,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                              List<ChatsRecord>
-                                                  messageButton1ChatsRecordList =
-                                                  snapshot.data!;
-                                              // Return an empty Container when the item does not exist.
-                                              if (snapshot.data!.isEmpty) {
-                                                return Container();
-                                              }
-                                              final messageButton1ChatsRecord =
-                                                  messageButton1ChatsRecordList
-                                                          .isNotEmpty
-                                                      ? messageButton1ChatsRecordList
-                                                          .first
-                                                      : null;
-                                              return InkWell(
-                                                splashColor: Colors.transparent,
-                                                focusColor: Colors.transparent,
-                                                hoverColor: Colors.transparent,
-                                                highlightColor:
-                                                    Colors.transparent,
-                                                onTap: () async {
-                                                  context.pushNamed(
-                                                    'IndividualMessage',
-                                                    queryParameters: {
-                                                      'chat': serializeParam(
-                                                        messageButton1ChatsRecord
-                                                            ?.reference,
-                                                        ParamType
-                                                            .DocumentReference,
-                                                      ),
-                                                    }.withoutNulls,
-                                                  );
-                                                },
-                                                child: Container(
-                                                  height: 35.0,
-                                                  decoration: BoxDecoration(
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryBackground,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8.0),
-                                                  ),
-                                                  child: Align(
-                                                    alignment:
-                                                        const AlignmentDirectional(
-                                                            0.0, 0.0),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  8.0,
-                                                                  6.0,
-                                                                  8.0,
-                                                                  6.0),
-                                                      child: Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text(
-                                                            'Message',
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Inter',
-                                                                  fontSize:
-                                                                      13.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                          StreamBuilder<List<ChatsRecord>>(
-                                            stream: queryChatsRecord(
-                                              queryBuilder: (chatsRecord) =>
-                                                  chatsRecord
-                                                      .where(
-                                                        'user_a',
-                                                        isEqualTo:
-                                                            currentUserReference,
-                                                      )
-                                                      .where(
-                                                        'user_b',
-                                                        isEqualTo:
-                                                            columnUsersRecord
-                                                                ?.reference,
-                                                      ),
-                                              singleRecord: true,
-                                            ),
-                                            builder: (context, snapshot) {
-                                              // Customize what your widget looks like when it's loading.
-                                              if (!snapshot.hasData) {
-                                                return const Center(
-                                                  child: SizedBox(
-                                                    width: 12.0,
-                                                    height: 12.0,
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      valueColor:
-                                                          AlwaysStoppedAnimation<
-                                                              Color>(
-                                                        Colors.white,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                              List<ChatsRecord>
-                                                  messageButton2ChatsRecordList =
-                                                  snapshot.data!;
-                                              // Return an empty Container when the item does not exist.
-                                              if (snapshot.data!.isEmpty) {
-                                                return Container();
-                                              }
-                                              final messageButton2ChatsRecord =
-                                                  messageButton2ChatsRecordList
-                                                          .isNotEmpty
-                                                      ? messageButton2ChatsRecordList
-                                                          .first
-                                                      : null;
-                                              return InkWell(
-                                                splashColor: Colors.transparent,
-                                                focusColor: Colors.transparent,
-                                                hoverColor: Colors.transparent,
-                                                highlightColor:
-                                                    Colors.transparent,
-                                                onTap: () async {
-                                                  context.pushNamed(
-                                                    'IndividualMessage',
-                                                    queryParameters: {
-                                                      'chat': serializeParam(
-                                                        messageButton2ChatsRecord
-                                                            ?.reference,
-                                                        ParamType
-                                                            .DocumentReference,
-                                                      ),
-                                                    }.withoutNulls,
-                                                  );
-                                                },
-                                                child: Container(
-                                                  height: 35.0,
-                                                  decoration: BoxDecoration(
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryBackground,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8.0),
-                                                  ),
-                                                  child: Align(
-                                                    alignment:
-                                                        const AlignmentDirectional(
-                                                            0.0, 0.0),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  8.0,
-                                                                  6.0,
-                                                                  8.0,
-                                                                  6.0),
-                                                      child: Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text(
-                                                            'Message',
-                                                            style: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .bodyMedium
-                                                                .override(
-                                                                  fontFamily:
-                                                                      'Inter',
-                                                                  fontSize:
-                                                                      13.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  if (columnUsersRecord?.enableEmail ?? true)
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsetsDirectional.fromSTEB(
-                                            12.0, 0.0, 0.0, 0.0),
-                                        child: InkWell(
-                                          splashColor: Colors.transparent,
-                                          focusColor: Colors.transparent,
-                                          hoverColor: Colors.transparent,
-                                          highlightColor: Colors.transparent,
-                                          onTap: () async {
-                                            await launchUrl(Uri(
-                                              scheme: 'mailto',
-                                              path: columnUsersRecord!.email,
-                                            ));
-                                          },
-                                          child: Container(
-                                            height: 35.0,
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryBackground,
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                            ),
-                                            child: Align(
-                                              alignment: const AlignmentDirectional(
-                                                  0.0, 0.0),
-                                              child: Padding(
-                                                padding: const EdgeInsetsDirectional
-                                                    .fromSTEB(
-                                                        8.0, 6.0, 8.0, 6.0),
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.max,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      'Email',
-                                                      style: FlutterFlowTheme
-                                                              .of(context)
-                                                          .bodyMedium
-                                                          .override(
-                                                            fontFamily: 'Inter',
-                                                            fontSize: 13.0,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  FlutterFlowTimer(
-                                    initialTime: _model
-                                        .timerFollowButtonActionsMilliseconds,
-                                    getDisplayTime: (value) =>
-                                        StopWatchTimer.getDisplayTime(value,
-                                            milliSecond: false),
-                                    controller: _model
-                                        .timerFollowButtonActionsController,
-                                    onChanged:
-                                        (value, displayTime, shouldUpdate) {
-                                      _model.timerFollowButtonActionsMilliseconds =
-                                          value;
-                                      _model.timerFollowButtonActionsValue =
-                                          displayTime;
-                                      if (shouldUpdate) setState(() {});
-                                    },
-                                    onEnded: () async {
-                                      var notificationsRecordReference =
-                                          NotificationsRecord.createDoc(
-                                              columnUsersRecord!.reference);
-                                      await notificationsRecordReference
-                                          .set(createNotificationsRecordData(
-                                        notificationType: 'Follow',
-                                        userRef: currentUserReference,
-                                        timeCreated: getCurrentTimestamp,
-                                      ));
-                                      _model.notification = NotificationsRecord
-                                          .getDocumentFromData(
-                                              createNotificationsRecordData(
-                                                notificationType: 'Follow',
-                                                userRef: currentUserReference,
-                                                timeCreated:
-                                                    getCurrentTimestamp,
-                                              ),
-                                              notificationsRecordReference);
-
-                                      await columnUsersRecord.reference
-                                          .update({
-                                        ...mapToFirestore(
-                                          {
-                                            'unreadNotifications':
-                                                FieldValue.arrayUnion([
-                                              _model.notification?.reference
-                                            ]),
-                                          },
-                                        ),
-                                      });
-
-                                      setState(() {});
-                                    },
-                                    textAlign: TextAlign.start,
-                                    style: FlutterFlowTheme.of(context)
-                                        .bodyMedium
-                                        .override(
-                                          fontFamily: 'Inter',
-                                          color: FlutterFlowTheme.of(context)
-                                              .primary,
-                                          fontSize: 0.0,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: double.infinity,
-                              height: 550.0,
-                              decoration: BoxDecoration(
-                                color: FlutterFlowTheme.of(context)
-                                    .secondaryBackground,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsetsDirectional.fromSTEB(
-                                    0.0, 12.0, 0.0, 0.0),
-                                child: Column(
-                                  children: [
-                                    Align(
-                                      alignment: const Alignment(0.0, 0),
-                                      child: TabBar(
-                                        labelColor: FlutterFlowTheme.of(context)
-                                            .primaryText,
-                                        unselectedLabelColor:
-                                            FlutterFlowTheme.of(context)
-                                                .secondaryText,
-                                        labelStyle: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily: 'Inter',
-                                              fontSize: 18.0,
-                                              lineHeight: 0.0,
-                                            ),
-                                        unselectedLabelStyle: const TextStyle(),
-                                        indicatorColor:
-                                            FlutterFlowTheme.of(context)
-                                                .secondary,
-                                        indicatorWeight: 2.0,
-                                        tabs: const [
-                                          Tab(
-                                            text: 'Posts',
-                                          ),
-                                          Tab(
-                                            text: 'Shorts',
-                                          ),
-                                        ],
-                                        controller: _model.tabBarController,
-                                        onTap: (i) async {
-                                          [() async {}, () async {}][i]();
-                                        },
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: TabBarView(
-                                        controller: _model.tabBarController,
-                                        children: [
-                                          KeepAliveWidgetWrapper(
-                                            builder: (context) => StreamBuilder<
-                                                List<PostsRecord>>(
-                                              stream: queryPostsRecord(
-                                                queryBuilder: (postsRecord) =>
-                                                    postsRecord
-                                                        .where(
-                                                          'post_user',
-                                                          isEqualTo:
-                                                              currentUserReference,
-                                                        )
-                                                        .where(
-                                                          'deleted',
-                                                          isEqualTo: false,
-                                                        )
-                                                        .orderBy('time_posted',
-                                                            descending: true),
-                                              ),
-                                              builder: (context, snapshot) {
-                                                // Customize what your widget looks like when it's loading.
-                                                if (!snapshot.hasData) {
-                                                  return const Center(
-                                                    child: SizedBox(
-                                                      width: 12.0,
-                                                      height: 12.0,
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation<
-                                                                Color>(
-                                                          Colors.white,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                                List<PostsRecord>
-                                                    profilePhotosPostsRecordList =
-                                                    snapshot.data!;
-                                                return GridView.builder(
-                                                  padding: EdgeInsets.zero,
-                                                  gridDelegate:
-                                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                                    crossAxisCount: 3,
-                                                    crossAxisSpacing: 1.0,
-                                                    mainAxisSpacing: 1.0,
-                                                    childAspectRatio: 1.0,
-                                                  ),
-                                                  primary: false,
-                                                  shrinkWrap: true,
-                                                  scrollDirection:
-                                                      Axis.vertical,
-                                                  itemCount:
-                                                      profilePhotosPostsRecordList
-                                                          .length,
-                                                  itemBuilder: (context,
-                                                      profilePhotosIndex) {
-                                                    final profilePhotosPostsRecord =
-                                                        profilePhotosPostsRecordList[
-                                                            profilePhotosIndex];
-                                                    return InkWell(
-                                                      splashColor:
-                                                          Colors.transparent,
-                                                      focusColor:
-                                                          Colors.transparent,
-                                                      hoverColor:
-                                                          Colors.transparent,
-                                                      highlightColor:
-                                                          Colors.transparent,
-                                                      onTap: () async {
-                                                        context.pushNamed(
-                                                          'PostDetails',
-                                                          queryParameters: {
-                                                            'post':
-                                                                serializeParam(
-                                                              profilePhotosPostsRecord
-                                                                  .reference,
-                                                              ParamType
-                                                                  .DocumentReference,
-                                                            ),
-                                                          }.withoutNulls,
-                                                        );
-                                                      },
-                                                      child: Hero(
-                                                        tag:
-                                                            profilePhotosPostsRecord
-                                                                .postPhoto,
-                                                        transitionOnUserGestures:
-                                                            true,
-                                                        child: Image.network(
-                                                          profilePhotosPostsRecord
-                                                              .postPhoto,
-                                                          width: 100.0,
-                                                          height: 100.0,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                          KeepAliveWidgetWrapper(
-                                            builder: (context) => Padding(
-                                              padding: const EdgeInsets.all(5.0),
-                                              child: StreamBuilder<
+                                              child: FutureBuilder<
                                                   List<ReelsRecord>>(
-                                                stream: queryReelsRecord(
+                                                future: queryReelsRecordOnce(
                                                   queryBuilder: (reelsRecord) =>
                                                       reelsRecord
                                                           .where(
                                                             'User_id',
                                                             isEqualTo:
-                                                                currentUserReference,
+                                                                columnUsersRecord
+                                                                    .reference,
                                                           )
                                                           .orderBy('Post_date',
                                                               descending: true),
@@ -1550,76 +1101,296 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                     );
                                                   }
                                                   List<ReelsRecord>
-                                                      gridViewReelsRecordList =
+                                                      pageViewReelsRecordList =
                                                       snapshot.data!;
-                                                  return GridView.builder(
-                                                    padding: EdgeInsets.zero,
-                                                    gridDelegate:
-                                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                                      crossAxisCount: 2,
-                                                      crossAxisSpacing: 2.0,
-                                                      mainAxisSpacing: 2.0,
-                                                      childAspectRatio: 0.7,
+                                                  return SizedBox(
+                                                    width: double.infinity,
+                                                    height: MediaQuery.sizeOf(
+                                                                context)
+                                                            .height *
+                                                        1.0,
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsetsDirectional
+                                                              .fromSTEB(
+                                                                  0.0,
+                                                                  0.0,
+                                                                  0.0,
+                                                                  2.0),
+                                                      child: PageView.builder(
+                                                        controller: _model
+                                                                .pageViewController ??=
+                                                            PageController(
+                                                                initialPage: min(
+                                                                    0,
+                                                                    pageViewReelsRecordList
+                                                                            .length -
+                                                                        1)),
+                                                        scrollDirection:
+                                                            Axis.vertical,
+                                                        itemCount:
+                                                            pageViewReelsRecordList
+                                                                .length,
+                                                        itemBuilder: (context,
+                                                            pageViewIndex) {
+                                                          final pageViewReelsRecord =
+                                                              pageViewReelsRecordList[
+                                                                  pageViewIndex];
+                                                          return Stack(
+                                                            children: [
+                                                              Align(
+                                                                alignment:
+                                                                    const AlignmentDirectional(
+                                                                        0.0,
+                                                                        0.0),
+                                                                child:
+                                                                    Container(
+                                                                  width: double
+                                                                      .infinity,
+                                                                  height: MediaQuery.sizeOf(
+                                                                              context)
+                                                                          .height *
+                                                                      1.0,
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .secondaryBackground,
+                                                                  ),
+                                                                  child:
+                                                                      FlutterFlowVideoPlayer(
+                                                                    path: pageViewReelsRecord
+                                                                        .video,
+                                                                    videoType:
+                                                                        VideoType
+                                                                            .network,
+                                                                    autoPlay:
+                                                                        true,
+                                                                    looping:
+                                                                        true,
+                                                                    showControls:
+                                                                        false,
+                                                                    allowFullScreen:
+                                                                        true,
+                                                                    allowPlaybackSpeedMenu:
+                                                                        true,
+                                                                    lazyLoad:
+                                                                        false,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Align(
+                                                                alignment:
+                                                                    const AlignmentDirectional(
+                                                                        1.0,
+                                                                        1.0),
+                                                                child: Column(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .min,
+                                                                  children: [
+                                                                    FutureBuilder<
+                                                                        UsersRecord>(
+                                                                      future: UsersRecord.getDocumentOnce(
+                                                                          pageViewReelsRecord
+                                                                              .userId!),
+                                                                      builder:
+                                                                          (context,
+                                                                              snapshot) {
+                                                                        // Customize what your widget looks like when it's loading.
+                                                                        if (!snapshot
+                                                                            .hasData) {
+                                                                          return const Center(
+                                                                            child:
+                                                                                SizedBox(
+                                                                              width: 12.0,
+                                                                              height: 12.0,
+                                                                              child: CircularProgressIndicator(
+                                                                                valueColor: AlwaysStoppedAnimation<Color>(
+                                                                                  Colors.white,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          );
+                                                                        }
+                                                                        final containerUsersRecord =
+                                                                            snapshot.data!;
+                                                                        return Container(
+                                                                          width:
+                                                                              76.0,
+                                                                          height:
+                                                                              MediaQuery.sizeOf(context).height * 0.35,
+                                                                          decoration:
+                                                                              BoxDecoration(
+                                                                            color:
+                                                                                Colors.transparent,
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(12.0),
+                                                                          ),
+                                                                          child:
+                                                                              Column(
+                                                                            mainAxisSize:
+                                                                                MainAxisSize.max,
+                                                                            children: [
+                                                                              Expanded(
+                                                                                child: Column(
+                                                                                  mainAxisSize: MainAxisSize.max,
+                                                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                                                  children: [
+                                                                                    Stack(
+                                                                                      children: [
+                                                                                        if (!pageViewReelsRecord.likes.contains(currentUserReference))
+                                                                                          Padding(
+                                                                                            padding: const EdgeInsetsDirectional.fromSTEB(0.0, 21.0, 0.0, 0.0),
+                                                                                            child: InkWell(
+                                                                                              splashColor: Colors.transparent,
+                                                                                              focusColor: Colors.transparent,
+                                                                                              hoverColor: Colors.transparent,
+                                                                                              highlightColor: Colors.transparent,
+                                                                                              onTap: () async {
+                                                                                                if (animationsMap['iconOnActionTriggerAnimation'] != null) {
+                                                                                                  animationsMap['iconOnActionTriggerAnimation']!.controller.forward(from: 0.0);
+                                                                                                }
+
+                                                                                                await pageViewReelsRecord.reference.update({
+                                                                                                  ...mapToFirestore(
+                                                                                                    {
+                                                                                                      'likes': FieldValue.arrayUnion([currentUserReference]),
+                                                                                                    },
+                                                                                                  ),
+                                                                                                });
+                                                                                                HapticFeedback.lightImpact();
+                                                                                              },
+                                                                                              child: Icon(
+                                                                                                FFIcons.kheart,
+                                                                                                color: FlutterFlowTheme.of(context).white,
+                                                                                                size: 30.0,
+                                                                                              ),
+                                                                                            ),
+                                                                                          ),
+                                                                                        if (pageViewReelsRecord.likes.contains(currentUserReference))
+                                                                                          Padding(
+                                                                                            padding: const EdgeInsetsDirectional.fromSTEB(0.0, 21.0, 0.0, 0.0),
+                                                                                            child: InkWell(
+                                                                                              splashColor: Colors.transparent,
+                                                                                              focusColor: Colors.transparent,
+                                                                                              hoverColor: Colors.transparent,
+                                                                                              highlightColor: Colors.transparent,
+                                                                                              onTap: () async {
+                                                                                                await pageViewReelsRecord.reference.update({
+                                                                                                  ...mapToFirestore(
+                                                                                                    {
+                                                                                                      'likes': FieldValue.arrayRemove([
+                                                                                                        containerUsersRecord.reference
+                                                                                                      ]),
+                                                                                                    },
+                                                                                                  ),
+                                                                                                });
+                                                                                              },
+                                                                                              child: const Icon(
+                                                                                                FFIcons.kheart1,
+                                                                                                color: Color(0xFFFF4963),
+                                                                                                size: 30.0,
+                                                                                              ),
+                                                                                            ).animateOnPageLoad(animationsMap['iconOnPageLoadAnimation']!),
+                                                                                          ),
+                                                                                      ],
+                                                                                    ),
+                                                                                    Padding(
+                                                                                      padding: const EdgeInsetsDirectional.fromSTEB(0.0, 21.0, 0.0, 0.0),
+                                                                                      child: FlutterFlowIconButton(
+                                                                                        borderColor: Colors.transparent,
+                                                                                        borderRadius: 30.0,
+                                                                                        borderWidth: 1.0,
+                                                                                        buttonSize: 60.0,
+                                                                                        icon: Icon(
+                                                                                          Icons.comment_rounded,
+                                                                                          color: FlutterFlowTheme.of(context).white,
+                                                                                          size: 30.0,
+                                                                                        ),
+                                                                                        onPressed: () {
+                                                                                          print('IconButton pressed ...');
+                                                                                        },
+                                                                                      ),
+                                                                                    ),
+                                                                                    Align(
+                                                                                      alignment: const AlignmentDirectional(0.0, 0.0),
+                                                                                      child: Padding(
+                                                                                        padding: const EdgeInsetsDirectional.fromSTEB(0.0, 21.0, 0.0, 0.0),
+                                                                                        child: Icon(
+                                                                                          FFIcons.kshare,
+                                                                                          color: FlutterFlowTheme.of(context).primaryBtnText,
+                                                                                          size: 30.0,
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                    Padding(
+                                                                                      padding: const EdgeInsetsDirectional.fromSTEB(0.0, 21.0, 0.0, 0.0),
+                                                                                      child: Icon(
+                                                                                        Icons.keyboard_control,
+                                                                                        color: FlutterFlowTheme.of(context).white,
+                                                                                        size: 30.0,
+                                                                                      ),
+                                                                                    ),
+                                                                                    Padding(
+                                                                                      padding: const EdgeInsetsDirectional.fromSTEB(0.0, 21.0, 0.0, 0.0),
+                                                                                      child: Material(
+                                                                                        color: Colors.transparent,
+                                                                                        elevation: 0.0,
+                                                                                        shape: RoundedRectangleBorder(
+                                                                                          borderRadius: BorderRadius.circular(4.0),
+                                                                                        ),
+                                                                                        child: Container(
+                                                                                          width: 20.0,
+                                                                                          height: 20.0,
+                                                                                          decoration: BoxDecoration(
+                                                                                            image: DecorationImage(
+                                                                                              fit: BoxFit.cover,
+                                                                                              image: Image.asset(
+                                                                                                'assets/images/Frame.png',
+                                                                                              ).image,
+                                                                                            ),
+                                                                                            borderRadius: BorderRadius.circular(4.0),
+                                                                                            border: Border.all(
+                                                                                              color: FlutterFlowTheme.of(context).white,
+                                                                                              width: 0.0,
+                                                                                            ),
+                                                                                          ),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              Align(
+                                                                alignment:
+                                                                    const AlignmentDirectional(
+                                                                        0.0,
+                                                                        0.0),
+                                                                child: const Icon(
+                                                                  Icons
+                                                                      .favorite_rounded,
+                                                                  color: Color(
+                                                                      0xFFFF4963),
+                                                                  size: 120.0,
+                                                                ).animateOnActionTrigger(
+                                                                  animationsMap[
+                                                                      'iconOnActionTriggerAnimation']!,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      ),
                                                     ),
-                                                    scrollDirection:
-                                                        Axis.vertical,
-                                                    itemCount:
-                                                        gridViewReelsRecordList
-                                                            .length,
-                                                    itemBuilder: (context,
-                                                        gridViewIndex) {
-                                                      final gridViewReelsRecord =
-                                                          gridViewReelsRecordList[
-                                                              gridViewIndex];
-                                                      return Card(
-                                                        clipBehavior: Clip
-                                                            .antiAliasWithSaveLayer,
-                                                        color: FlutterFlowTheme
-                                                                .of(context)
-                                                            .secondaryBackground,
-                                                        elevation: 0.0,
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      8.0),
-                                                        ),
-                                                        child: Container(
-                                                          width:
-                                                              MediaQuery.sizeOf(
-                                                                          context)
-                                                                      .width *
-                                                                  0.48,
-                                                          height:
-                                                              MediaQuery.sizeOf(
-                                                                          context)
-                                                                      .height *
-                                                                  0.3,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                            color: FlutterFlowTheme
-                                                                    .of(context)
-                                                                .secondaryBackground,
-                                                          ),
-                                                          child:
-                                                              FlutterFlowVideoPlayer(
-                                                            path:
-                                                                gridViewReelsRecord
-                                                                    .video,
-                                                            videoType: VideoType
-                                                                .network,
-                                                            autoPlay: true,
-                                                            looping: true,
-                                                            showControls: false,
-                                                            allowFullScreen:
-                                                                true,
-                                                            allowPlaybackSpeedMenu:
-                                                                false,
-                                                          ),
-                                                        ),
-                                                      );
-                                                    },
                                                   );
                                                 },
                                               ),
@@ -1627,10 +1398,243 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  ],
+                                      Column(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          Padding(
+                                            padding:
+                                                const EdgeInsetsDirectional.fromSTEB(
+                                                    10.0, 5.0, 0.0, 0.0),
+                                            child: StreamBuilder<
+                                                List<PostsRecord>>(
+                                              stream: queryPostsRecord(
+                                                queryBuilder: (postsRecord) =>
+                                                    postsRecord.where(
+                                                  'post_user',
+                                                  isEqualTo: columnUsersRecord
+                                                      .reference,
+                                                ),
+                                                singleRecord: true,
+                                              ),
+                                              builder: (context, snapshot) {
+                                                // Customize what your widget looks like when it's loading.
+                                                if (!snapshot.hasData) {
+                                                  return const Center(
+                                                    child: SizedBox(
+                                                      width: 12.0,
+                                                      height: 12.0,
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        valueColor:
+                                                            AlwaysStoppedAnimation<
+                                                                Color>(
+                                                          Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                                List<PostsRecord>
+                                                    photoPostsRecordList =
+                                                    snapshot.data!;
+                                                final photoPostsRecord =
+                                                    photoPostsRecordList
+                                                            .isNotEmpty
+                                                        ? photoPostsRecordList
+                                                            .first
+                                                        : null;
+                                                return InkWell(
+                                                  splashColor:
+                                                      Colors.transparent,
+                                                  focusColor:
+                                                      Colors.transparent,
+                                                  hoverColor:
+                                                      Colors.transparent,
+                                                  highlightColor:
+                                                      Colors.transparent,
+                                                  onTap: () async {},
+                                                  child: Hero(
+                                                    tag: '',
+                                                    transitionOnUserGestures:
+                                                        true,
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12.0),
+                                                      child: Image.asset(
+                                                        'assets/images/mind-matter-low-angle-shot-sporty-young-woman-exercising-with-dumbbells-gym_590464-61246.jpg',
+                                                        width: 148.0,
+                                                        height:
+                                                            MediaQuery.sizeOf(
+                                                                        context)
+                                                                    .height *
+                                                                0.15,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsetsDirectional.fromSTEB(
+                                                    10.0, 10.0, 0.0, 0.0),
+                                            child: InkWell(
+                                              splashColor: Colors.transparent,
+                                              focusColor: Colors.transparent,
+                                              hoverColor: Colors.transparent,
+                                              highlightColor:
+                                                  Colors.transparent,
+                                              onTap: () async {},
+                                              child: Hero(
+                                                tag: '',
+                                                transitionOnUserGestures: true,
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.0),
+                                                  child: Image.asset(
+                                                    'assets/images/download_(1).jpeg',
+                                                    width: 148.0,
+                                                    height: MediaQuery.sizeOf(
+                                                                context)
+                                                            .height *
+                                                        0.33,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
+                                Padding(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      10.0, 10.0, 10.0, 0.0),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsetsDirectional.fromSTEB(
+                                                  5.0, 0.0, 5.0, 0.0),
+                                          child:
+                                              StreamBuilder<List<PostsRecord>>(
+                                            stream: queryPostsRecord(
+                                              queryBuilder: (postsRecord) =>
+                                                  postsRecord
+                                                      .where(
+                                                        'post_user',
+                                                        isEqualTo:
+                                                            columnUsersRecord
+                                                                .reference,
+                                                      )
+                                                      .where(
+                                                        'deleted',
+                                                        isEqualTo: false,
+                                                      )
+                                                      .orderBy('time_posted',
+                                                          descending: true),
+                                            ),
+                                            builder: (context, snapshot) {
+                                              // Customize what your widget looks like when it's loading.
+                                              if (!snapshot.hasData) {
+                                                return const Center(
+                                                  child: SizedBox(
+                                                    width: 12.0,
+                                                    height: 12.0,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      valueColor:
+                                                          AlwaysStoppedAnimation<
+                                                              Color>(
+                                                        Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                              List<PostsRecord>
+                                                  profilePhotosPostsRecordList =
+                                                  snapshot.data!;
+                                              return GridView.builder(
+                                                padding: EdgeInsets.zero,
+                                                gridDelegate:
+                                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                                  crossAxisCount: 2,
+                                                  crossAxisSpacing: 20.0,
+                                                  mainAxisSpacing: 20.0,
+                                                  childAspectRatio: 1.0,
+                                                ),
+                                                shrinkWrap: true,
+                                                scrollDirection: Axis.vertical,
+                                                itemCount:
+                                                    profilePhotosPostsRecordList
+                                                        .length,
+                                                itemBuilder: (context,
+                                                    profilePhotosIndex) {
+                                                  final profilePhotosPostsRecord =
+                                                      profilePhotosPostsRecordList[
+                                                          profilePhotosIndex];
+                                                  return InkWell(
+                                                    splashColor:
+                                                        Colors.transparent,
+                                                    focusColor:
+                                                        Colors.transparent,
+                                                    hoverColor:
+                                                        Colors.transparent,
+                                                    highlightColor:
+                                                        Colors.transparent,
+                                                    onTap: () async {
+                                                      context.pushNamed(
+                                                        'PostDetails',
+                                                        queryParameters: {
+                                                          'post':
+                                                              serializeParam(
+                                                            profilePhotosPostsRecord
+                                                                .reference,
+                                                            ParamType
+                                                                .DocumentReference,
+                                                          ),
+                                                        }.withoutNulls,
+                                                      );
+                                                    },
+                                                    child: Hero(
+                                                      tag:
+                                                          profilePhotosPostsRecord
+                                                              .postPhoto,
+                                                      transitionOnUserGestures:
+                                                          true,
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12.0),
+                                                        child: Image.network(
+                                                          profilePhotosPostsRecord
+                                                              .postPhoto,
+                                                          width: 100.0,
+                                                          height: 100.0,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -1652,10 +1656,155 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                         color: Color(0xFFDADADA),
                       ),
                     ),
-                    wrapWithModel(
-                      model: _model.navBar1Model,
-                      updateCallback: () => setState(() {}),
-                      child: const NavBar1Widget(),
+                    Material(
+                      color: Colors.transparent,
+                      elevation: 0.0,
+                      child: Container(
+                        width: double.infinity,
+                        height: 80.0,
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(context).primaryBackground,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                context.pushNamed(
+                                  'HomePage',
+                                  extra: <String, dynamic>{
+                                    kTransitionInfoKey: const TransitionInfo(
+                                      hasTransition: true,
+                                      transitionType:
+                                          PageTransitionType.topToBottom,
+                                      duration: Duration(milliseconds: 300),
+                                    ),
+                                  },
+                                );
+                              },
+                              child: Icon(
+                                FFIcons.khome,
+                                color:
+                                    FlutterFlowTheme.of(context).secondaryText,
+                                size: 26.0,
+                              ),
+                            ),
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                context.pushNamed(
+                                  'friends',
+                                  extra: <String, dynamic>{
+                                    kTransitionInfoKey: const TransitionInfo(
+                                      hasTransition: true,
+                                      transitionType:
+                                          PageTransitionType.rightToLeft,
+                                      duration: Duration(milliseconds: 300),
+                                    ),
+                                  },
+                                );
+                              },
+                              child: Icon(
+                                Icons.people_outlined,
+                                color:
+                                    FlutterFlowTheme.of(context).secondaryText,
+                                size: 26.0,
+                              ),
+                            ),
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                context.pushNamed(
+                                  'Home',
+                                  extra: <String, dynamic>{
+                                    kTransitionInfoKey: const TransitionInfo(
+                                      hasTransition: true,
+                                      transitionType:
+                                          PageTransitionType.topToBottom,
+                                      duration: Duration(milliseconds: 300),
+                                    ),
+                                  },
+                                );
+                              },
+                              child: Container(
+                                width: 28.0,
+                                height: 24.0,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: Image.asset(
+                                      Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? 'assets/images/video-play.png'
+                                          : 'assets/images/video-play_(1).png',
+                                    ).image,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                context.pushNamed('community');
+                              },
+                              child: Container(
+                                width: 28.0,
+                                height: 24.0,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: Image.asset(
+                                      Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? 'assets/images/users-group-alt_(1).png'
+                                          : 'assets/images/users-group-alt_(2).png',
+                                    ).image,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              splashColor: Colors.transparent,
+                              focusColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+                              onTap: () async {
+                                context.pushNamed(
+                                  'Profile',
+                                  extra: <String, dynamic>{
+                                    kTransitionInfoKey: const TransitionInfo(
+                                      hasTransition: true,
+                                      transitionType:
+                                          PageTransitionType.rightToLeft,
+                                      duration: Duration(milliseconds: 300),
+                                    ),
+                                  },
+                                );
+                              },
+                              child: Icon(
+                                Icons.person,
+                                color: FlutterFlowTheme.of(context).primary,
+                                size: 26.0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
