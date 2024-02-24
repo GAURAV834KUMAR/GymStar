@@ -5,7 +5,6 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/custom_code/widgets/index.dart' as custom_widgets;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'reel_comment_model.dart';
 export 'reel_comment_model.dart';
@@ -47,15 +46,6 @@ class _ReelCommentWidgetState extends State<ReelCommentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (isiOS) {
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          statusBarBrightness: Theme.of(context).brightness,
-          systemStatusBarContrastEnforced: true,
-        ),
-      );
-    }
-
     context.watch<FFAppState>();
 
     return GestureDetector(
@@ -604,7 +594,7 @@ class _ReelCommentWidgetState extends State<ReelCommentWidget> {
                                         child: FutureBuilder<UsersRecord>(
                                           future: UsersRecord.getDocumentOnce(
                                               listViewReelCommentRecord
-                                                  .reelUser!),
+                                                  .commUser!),
                                           builder: (context, snapshot) {
                                             // Customize what your widget looks like when it's loading.
                                             if (!snapshot.hasData) {
@@ -1290,6 +1280,7 @@ class _ReelCommentWidgetState extends State<ReelCommentWidget> {
                                                     columnReelsRecord.userId,
                                                 createdTime:
                                                     getCurrentTimestamp,
+                                                commUser: currentUserReference,
                                               ));
                                               _model.comment = ReelCommentRecord
                                                   .getDocumentFromData(
@@ -1302,6 +1293,8 @@ class _ReelCommentWidgetState extends State<ReelCommentWidget> {
                                                                 .userId,
                                                         createdTime:
                                                             getCurrentTimestamp,
+                                                        commUser:
+                                                            currentUserReference,
                                                       ),
                                                       reelCommentRecordReference);
                                               setState(() {

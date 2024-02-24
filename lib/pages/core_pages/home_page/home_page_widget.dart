@@ -1,7 +1,6 @@
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'home_page_model.dart';
@@ -36,15 +35,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (isiOS) {
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          statusBarBrightness: Theme.of(context).brightness,
-          systemStatusBarContrastEnforced: true,
-        ),
-      );
-    }
-
     context.watch<FFAppState>();
 
     return GestureDetector(
@@ -205,8 +195,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                                 transitionType:
                                                     PageTransitionType
                                                         .bottomToTop,
-                                                duration:
-                                                    Duration(milliseconds: 300),
                                               ),
                                             },
                                           );
@@ -722,7 +710,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                       hasTransition: true,
                                       transitionType:
                                           PageTransitionType.rightToLeft,
-                                      duration: Duration(milliseconds: 300),
                                     ),
                                   },
                                 );
@@ -1070,7 +1057,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                       hasTransition: true,
                                       transitionType:
                                           PageTransitionType.rightToLeft,
-                                      duration: Duration(milliseconds: 300),
                                     ),
                                   },
                                 );
@@ -1302,7 +1288,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                       hasTransition: true,
                                       transitionType:
                                           PageTransitionType.rightToLeft,
-                                      duration: Duration(milliseconds: 300),
                                     ),
                                   },
                                 );
@@ -1820,7 +1805,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                               kTransitionInfoKey: const TransitionInfo(
                                 hasTransition: true,
                                 transitionType: PageTransitionType.rightToLeft,
-                                duration: Duration(milliseconds: 300),
                               ),
                             },
                           );
@@ -1843,7 +1827,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                               kTransitionInfoKey: const TransitionInfo(
                                 hasTransition: true,
                                 transitionType: PageTransitionType.topToBottom,
-                                duration: Duration(milliseconds: 300),
                               ),
                             },
                           );
@@ -1898,7 +1881,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                               kTransitionInfoKey: const TransitionInfo(
                                 hasTransition: true,
                                 transitionType: PageTransitionType.rightToLeft,
-                                duration: Duration(milliseconds: 300),
                               ),
                             },
                           );

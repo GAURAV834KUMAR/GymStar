@@ -108,15 +108,6 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
 
   @override
   Widget build(BuildContext context) {
-    if (isiOS) {
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          statusBarBrightness: Theme.of(context).brightness,
-          systemStatusBarContrastEnforced: true,
-        ),
-      );
-    }
-
     context.watch<FFAppState>();
 
     return GestureDetector(
@@ -471,87 +462,84 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                               Align(
                                                 alignment: const AlignmentDirectional(
                                                     0.0, 0.0),
-                                                child: AuthUserStreamWidget(
-                                                  builder: (context) => InkWell(
-                                                    splashColor:
-                                                        Colors.transparent,
-                                                    focusColor:
-                                                        Colors.transparent,
-                                                    hoverColor:
-                                                        Colors.transparent,
-                                                    highlightColor:
-                                                        Colors.transparent,
-                                                    onTap: () async {
-                                                      if (stackStoriesRecord !=
-                                                          null) {
-                                                        showModalBottomSheet(
-                                                          isScrollControlled:
-                                                              true,
-                                                          backgroundColor:
-                                                              Colors
-                                                                  .transparent,
-                                                          barrierColor:
-                                                              const Color(0x00000000),
-                                                          context: context,
-                                                          builder: (context) {
-                                                            return GestureDetector(
-                                                              onTap: () => _model
-                                                                      .unfocusNode
-                                                                      .canRequestFocus
-                                                                  ? FocusScope.of(
-                                                                          context)
-                                                                      .requestFocus(
-                                                                          _model
-                                                                              .unfocusNode)
-                                                                  : FocusScope.of(
-                                                                          context)
-                                                                      .unfocus(),
-                                                              child: Padding(
-                                                                padding: MediaQuery
-                                                                    .viewInsetsOf(
-                                                                        context),
-                                                                child:
-                                                                    StoryWidget(
-                                                                  story:
-                                                                      stackStoriesRecord,
-                                                                ),
+                                                child: InkWell(
+                                                  splashColor:
+                                                      Colors.transparent,
+                                                  focusColor:
+                                                      Colors.transparent,
+                                                  hoverColor:
+                                                      Colors.transparent,
+                                                  highlightColor:
+                                                      Colors.transparent,
+                                                  onTap: () async {
+                                                    if (stackStoriesRecord !=
+                                                        null) {
+                                                      showModalBottomSheet(
+                                                        isScrollControlled:
+                                                            true,
+                                                        backgroundColor:
+                                                            Colors.transparent,
+                                                        barrierColor:
+                                                            const Color(0x00000000),
+                                                        context: context,
+                                                        builder: (context) {
+                                                          return GestureDetector(
+                                                            onTap: () => _model
+                                                                    .unfocusNode
+                                                                    .canRequestFocus
+                                                                ? FocusScope.of(
+                                                                        context)
+                                                                    .requestFocus(
+                                                                        _model
+                                                                            .unfocusNode)
+                                                                : FocusScope.of(
+                                                                        context)
+                                                                    .unfocus(),
+                                                            child: Padding(
+                                                              padding: MediaQuery
+                                                                  .viewInsetsOf(
+                                                                      context),
+                                                              child:
+                                                                  StoryWidget(
+                                                                story:
+                                                                    stackStoriesRecord,
                                                               ),
-                                                            );
-                                                          },
-                                                        ).then((value) =>
-                                                            safeSetState(
-                                                                () {}));
-
-                                                        await Future.delayed(
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    5000));
-                                                        Navigator.pop(context);
-                                                      }
-                                                    },
-                                                    child: Container(
-                                                      width: 93.0,
-                                                      height: 93.0,
-                                                      decoration: BoxDecoration(
-                                                        color: FlutterFlowTheme
-                                                                .of(context)
-                                                            .secondaryBackground,
-                                                        image: DecorationImage(
-                                                          fit: BoxFit.cover,
-                                                          image: Image.network(
-                                                            valueOrDefault<
-                                                                String>(
-                                                              currentUserPhoto,
-                                                              'https://nft-marketplace-website.netlify.app/static/media/ava-03.d5247c0b.png',
                                                             ),
-                                                          ).image,
-                                                        ),
-                                                        shape: BoxShape.circle,
-                                                        border: Border.all(
-                                                          color:
-                                                              const Color(0x05000000),
-                                                          width: 0.0,
-                                                        ),
+                                                          );
+                                                        },
+                                                      ).then((value) =>
+                                                          safeSetState(() {}));
+
+                                                      await Future.delayed(
+                                                          const Duration(
+                                                              milliseconds:
+                                                                  5000));
+                                                      Navigator.pop(context);
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    width: 93.0,
+                                                    height: 93.0,
+                                                    decoration: BoxDecoration(
+                                                      color: FlutterFlowTheme
+                                                              .of(context)
+                                                          .secondaryBackground,
+                                                      image: DecorationImage(
+                                                        fit: BoxFit.cover,
+                                                        image: Image.network(
+                                                          valueOrDefault<
+                                                              String>(
+                                                            columnUsersRecord
+                                                                ?.photoUrl,
+                                                            'https://nft-marketplace-website.netlify.app/static/media/ava-03.d5247c0b.png',
+                                                          ),
+                                                        ).image,
+                                                      ),
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(
+                                                        color:
+                                                            const Color(0x05000000),
+                                                        width: 0.0,
                                                       ),
                                                     ),
                                                   ),
@@ -1591,20 +1579,7 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                                         Colors.transparent,
                                                     highlightColor:
                                                         Colors.transparent,
-                                                    onTap: () async {
-                                                      context.pushNamed(
-                                                        'PostDetails',
-                                                        queryParameters: {
-                                                          'post':
-                                                              serializeParam(
-                                                            profilePhotosPostsRecord
-                                                                .reference,
-                                                            ParamType
-                                                                .DocumentReference,
-                                                          ),
-                                                        }.withoutNulls,
-                                                      );
-                                                    },
+                                                    onTap: () async {},
                                                     child: Hero(
                                                       tag:
                                                           profilePhotosPostsRecord
@@ -1683,7 +1658,6 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                       hasTransition: true,
                                       transitionType:
                                           PageTransitionType.topToBottom,
-                                      duration: Duration(milliseconds: 300),
                                     ),
                                   },
                                 );
@@ -1708,7 +1682,6 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                       hasTransition: true,
                                       transitionType:
                                           PageTransitionType.rightToLeft,
-                                      duration: Duration(milliseconds: 300),
                                     ),
                                   },
                                 );
@@ -1733,7 +1706,6 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                       hasTransition: true,
                                       transitionType:
                                           PageTransitionType.topToBottom,
-                                      duration: Duration(milliseconds: 300),
                                     ),
                                   },
                                 );
@@ -1791,7 +1763,6 @@ class _ProfileOtherWidgetState extends State<ProfileOtherWidget>
                                       hasTransition: true,
                                       transitionType:
                                           PageTransitionType.rightToLeft,
-                                      duration: Duration(milliseconds: 300),
                                     ),
                                   },
                                 );

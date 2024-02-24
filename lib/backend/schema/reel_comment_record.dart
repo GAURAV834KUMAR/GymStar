@@ -30,12 +30,18 @@ class ReelCommentRecord extends FirestoreRecord {
   String get comment => _comment ?? '';
   bool hasComment() => _comment != null;
 
+  // "comm_user" field.
+  DocumentReference? _commUser;
+  DocumentReference? get commUser => _commUser;
+  bool hasCommUser() => _commUser != null;
+
   DocumentReference get parentReference => reference.parent.parent!;
 
   void _initializeFields() {
     _reelUser = snapshotData['Reel_user'] as DocumentReference?;
     _createdTime = snapshotData['created_time'] as DateTime?;
     _comment = snapshotData['comment'] as String?;
+    _commUser = snapshotData['comm_user'] as DocumentReference?;
   }
 
   static Query<Map<String, dynamic>> collection([DocumentReference? parent]) =>
@@ -81,12 +87,14 @@ Map<String, dynamic> createReelCommentRecordData({
   DocumentReference? reelUser,
   DateTime? createdTime,
   String? comment,
+  DocumentReference? commUser,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
       'Reel_user': reelUser,
       'created_time': createdTime,
       'comment': comment,
+      'comm_user': commUser,
     }.withoutNulls,
   );
 
@@ -100,12 +108,13 @@ class ReelCommentRecordDocumentEquality implements Equality<ReelCommentRecord> {
   bool equals(ReelCommentRecord? e1, ReelCommentRecord? e2) {
     return e1?.reelUser == e2?.reelUser &&
         e1?.createdTime == e2?.createdTime &&
-        e1?.comment == e2?.comment;
+        e1?.comment == e2?.comment &&
+        e1?.commUser == e2?.commUser;
   }
 
   @override
-  int hash(ReelCommentRecord? e) =>
-      const ListEquality().hash([e?.reelUser, e?.createdTime, e?.comment]);
+  int hash(ReelCommentRecord? e) => const ListEquality()
+      .hash([e?.reelUser, e?.createdTime, e?.comment, e?.commUser]);
 
   @override
   bool isValidKey(Object? o) => o is ReelCommentRecord;
