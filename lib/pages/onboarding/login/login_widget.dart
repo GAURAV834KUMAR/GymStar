@@ -158,7 +158,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                   );
                                 },
                                 child: Text(
-                                  'Sighn up',
+                                  'Sign up',
                                   style: FlutterFlowTheme.of(context)
                                       .bodyMedium
                                       .override(

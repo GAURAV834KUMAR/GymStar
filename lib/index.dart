@@ -59,3 +59,13 @@ export '/pages/core_pages/exercise_detals/exercise_detals_widget.dart'
     show ExerciseDetalsWidget;
 export '/pages/posts/reel_comment/reel_comment_widget.dart'
     show ReelCommentWidget;
+export '/chat_groupwbubbles/chat_2_details/chat2_details_widget.dart'
+    show Chat2DetailsWidget;
+export '/chat_groupwbubbles/chat_2_main/chat2_main_widget.dart'
+    show Chat2MainWidget;
+export '/chat_groupwbubbles/chat_2_invite_users/chat2_invite_users_widget.dart'
+    show Chat2InviteUsersWidget;
+export '/chat_groupwbubbles/image_details/image_details_widget.dart'
+    show ImageDetailsWidget;
+export '/chat_groupwbubbles/new_group/new_group_widget.dart'
+    show NewGroupWidget;

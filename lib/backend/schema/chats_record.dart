@@ -6,6 +6,7 @@ import '/backend/schema/util/firestore_util.dart';
 import '/backend/schema/util/schema_util.dart';
 
 import 'index.dart';
+import '/flutter_flow/flutter_flow_util.dart';
 
 class ChatsRecord extends FirestoreRecord {
   ChatsRecord._(
@@ -51,6 +52,26 @@ class ChatsRecord extends FirestoreRecord {
   List<DocumentReference> get users => _users ?? const [];
   bool hasUsers() => _users != null;
 
+  // "group_chat_id" field.
+  int? _groupChatId;
+  int get groupChatId => _groupChatId ?? 0;
+  bool hasGroupChatId() => _groupChatId != null;
+
+  // "group_name" field.
+  String? _groupName;
+  String get groupName => _groupName ?? '';
+  bool hasGroupName() => _groupName != null;
+
+  // "group_pic" field.
+  String? _groupPic;
+  String get groupPic => _groupPic ?? '';
+  bool hasGroupPic() => _groupPic != null;
+
+  // "isgroup" field.
+  bool? _isgroup;
+  bool get isgroup => _isgroup ?? false;
+  bool hasIsgroup() => _isgroup != null;
+
   void _initializeFields() {
     _userA = snapshotData['user_a'] as DocumentReference?;
     _userB = snapshotData['user_b'] as DocumentReference?;
@@ -60,6 +81,10 @@ class ChatsRecord extends FirestoreRecord {
         snapshotData['last_message_sent_by'] as DocumentReference?;
     _lastMessageSeenBy = getDataList(snapshotData['last_message_seen_by']);
     _users = getDataList(snapshotData['users']);
+    _groupChatId = castToType<int>(snapshotData['group_chat_id']);
+    _groupName = snapshotData['group_name'] as String?;
+    _groupPic = snapshotData['group_pic'] as String?;
+    _isgroup = snapshotData['isgroup'] as bool?;
   }
 
   static CollectionReference get collection =>
@@ -101,6 +126,10 @@ Map<String, dynamic> createChatsRecordData({
   String? lastMessage,
   DateTime? lastMessageTime,
   DocumentReference? lastMessageSentBy,
+  int? groupChatId,
+  String? groupName,
+  String? groupPic,
+  bool? isgroup,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -109,6 +138,10 @@ Map<String, dynamic> createChatsRecordData({
       'last_message': lastMessage,
       'last_message_time': lastMessageTime,
       'last_message_sent_by': lastMessageSentBy,
+      'group_chat_id': groupChatId,
+      'group_name': groupName,
+      'group_pic': groupPic,
+      'isgroup': isgroup,
     }.withoutNulls,
   );
 
@@ -127,7 +160,11 @@ class ChatsRecordDocumentEquality implements Equality<ChatsRecord> {
         e1?.lastMessageTime == e2?.lastMessageTime &&
         e1?.lastMessageSentBy == e2?.lastMessageSentBy &&
         listEquality.equals(e1?.lastMessageSeenBy, e2?.lastMessageSeenBy) &&
-        listEquality.equals(e1?.users, e2?.users);
+        listEquality.equals(e1?.users, e2?.users) &&
+        e1?.groupChatId == e2?.groupChatId &&
+        e1?.groupName == e2?.groupName &&
+        e1?.groupPic == e2?.groupPic &&
+        e1?.isgroup == e2?.isgroup;
   }
 
   @override
@@ -138,7 +175,11 @@ class ChatsRecordDocumentEquality implements Equality<ChatsRecord> {
         e?.lastMessageTime,
         e?.lastMessageSentBy,
         e?.lastMessageSeenBy,
-        e?.users
+        e?.users,
+        e?.groupChatId,
+        e?.groupName,
+        e?.groupPic,
+        e?.isgroup
       ]);
 
   @override

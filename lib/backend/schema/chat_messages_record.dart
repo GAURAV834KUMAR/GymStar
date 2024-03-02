@@ -50,6 +50,11 @@ class ChatMessagesRecord extends FirestoreRecord {
   String get image => _image ?? '';
   bool hasImage() => _image != null;
 
+  // "video" field.
+  String? _video;
+  String get video => _video ?? '';
+  bool hasVideo() => _video != null;
+
   void _initializeFields() {
     _user = snapshotData['user'] as DocumentReference?;
     _chat = snapshotData['chat'] as DocumentReference?;
@@ -58,6 +63,7 @@ class ChatMessagesRecord extends FirestoreRecord {
     _postRef = snapshotData['postRef'] as DocumentReference?;
     _commentRef = snapshotData['commentRef'] as DocumentReference?;
     _image = snapshotData['image'] as String?;
+    _video = snapshotData['video'] as String?;
   }
 
   static CollectionReference get collection =>
@@ -102,6 +108,7 @@ Map<String, dynamic> createChatMessagesRecordData({
   DocumentReference? postRef,
   DocumentReference? commentRef,
   String? image,
+  String? video,
 }) {
   final firestoreData = mapToFirestore(
     <String, dynamic>{
@@ -112,6 +119,7 @@ Map<String, dynamic> createChatMessagesRecordData({
       'postRef': postRef,
       'commentRef': commentRef,
       'image': image,
+      'video': video,
     }.withoutNulls,
   );
 
@@ -130,7 +138,8 @@ class ChatMessagesRecordDocumentEquality
         e1?.timestamp == e2?.timestamp &&
         e1?.postRef == e2?.postRef &&
         e1?.commentRef == e2?.commentRef &&
-        e1?.image == e2?.image;
+        e1?.image == e2?.image &&
+        e1?.video == e2?.video;
   }
 
   @override
@@ -141,7 +150,8 @@ class ChatMessagesRecordDocumentEquality
         e?.timestamp,
         e?.postRef,
         e?.commentRef,
-        e?.image
+        e?.image,
+        e?.video
       ]);
 
   @override

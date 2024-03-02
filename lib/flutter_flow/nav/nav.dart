@@ -331,6 +331,51 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
                 reels: params.getParam(
                     'reels', ParamType.DocumentReference, false, ['Reels']),
               ),
+            ),
+            FFRoute(
+              name: 'chat_2_Details',
+              path: 'chat2Details',
+              asyncParams: {
+                'chatRef': getDoc(['chats'], ChatsRecord.fromSnapshot),
+              },
+              builder: (context, params) => Chat2DetailsWidget(
+                chatRef: params.getParam('chatRef', ParamType.Document),
+              ),
+            ),
+            FFRoute(
+              name: 'chat_2_main',
+              path: 'chat2Main',
+              builder: (context, params) => const Chat2MainWidget(),
+            ),
+            FFRoute(
+              name: 'chat_2_InviteUsers',
+              path: 'chat2InviteUsers',
+              asyncParams: {
+                'chatRef': getDoc(['chats'], ChatsRecord.fromSnapshot),
+              },
+              builder: (context, params) => Chat2InviteUsersWidget(
+                chatRef: params.getParam('chatRef', ParamType.Document),
+                name: params.getParam('name', ParamType.String),
+                image: params.getParam('image', ParamType.String),
+              ),
+            ),
+            FFRoute(
+              name: 'image_Details',
+              path: 'imageDetails',
+              asyncParams: {
+                'chatMessage':
+                    getDoc(['chat_messages'], ChatMessagesRecord.fromSnapshot),
+              },
+              builder: (context, params) => ImageDetailsWidget(
+                chatMessage: params.getParam('chatMessage', ParamType.Document),
+              ),
+            ),
+            FFRoute(
+              name: 'new_group',
+              path: 'newGroup',
+              builder: (context, params) => NewGroupWidget(
+                photo: params.getParam('photo', ParamType.String),
+              ),
             )
           ].map((r) => r.toRoute(appStateNotifier)).toList(),
         ),

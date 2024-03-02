@@ -1,6 +1,11 @@
+import '/auth/firebase_auth/auth_util.dart';
 import '/backend/backend.dart';
+import '/backend/firebase_storage/storage.dart';
+import '/chat_groupwbubbles/chat_details_overlay/chat_details_overlay_widget.dart';
+import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/upload_data.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -78,19 +83,103 @@ class _CommunityWidgetState extends State<CommunityWidget> {
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  InkWell(
-                    splashColor: Colors.transparent,
-                    focusColor: Colors.transparent,
-                    hoverColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    onTap: () async {
-                      context.pushNamed('Messages');
-                    },
-                    child: Icon(
-                      Icons.message_rounded,
+                  FlutterFlowIconButton(
+                    borderColor: Colors.transparent,
+                    borderRadius: 12.0,
+                    borderWidth: 1.0,
+                    buttonSize: 40.0,
+                    icon: Icon(
+                      Icons.add_comment,
                       color: FlutterFlowTheme.of(context).primaryText,
-                      size: 28.0,
+                      size: 24.0,
                     ),
+                    onPressed: () async {
+                      await showDialog(
+                        context: context,
+                        builder: (alertDialogContext) {
+                          return AlertDialog(
+                            title: const Text('Upload Group Photo'),
+                            content:
+                                const Text('Please upload the group photo first.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.pop(alertDialogContext),
+                                child: const Text('Ok'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      final selectedMedia =
+                          await selectMediaWithSourceBottomSheet(
+                        context: context,
+                        allowPhoto: true,
+                      );
+                      if (selectedMedia != null &&
+                          selectedMedia.every((m) =>
+                              validateFileFormat(m.storagePath, context))) {
+                        setState(() => _model.isDataUploading = true);
+                        var selectedUploadedFiles = <FFUploadedFile>[];
+
+                        var downloadUrls = <String>[];
+                        try {
+                          selectedUploadedFiles = selectedMedia
+                              .map((m) => FFUploadedFile(
+                                    name: m.storagePath.split('/').last,
+                                    bytes: m.bytes,
+                                    height: m.dimensions?.height,
+                                    width: m.dimensions?.width,
+                                    blurHash: m.blurHash,
+                                  ))
+                              .toList();
+
+                          downloadUrls = (await Future.wait(
+                            selectedMedia.map(
+                              (m) async =>
+                                  await uploadData(m.storagePath, m.bytes),
+                            ),
+                          ))
+                              .where((u) => u != null)
+                              .map((u) => u!)
+                              .toList();
+                        } finally {
+                          _model.isDataUploading = false;
+                        }
+                        if (selectedUploadedFiles.length ==
+                                selectedMedia.length &&
+                            downloadUrls.length == selectedMedia.length) {
+                          setState(() {
+                            _model.uploadedLocalFile =
+                                selectedUploadedFiles.first;
+                            _model.uploadedFileUrl = downloadUrls.first;
+                          });
+                        } else {
+                          setState(() {});
+                          return;
+                        }
+                      }
+
+                      context.pushNamed(
+                        'new_group',
+                        queryParameters: {
+                          'photo': serializeParam(
+                            valueOrDefault<String>(
+                              _model.uploadedFileUrl,
+                              'https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/instagram-clone-6a0sgj/assets/5kzna2tblj33/young-fitness-man-studio_7502-5008.jpg',
+                            ),
+                            ParamType.String,
+                          ),
+                        }.withoutNulls,
+                        extra: <String, dynamic>{
+                          kTransitionInfoKey: const TransitionInfo(
+                            hasTransition: true,
+                            transitionType: PageTransitionType.fade,
+                            duration: Duration(milliseconds: 0),
+                          ),
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
@@ -183,13 +272,18 @@ class _CommunityWidgetState extends State<CommunityWidget> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(16.0, 20.0, 16.0, 0.0),
-                child: StreamBuilder<List<UsersRecord>>(
-                  stream: queryUsersRecord(
-                    queryBuilder: (usersRecord) => usersRecord.where(
-                      'uid',
-                      isEqualTo: 'N1gDlcfD2wMQTNzjhZfpvMRJoIl1',
-                    ),
-                    singleRecord: true,
+                child: StreamBuilder<List<ChatsRecord>>(
+                  stream: queryChatsRecord(
+                    queryBuilder: (chatsRecord) => chatsRecord
+                        .where(
+                          'users',
+                          arrayContains: currentUserReference,
+                        )
+                        .where(
+                          'isgroup',
+                          isEqualTo: true,
+                        )
+                        .orderBy('last_message_time', descending: true),
                   ),
                   builder: (context, snapshot) {
                     // Customize what your widget looks like when it's loading.
@@ -206,22 +300,21 @@ class _CommunityWidgetState extends State<CommunityWidget> {
                         ),
                       );
                     }
-                    List<UsersRecord> gridViewUsersRecordList = snapshot.data!;
-                    final gridViewUsersRecord =
-                        gridViewUsersRecordList.isNotEmpty
-                            ? gridViewUsersRecordList.first
-                            : null;
-                    return GridView(
+                    List<ChatsRecord> gridViewChatsRecordList = snapshot.data!;
+                    return GridView.builder(
                       padding: EdgeInsets.zero,
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 8.0,
                         mainAxisSpacing: 8.0,
-                        childAspectRatio: 0.8,
+                        childAspectRatio: 0.79,
                       ),
                       scrollDirection: Axis.vertical,
-                      children: [
-                        Stack(
+                      itemCount: gridViewChatsRecordList.length,
+                      itemBuilder: (context, gridViewIndex) {
+                        final gridViewChatsRecord =
+                            gridViewChatsRecordList[gridViewIndex];
+                        return Stack(
                           children: [
                             Column(
                               mainAxisSize: MainAxisSize.max,
@@ -235,14 +328,20 @@ class _CommunityWidgetState extends State<CommunityWidget> {
                                     highlightColor: Colors.transparent,
                                     onTap: () async {
                                       context.pushNamed(
-                                        'community_message',
+                                        'chat_2_Details',
+                                        queryParameters: {
+                                          'chatRef': serializeParam(
+                                            gridViewChatsRecord,
+                                            ParamType.Document,
+                                          ),
+                                        }.withoutNulls,
                                         extra: <String, dynamic>{
+                                          'chatRef': gridViewChatsRecord,
                                           kTransitionInfoKey: const TransitionInfo(
                                             hasTransition: true,
                                             transitionType:
-                                                PageTransitionType.bottomToTop,
-                                            duration:
-                                                Duration(milliseconds: 300),
+                                                PageTransitionType.fade,
+                                            duration: Duration(milliseconds: 0),
                                           ),
                                         },
                                       );
@@ -255,8 +354,11 @@ class _CommunityWidgetState extends State<CommunityWidget> {
                                             .secondaryBackground,
                                         image: DecorationImage(
                                           fit: BoxFit.cover,
-                                          image: Image.asset(
-                                            'assets/images/young-fitness-man-studio_7502-5008.jpg',
+                                          image: Image.network(
+                                            valueOrDefault<String>(
+                                              gridViewChatsRecord.groupPic,
+                                              'https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/instagram-clone-6a0sgj/assets/5kzna2tblj33/young-fitness-man-studio_7502-5008.jpg',
+                                            ),
                                           ).image,
                                         ),
                                         borderRadius:
@@ -294,9 +396,12 @@ class _CommunityWidgetState extends State<CommunityWidget> {
                                           Padding(
                                             padding:
                                                 const EdgeInsetsDirectional.fromSTEB(
-                                                    0.0, 11.0, 0.0, 0.0),
+                                                    0.0, 10.0, 0.0, 2.0),
                                             child: Text(
-                                              'Fitness One',
+                                              valueOrDefault<String>(
+                                                gridViewChatsRecord.groupName,
+                                                'Group name',
+                                              ),
                                               style: FlutterFlowTheme.of(
                                                       context)
                                                   .bodyMedium
@@ -311,14 +416,18 @@ class _CommunityWidgetState extends State<CommunityWidget> {
                                             ),
                                           ),
                                           Text(
-                                            '800 Member',
+                                            '${valueOrDefault<String>(
+                                              gridViewChatsRecord.users.length
+                                                  .toString(),
+                                              '2',
+                                            )} Members',
                                             style: FlutterFlowTheme.of(context)
                                                 .bodyMedium
                                                 .override(
                                                   fontFamily: 'Inter',
                                                   color: FlutterFlowTheme.of(
                                                           context)
-                                                      .secondaryText,
+                                                      .primary,
                                                   fontSize: 11.0,
                                                   fontWeight: FontWeight.w500,
                                                 ),
@@ -327,144 +436,50 @@ class _CommunityWidgetState extends State<CommunityWidget> {
                                       ),
                                       Padding(
                                         padding: const EdgeInsetsDirectional.fromSTEB(
-                                            16.0, 11.0, 0.0, 0.0),
-                                        child: Icon(
-                                          Icons.add_sharp,
-                                          color: FlutterFlowTheme.of(context)
-                                              .primary,
-                                          size: 24.0,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Align(
-                              alignment: const AlignmentDirectional(1.01, -1.0),
-                              child: Container(
-                                width: 12.0,
-                                height: 12.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context).error,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Stack(
-                          children: [
-                            Column(
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(2.0),
-                                  child: InkWell(
-                                    splashColor: Colors.transparent,
-                                    focusColor: Colors.transparent,
-                                    hoverColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    onTap: () async {
-                                      context.pushNamed(
-                                        'community_message',
-                                        extra: <String, dynamic>{
-                                          kTransitionInfoKey: const TransitionInfo(
-                                            hasTransition: true,
-                                            transitionType:
-                                                PageTransitionType.bottomToTop,
-                                            duration:
-                                                Duration(milliseconds: 300),
+                                            16.0, 8.0, 0.0, 0.0),
+                                        child: FlutterFlowIconButton(
+                                          borderRadius: 12.0,
+                                          borderWidth: 2.0,
+                                          buttonSize: 40.0,
+                                          icon: Icon(
+                                            Icons.more_vert,
+                                            color: FlutterFlowTheme.of(context)
+                                                .primary,
+                                            size: 24.0,
                                           ),
-                                        },
-                                      );
-                                    },
-                                    child: Container(
-                                      width: double.infinity,
-                                      height: 160.0,
-                                      decoration: BoxDecoration(
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryBackground,
-                                        image: DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: Image.asset(
-                                            'assets/images/14.jpg',
-                                          ).image,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(16.0),
-                                      ),
-                                      child: Container(
-                                        width: 100.0,
-                                        height: 100.0,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0x001C1C1E),
-                                          image: DecorationImage(
-                                            fit: BoxFit.cover,
-                                            image: Image.asset(
-                                              'assets/images/Rectangle.png',
-                                            ).image,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(16.0),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsetsDirectional.fromSTEB(
-                                      10.0, 0.0, 0.0, 16.0),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.max,
-                                    children: [
-                                      Column(
-                                        mainAxisSize: MainAxisSize.max,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding:
-                                                const EdgeInsetsDirectional.fromSTEB(
-                                                    0.0, 11.0, 0.0, 0.0),
-                                            child: Text(
-                                              'Air Source',
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .bodyMedium
-                                                  .override(
-                                                    fontFamily: 'Inter',
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primaryText,
-                                                    fontSize: 17.0,
-                                                    fontWeight: FontWeight.w600,
+                                          onPressed: () async {
+                                            await showModalBottomSheet(
+                                              isScrollControlled: true,
+                                              backgroundColor:
+                                                  FlutterFlowTheme.of(context)
+                                                      .accent4,
+                                              barrierColor: const Color(0x00FFFFFF),
+                                              context: context,
+                                              builder: (context) {
+                                                return GestureDetector(
+                                                  onTap: () => _model
+                                                          .unfocusNode
+                                                          .canRequestFocus
+                                                      ? FocusScope.of(context)
+                                                          .requestFocus(_model
+                                                              .unfocusNode)
+                                                      : FocusScope.of(context)
+                                                          .unfocus(),
+                                                  child: Padding(
+                                                    padding:
+                                                        MediaQuery.viewInsetsOf(
+                                                            context),
+                                                    child:
+                                                        ChatDetailsOverlayWidget(
+                                                      chatRef:
+                                                          gridViewChatsRecord,
+                                                    ),
                                                   ),
-                                            ),
-                                          ),
-                                          Text(
-                                            '800 Member',
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyMedium
-                                                .override(
-                                                  fontFamily: 'Inter',
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .secondaryText,
-                                                  fontSize: 11.0,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsetsDirectional.fromSTEB(
-                                            26.0, 11.0, 0.0, 0.0),
-                                        child: Icon(
-                                          Icons.add_sharp,
-                                          color: FlutterFlowTheme.of(context)
-                                              .primary,
-                                          size: 24.0,
+                                                );
+                                              },
+                                            ).then(
+                                                (value) => safeSetState(() {}));
+                                          },
                                         ),
                                       ),
                                     ],
@@ -472,456 +487,22 @@ class _CommunityWidgetState extends State<CommunityWidget> {
                                 ),
                               ],
                             ),
-                            Align(
-                              alignment: const AlignmentDirectional(0.97, -0.99),
-                              child: Container(
-                                width: 12.0,
-                                height: 12.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context).error,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            InkWell(
-                              splashColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () async {
-                                context.pushNamed(
-                                  'community_message',
-                                  extra: <String, dynamic>{
-                                    kTransitionInfoKey: const TransitionInfo(
-                                      hasTransition: true,
-                                      transitionType:
-                                          PageTransitionType.bottomToTop,
-                                      duration: Duration(milliseconds: 300),
-                                    ),
-                                  },
-                                );
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                height: 160.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: Image.asset(
-                                      'assets/images/caucasian-teenage-girl-practicing-weightlifting-gym-female-sportive-model-preapring-training-with-barbell-looks-concentrated-body-building-healthy-lifestyle-movement-action-concept_489646-13560.jpg',
-                                    ).image,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16.0),
-                                ),
+                            if (!gridViewChatsRecord.lastMessageSeenBy
+                                .contains(currentUserReference))
+                              Align(
+                                alignment: const AlignmentDirectional(1.01, -1.0),
                                 child: Container(
-                                  width: 100.0,
-                                  height: 100.0,
+                                  width: 12.0,
+                                  height: 12.0,
                                   decoration: BoxDecoration(
-                                    color: const Color(0x001C1C1E),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: Image.asset(
-                                        'assets/images/Rectangle.png',
-                                      ).image,
-                                    ),
-                                    borderRadius: BorderRadius.circular(16.0),
+                                    color: FlutterFlowTheme.of(context).error,
+                                    shape: BoxShape.circle,
                                   ),
                                 ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  10.0, 0.0, 0.0, 16.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsetsDirectional.fromSTEB(
-                                            0.0, 11.0, 0.0, 0.0),
-                                        child: Text(
-                                          'Teen Lifters',
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                fontFamily: 'Inter',
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .primaryText,
-                                                fontSize: 17.0,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                      ),
-                                      Text(
-                                        '800 Member',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily: 'Inter',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryText,
-                                              fontSize: 11.0,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsetsDirectional.fromSTEB(
-                                        20.0, 11.0, 0.0, 0.0),
-                                    child: Icon(
-                                      Icons.add_sharp,
-                                      color:
-                                          FlutterFlowTheme.of(context).primary,
-                                      size: 24.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                           ],
-                        ),
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            InkWell(
-                              splashColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () async {
-                                context.pushNamed(
-                                  'community_message',
-                                  extra: <String, dynamic>{
-                                    kTransitionInfoKey: const TransitionInfo(
-                                      hasTransition: true,
-                                      transitionType:
-                                          PageTransitionType.bottomToTop,
-                                      duration: Duration(milliseconds: 300),
-                                    ),
-                                  },
-                                );
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                height: 160.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: Image.asset(
-                                      'assets/images/grunting-at-the-gym.jpg',
-                                    ).image,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16.0),
-                                ),
-                                child: Container(
-                                  width: 100.0,
-                                  height: 100.0,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0x001C1C1E),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: Image.asset(
-                                        'assets/images/Rectangle.png',
-                                      ).image,
-                                    ),
-                                    borderRadius: BorderRadius.circular(16.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  10.0, 0.0, 0.0, 16.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsetsDirectional.fromSTEB(
-                                            0.0, 11.0, 0.0, 0.0),
-                                        child: Text(
-                                          'Goal Getters',
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                fontFamily: 'Inter',
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .primaryText,
-                                                fontSize: 17.0,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                      ),
-                                      Text(
-                                        '800 Member',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily: 'Inter',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryText,
-                                              fontSize: 11.0,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsetsDirectional.fromSTEB(
-                                        16.0, 11.0, 0.0, 0.0),
-                                    child: Icon(
-                                      Icons.add_sharp,
-                                      color:
-                                          FlutterFlowTheme.of(context).primary,
-                                      size: 24.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            InkWell(
-                              splashColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () async {
-                                context.pushNamed(
-                                  'community_message',
-                                  extra: <String, dynamic>{
-                                    kTransitionInfoKey: const TransitionInfo(
-                                      hasTransition: true,
-                                      transitionType:
-                                          PageTransitionType.bottomToTop,
-                                      duration: Duration(milliseconds: 300),
-                                    ),
-                                  },
-                                );
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                height: 160.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: Image.asset(
-                                      'assets/images/MealPro-Chicken-Gym-Meal-Prep.jpg',
-                                    ).image,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16.0),
-                                ),
-                                child: Container(
-                                  width: 100.0,
-                                  height: 100.0,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0x001C1C1E),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: Image.asset(
-                                        'assets/images/Rectangle.png',
-                                      ).image,
-                                    ),
-                                    borderRadius: BorderRadius.circular(16.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  10.0, 0.0, 0.0, 16.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsetsDirectional.fromSTEB(
-                                            0.0, 11.0, 0.0, 0.0),
-                                        child: Text(
-                                          'Meals Active',
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                fontFamily: 'Inter',
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .primaryText,
-                                                fontSize: 17.0,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                      ),
-                                      Text(
-                                        '800 Member',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily: 'Inter',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryText,
-                                              fontSize: 11.0,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsetsDirectional.fromSTEB(
-                                        16.0, 11.0, 0.0, 0.0),
-                                    child: Icon(
-                                      Icons.add_sharp,
-                                      color:
-                                          FlutterFlowTheme.of(context).primary,
-                                      size: 24.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            InkWell(
-                              splashColor: Colors.transparent,
-                              focusColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              onTap: () async {
-                                context.pushNamed(
-                                  'community_message',
-                                  extra: <String, dynamic>{
-                                    kTransitionInfoKey: const TransitionInfo(
-                                      hasTransition: true,
-                                      transitionType:
-                                          PageTransitionType.bottomToTop,
-                                      duration: Duration(milliseconds: 300),
-                                    ),
-                                  },
-                                );
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                height: 160.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  image: DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: Image.asset(
-                                      'assets/images/211208-working-out-stock-mn-1310-55e1c7.webp',
-                                    ).image,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16.0),
-                                ),
-                                child: Container(
-                                  width: 100.0,
-                                  height: 100.0,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0x001C1C1E),
-                                    image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: Image.asset(
-                                        'assets/images/Rectangle.png',
-                                      ).image,
-                                    ),
-                                    borderRadius: BorderRadius.circular(16.0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsetsDirectional.fromSTEB(
-                                  10.0, 0.0, 0.0, 16.0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.max,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsetsDirectional.fromSTEB(
-                                            0.0, 11.0, 0.0, 0.0),
-                                        child: Text(
-                                          'Fitness News',
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyMedium
-                                              .override(
-                                                fontFamily: 'Inter',
-                                                color:
-                                                    FlutterFlowTheme.of(context)
-                                                        .primaryText,
-                                                fontSize: 17.0,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                      ),
-                                      Text(
-                                        '800 Member',
-                                        style: FlutterFlowTheme.of(context)
-                                            .bodyMedium
-                                            .override(
-                                              fontFamily: 'Inter',
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .secondaryText,
-                                              fontSize: 11.0,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsetsDirectional.fromSTEB(
-                                        16.0, 11.0, 0.0, 0.0),
-                                    child: Icon(
-                                      Icons.add_sharp,
-                                      color:
-                                          FlutterFlowTheme.of(context).primary,
-                                      size: 24.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                        );
+                      },
                     );
                   },
                 ),
@@ -954,8 +535,8 @@ class _CommunityWidgetState extends State<CommunityWidget> {
                             extra: <String, dynamic>{
                               kTransitionInfoKey: const TransitionInfo(
                                 hasTransition: true,
-                                transitionType: PageTransitionType.topToBottom,
-                                duration: Duration(milliseconds: 300),
+                                transitionType: PageTransitionType.fade,
+                                duration: Duration(milliseconds: 0),
                               ),
                             },
                           );
@@ -977,8 +558,8 @@ class _CommunityWidgetState extends State<CommunityWidget> {
                             extra: <String, dynamic>{
                               kTransitionInfoKey: const TransitionInfo(
                                 hasTransition: true,
-                                transitionType: PageTransitionType.rightToLeft,
-                                duration: Duration(milliseconds: 300),
+                                transitionType: PageTransitionType.fade,
+                                duration: Duration(milliseconds: 0),
                               ),
                             },
                           );
@@ -1000,8 +581,8 @@ class _CommunityWidgetState extends State<CommunityWidget> {
                             extra: <String, dynamic>{
                               kTransitionInfoKey: const TransitionInfo(
                                 hasTransition: true,
-                                transitionType: PageTransitionType.topToBottom,
-                                duration: Duration(milliseconds: 300),
+                                transitionType: PageTransitionType.fade,
+                                duration: Duration(milliseconds: 0),
                               ),
                             },
                           );
@@ -1027,7 +608,16 @@ class _CommunityWidgetState extends State<CommunityWidget> {
                         hoverColor: Colors.transparent,
                         highlightColor: Colors.transparent,
                         onTap: () async {
-                          context.pushNamed('community');
+                          context.pushNamed(
+                            'community',
+                            extra: <String, dynamic>{
+                              kTransitionInfoKey: const TransitionInfo(
+                                hasTransition: true,
+                                transitionType: PageTransitionType.fade,
+                                duration: Duration(milliseconds: 0),
+                              ),
+                            },
+                          );
                         },
                         child: Container(
                           width: 28.0,
@@ -1055,8 +645,8 @@ class _CommunityWidgetState extends State<CommunityWidget> {
                             extra: <String, dynamic>{
                               kTransitionInfoKey: const TransitionInfo(
                                 hasTransition: true,
-                                transitionType: PageTransitionType.rightToLeft,
-                                duration: Duration(milliseconds: 300),
+                                transitionType: PageTransitionType.fade,
+                                duration: Duration(milliseconds: 0),
                               ),
                             },
                           );

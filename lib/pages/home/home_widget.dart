@@ -250,10 +250,10 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                                     true,
                                                                 transitionType:
                                                                     PageTransitionType
-                                                                        .rightToLeft,
+                                                                        .fade,
                                                                 duration: Duration(
                                                                     milliseconds:
-                                                                        300),
+                                                                        0),
                                                               ),
                                                             },
                                                           );
@@ -452,10 +452,10 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                                                           true,
                                                                       transitionType:
                                                                           PageTransitionType
-                                                                              .topToBottom,
+                                                                              .fade,
                                                                       duration: Duration(
                                                                           milliseconds:
-                                                                              300),
+                                                                              0),
                                                                     ),
                                                                   },
                                                                 );
@@ -871,8 +871,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                 extra: <String, dynamic>{
                                   kTransitionInfoKey: const TransitionInfo(
                                     hasTransition: true,
-                                    transitionType:
-                                        PageTransitionType.topToBottom,
+                                    transitionType: PageTransitionType.fade,
+                                    duration: Duration(milliseconds: 0),
                                   ),
                                 },
                               );
@@ -894,8 +894,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                 extra: <String, dynamic>{
                                   kTransitionInfoKey: const TransitionInfo(
                                     hasTransition: true,
-                                    transitionType:
-                                        PageTransitionType.rightToLeft,
+                                    transitionType: PageTransitionType.fade,
+                                    duration: Duration(milliseconds: 0),
                                   ),
                                 },
                               );
@@ -917,8 +917,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                 extra: <String, dynamic>{
                                   kTransitionInfoKey: const TransitionInfo(
                                     hasTransition: true,
-                                    transitionType:
-                                        PageTransitionType.topToBottom,
+                                    transitionType: PageTransitionType.fade,
+                                    duration: Duration(milliseconds: 0),
                                   ),
                                 },
                               );
@@ -945,7 +945,16 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                             hoverColor: Colors.transparent,
                             highlightColor: Colors.transparent,
                             onTap: () async {
-                              context.pushNamed('community');
+                              context.pushNamed(
+                                'community',
+                                extra: <String, dynamic>{
+                                  kTransitionInfoKey: const TransitionInfo(
+                                    hasTransition: true,
+                                    transitionType: PageTransitionType.fade,
+                                    duration: Duration(milliseconds: 0),
+                                  ),
+                                },
+                              );
                             },
                             child: Container(
                               width: 28.0,
@@ -974,8 +983,8 @@ class _HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
                                 extra: <String, dynamic>{
                                   kTransitionInfoKey: const TransitionInfo(
                                     hasTransition: true,
-                                    transitionType:
-                                        PageTransitionType.rightToLeft,
+                                    transitionType: PageTransitionType.fade,
+                                    duration: Duration(milliseconds: 0),
                                   ),
                                 },
                               );

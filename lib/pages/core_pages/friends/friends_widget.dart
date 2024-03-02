@@ -822,7 +822,7 @@ class _FriendsWidgetState extends State<FriendsWidget>
                                                                     .video,
                                                             videoType: VideoType
                                                                 .network,
-                                                            autoPlay: true,
+                                                            autoPlay: false,
                                                             looping: true,
                                                             showControls: true,
                                                             allowFullScreen:
@@ -1721,9 +1721,8 @@ class _FriendsWidgetState extends State<FriendsWidget>
                                 extra: <String, dynamic>{
                                   kTransitionInfoKey: const TransitionInfo(
                                     hasTransition: true,
-                                    transitionType:
-                                        PageTransitionType.topToBottom,
-                                    duration: Duration(milliseconds: 300),
+                                    transitionType: PageTransitionType.fade,
+                                    duration: Duration(milliseconds: 0),
                                   ),
                                 },
                               );
@@ -1745,9 +1744,8 @@ class _FriendsWidgetState extends State<FriendsWidget>
                                 extra: <String, dynamic>{
                                   kTransitionInfoKey: const TransitionInfo(
                                     hasTransition: true,
-                                    transitionType:
-                                        PageTransitionType.rightToLeft,
-                                    duration: Duration(milliseconds: 300),
+                                    transitionType: PageTransitionType.fade,
+                                    duration: Duration(milliseconds: 0),
                                   ),
                                 },
                               );
@@ -1769,9 +1767,8 @@ class _FriendsWidgetState extends State<FriendsWidget>
                                 extra: <String, dynamic>{
                                   kTransitionInfoKey: const TransitionInfo(
                                     hasTransition: true,
-                                    transitionType:
-                                        PageTransitionType.topToBottom,
-                                    duration: Duration(milliseconds: 300),
+                                    transitionType: PageTransitionType.fade,
+                                    duration: Duration(milliseconds: 0),
                                   ),
                                 },
                               );
@@ -1798,7 +1795,16 @@ class _FriendsWidgetState extends State<FriendsWidget>
                             hoverColor: Colors.transparent,
                             highlightColor: Colors.transparent,
                             onTap: () async {
-                              context.pushNamed('community');
+                              context.pushNamed(
+                                'community',
+                                extra: <String, dynamic>{
+                                  kTransitionInfoKey: const TransitionInfo(
+                                    hasTransition: true,
+                                    transitionType: PageTransitionType.fade,
+                                    duration: Duration(milliseconds: 0),
+                                  ),
+                                },
+                              );
                             },
                             child: Container(
                               width: 28.0,
@@ -1827,9 +1833,8 @@ class _FriendsWidgetState extends State<FriendsWidget>
                                 extra: <String, dynamic>{
                                   kTransitionInfoKey: const TransitionInfo(
                                     hasTransition: true,
-                                    transitionType:
-                                        PageTransitionType.rightToLeft,
-                                    duration: Duration(milliseconds: 300),
+                                    transitionType: PageTransitionType.fade,
+                                    duration: Duration(milliseconds: 0),
                                   ),
                                 },
                               );

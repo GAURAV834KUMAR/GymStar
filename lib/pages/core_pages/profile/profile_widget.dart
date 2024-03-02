@@ -130,14 +130,16 @@ class _ProfileWidgetState extends State<ProfileWidget>
               context.pop();
             },
           ),
-          title: Text(
-            'Meal Planner',
-            style: FlutterFlowTheme.of(context).headlineMedium.override(
-                  fontFamily: 'Inter',
-                  color: FlutterFlowTheme.of(context).primaryText,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
-                ),
+          title: AuthUserStreamWidget(
+            builder: (context) => Text(
+              valueOrDefault(currentUserDocument?.username, ''),
+              style: FlutterFlowTheme.of(context).headlineMedium.override(
+                    fontFamily: 'Inter',
+                    color: FlutterFlowTheme.of(context).primaryText,
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
           ),
           actions: [
             Row(
@@ -229,7 +231,8 @@ class _ProfileWidgetState extends State<ProfileWidget>
                           extra: <String, dynamic>{
                             kTransitionInfoKey: const TransitionInfo(
                               hasTransition: true,
-                              transitionType: PageTransitionType.leftToRight,
+                              transitionType: PageTransitionType.fade,
+                              duration: Duration(milliseconds: 0),
                             ),
                           },
                         );
@@ -501,7 +504,7 @@ class _ProfileWidgetState extends State<ProfileWidget>
                                                           valueOrDefault<
                                                               String>(
                                                             currentUserPhoto,
-                                                            'https://nft-marketplace-website.netlify.app/static/media/ava-03.d5247c0b.png',
+                                                            'https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/instagram-clone-6a0sgj/assets/19tzwvs6yw32/3.png',
                                                           ),
                                                         ).image,
                                                       ),
@@ -1527,7 +1530,30 @@ class _ProfileWidgetState extends State<ProfileWidget>
                                                 hoverColor: Colors.transparent,
                                                 highlightColor:
                                                     Colors.transparent,
-                                                onTap: () async {},
+                                                onTap: () async {
+                                                  context.pushNamed(
+                                                    'PostDetails',
+                                                    queryParameters: {
+                                                      'post': serializeParam(
+                                                        profilePhotosPostsRecord
+                                                            .reference,
+                                                        ParamType
+                                                            .DocumentReference,
+                                                      ),
+                                                    }.withoutNulls,
+                                                    extra: <String, dynamic>{
+                                                      kTransitionInfoKey:
+                                                          const TransitionInfo(
+                                                        hasTransition: true,
+                                                        transitionType:
+                                                            PageTransitionType
+                                                                .fade,
+                                                        duration: Duration(
+                                                            milliseconds: 0),
+                                                      ),
+                                                    },
+                                                  );
+                                                },
                                                 child: Hero(
                                                   tag: profilePhotosPostsRecord
                                                       .postPhoto,
@@ -1594,9 +1620,8 @@ class _ProfileWidgetState extends State<ProfileWidget>
                                   extra: <String, dynamic>{
                                     kTransitionInfoKey: const TransitionInfo(
                                       hasTransition: true,
-                                      transitionType:
-                                          PageTransitionType.topToBottom,
-                                      duration: Duration(milliseconds: 300),
+                                      transitionType: PageTransitionType.fade,
+                                      duration: Duration(milliseconds: 0),
                                     ),
                                   },
                                 );
@@ -1619,9 +1644,8 @@ class _ProfileWidgetState extends State<ProfileWidget>
                                   extra: <String, dynamic>{
                                     kTransitionInfoKey: const TransitionInfo(
                                       hasTransition: true,
-                                      transitionType:
-                                          PageTransitionType.rightToLeft,
-                                      duration: Duration(milliseconds: 300),
+                                      transitionType: PageTransitionType.fade,
+                                      duration: Duration(milliseconds: 0),
                                     ),
                                   },
                                 );
@@ -1644,9 +1668,8 @@ class _ProfileWidgetState extends State<ProfileWidget>
                                   extra: <String, dynamic>{
                                     kTransitionInfoKey: const TransitionInfo(
                                       hasTransition: true,
-                                      transitionType:
-                                          PageTransitionType.topToBottom,
-                                      duration: Duration(milliseconds: 300),
+                                      transitionType: PageTransitionType.fade,
+                                      duration: Duration(milliseconds: 0),
                                     ),
                                   },
                                 );
@@ -1673,7 +1696,16 @@ class _ProfileWidgetState extends State<ProfileWidget>
                               hoverColor: Colors.transparent,
                               highlightColor: Colors.transparent,
                               onTap: () async {
-                                context.pushNamed('community');
+                                context.pushNamed(
+                                  'community',
+                                  extra: <String, dynamic>{
+                                    kTransitionInfoKey: const TransitionInfo(
+                                      hasTransition: true,
+                                      transitionType: PageTransitionType.fade,
+                                      duration: Duration(milliseconds: 0),
+                                    ),
+                                  },
+                                );
                               },
                               child: Container(
                                 width: 28.0,
@@ -1702,9 +1734,8 @@ class _ProfileWidgetState extends State<ProfileWidget>
                                   extra: <String, dynamic>{
                                     kTransitionInfoKey: const TransitionInfo(
                                       hasTransition: true,
-                                      transitionType:
-                                          PageTransitionType.rightToLeft,
-                                      duration: Duration(milliseconds: 300),
+                                      transitionType: PageTransitionType.fade,
+                                      duration: Duration(milliseconds: 0),
                                     ),
                                   },
                                 );

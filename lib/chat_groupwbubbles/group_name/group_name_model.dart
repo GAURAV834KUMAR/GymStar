@@ -1,19 +1,14 @@
 import '/flutter_flow/flutter_flow_util.dart';
-import 'community_widget.dart' show CommunityWidget;
+import 'group_name_widget.dart' show GroupNameWidget;
 import 'package:flutter/material.dart';
 
-class CommunityModel extends FlutterFlowModel<CommunityWidget> {
-  ///  State fields for stateful widgets in this page.
+class GroupNameModel extends FlutterFlowModel<GroupNameWidget> {
+  ///  State fields for stateful widgets in this component.
 
-  final unfocusNode = FocusNode();
   // State field(s) for TextField widget.
   FocusNode? textFieldFocusNode;
   TextEditingController? textController;
   String? Function(BuildContext, String?)? textControllerValidator;
-  bool isDataUploading = false;
-  FFUploadedFile uploadedLocalFile =
-      FFUploadedFile(bytes: Uint8List.fromList([]));
-  String uploadedFileUrl = '';
 
   /// Initialization and disposal methods.
 
@@ -22,7 +17,6 @@ class CommunityModel extends FlutterFlowModel<CommunityWidget> {
 
   @override
   void dispose() {
-    unfocusNode.dispose();
     textFieldFocusNode?.dispose();
     textController?.dispose();
   }
