@@ -91,6 +91,7 @@ dependencies:
   sqflite: 2.2.6
   stop_watch_timer: 3.0.2
   stream_transform: 2.1.0
+  substring_highlight: 1.0.33
   text_search: 1.0.1
   timeago: 3.2.2
   url_launcher: 6.1.10

@@ -7,8 +7,10 @@ class LoginModel extends FlutterFlowModel<LoginWidget> {
 
   final unfocusNode = FocusNode();
   // State field(s) for TextField widget.
+  final textFieldKey1 = GlobalKey();
   FocusNode? textFieldFocusNode1;
   TextEditingController? emailTextController;
+  String? textFieldSelectedOption1;
   String? Function(BuildContext, String?)? emailTextControllerValidator;
   // State field(s) for TextField widget.
   FocusNode? textFieldFocusNode2;
@@ -27,7 +29,6 @@ class LoginModel extends FlutterFlowModel<LoginWidget> {
   void dispose() {
     unfocusNode.dispose();
     textFieldFocusNode1?.dispose();
-    emailTextController?.dispose();
 
     textFieldFocusNode2?.dispose();
     passwordTextController?.dispose();
